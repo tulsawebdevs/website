@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro'
+const baseUrl = import.meta.env.BASE_URL;
 ---
 
 <Layout title="Tulsa Web Devs">
@@ -20,12 +21,12 @@ import Card from '../components/Card.astro'
 				/>
 			<Card
 				title="Suggest Topics or Projects" 
-				href="/propose" 
+				href="/website/propose"
 				body="Give us your best ideas and curiosities!"
 				/>
 			<Card
 				title="Vote on Topics and Projects" 
-				href="/vote" 
+				href="/website/vote"
 				body="We want input from you on what we program!"
 				/>
 		</nav>
