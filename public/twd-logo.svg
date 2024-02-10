@@ -15,7 +15,8 @@
       }
 
       .cls-3 {
-        fill: #e3e8f5;
+        <!-- fill: #e3e8f5; -->
+        fill: none
       }
     </style>
   </defs>
