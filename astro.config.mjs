@@ -6,4 +6,7 @@ export default defineConfig({
   site: 'https://tulsawebdevs.github.io',
   base: '/website',
   integrations: [tailwind()],
+  server:{
+    host: true
+  }
 });
