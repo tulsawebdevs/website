@@ -1,0 +1,26 @@
+{
+  /*
+        Formatting with Prettier
+  */
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  // Show a line for the prettier print width
+  "editor.rulers": [80, 120],
+  "editor.formatOnSave": true,
+  "prettier.requireConfig": true,
+  // Reduces noise in diffs
+  "editor.formatOnSaveMode": "modificationsIfAvailable",
+  // https://github.com/withastro/prettier-plugin-astro/blob/main/README.md#formatting-with-the-vs-code-prettier-extension-directly
+  "prettier.documentSelectors": ["**/*.astro"],
+  "[astro]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  // override any preconfigured defaults
+  "[html]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[css]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[javascriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[jsonc]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[markdown]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[yaml]": { "editor.defaultFormatter": "esbenp.prettier-vscode" }
+}
