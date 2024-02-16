@@ -2,7 +2,7 @@ services:
   app:
     build: ./
     restart: unless-stopped
-    volumes: 
+    volumes:
       - ./:/app
     ports:
       - 4321:4321
