@@ -1,14 +1,19 @@
+import type { IUseTabsProps } from '@zendeskgarden/container-tabs';
 import { useTabs } from '@zendeskgarden/container-tabs';
 import { useMemo } from 'react';
 
-export type TabsProps = Parameters<
-  typeof useTabs<{
-    title: string;
-    render: () => JSX.Element;
-  }>
->[0];
+type Tab<TValue extends string> = {
+  value: TValue;
+  title: string;
+  renderContent: () => JSX.Element;
+  disabled?: boolean;
+};
 
-export default function Tabs(props: TabsProps) {
+export type TabsProps<TValue extends string> = {
+  tabs: Tab<TValue | string>[];
+} & Omit<IUseTabsProps<NoInfer<TValue>>, 'tabs'>;
+
+export function Tabs<const TValue extends string>(props: TabsProps<TValue>) {
   const { selectedValue, getTabListProps, getTabPanelProps, getTabProps } =
     useTabs(props);
 
@@ -16,26 +21,26 @@ export default function Tabs(props: TabsProps) {
     const tabComponents = [];
     const tabPanelComponents = [];
 
-    props.tabs.forEach(({ value }: { value: any }) => {
+    props.tabs.forEach(({ renderContent, ...tab }) => {
       tabComponents.push(
         <li
-          {...getTabProps({ value })}
+          {...getTabProps(tab)}
           className={
-            value === selectedValue ?
+            tab.value === selectedValue ?
               `border-4 border-blue-600 border-solid flex h-4 w-full cursor-pointer items-center justify-center`
             : `border-4 border-transparent border-solid flex h-4 w-full cursor-pointer items-center justify-center`
           }
         >
-          {value?.title}
+          {tab.title}
         </li>,
       );
 
       tabPanelComponents.push(
         <div
-          {...getTabPanelProps({ value })}
+          {...getTabPanelProps(tab)}
           className="padding-top-10px padding-bottom-10px border-s-red-400"
         >
-          {value?.render()}
+          {renderContent()}
         </div>,
       );
     });
