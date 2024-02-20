@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 type Tab<TValue extends string> = {
   value: TValue;
   title: string;
+  title: string;
   renderContent: () => JSX.Element;
   disabled?: boolean;
 };
