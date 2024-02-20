@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 type Tab<TValue extends string> = {
   value: TValue;
   title: string;
+  title: string;
   renderContent: () => JSX.Element;
   disabled?: boolean;
 };
@@ -27,8 +28,8 @@ export function Tabs<const TValue extends string>(props: TabsProps<TValue>) {
           {...getTabProps(tab)}
           className={
             tab.value === selectedValue ?
-              `border-4 border-blue-600 border-solid flex h-4 w-full cursor-pointer items-center justify-center`
-            : `border-4 border-transparent border-solid flex h-4 w-full cursor-pointer items-center justify-center`
+              `border-4 border-blue-600 border-solid flex h-fit w-full cursor-pointer items-center justify-center`
+            : `border-4 border-transparent border-solid flex h-fit w-full cursor-pointer items-center justify-center`
           }
         >
           {tab.title}
@@ -36,24 +37,27 @@ export function Tabs<const TValue extends string>(props: TabsProps<TValue>) {
       );
 
       tabPanelComponents.push(
-        <div
-          {...getTabPanelProps(tab)}
-          className="padding-top-10px padding-bottom-10px border-s-red-400"
-        >
-          {renderContent()}
-        </div>,
+        <div {...getTabPanelProps(tab)}>{renderContent()}</div>,
       );
     });
 
     return { tabs: tabComponents, panels: tabPanelComponents };
   }, [getTabProps, getTabPanelProps, props.tabs, selectedValue]);
 
+  const horizontal = 'flex flex-col';
+  const vertical = 'flex flex-row';
+
+  const [containerDir, listDir] =
+    props.orientation === 'vertical' ?
+      [vertical, horizontal]
+    : [horizontal, vertical];
+
   return (
-    <>
-      <ul {...getTabListProps()} className="flex">
+    <div className={containerDir}>
+      <ul {...getTabListProps()} className={listDir}>
         {components.tabs}
       </ul>
       {components.panels}
-    </>
+    </div>
   );
 }
