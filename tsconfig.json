@@ -1,3 +1,17 @@
 {
-  "extends": "astro/tsconfigs/base"
+  "$schema": "https://json.schemastore.org/tsconfig",
+  /**
+   * Astro's 'strict' config adds `"strict": true`, which is a best practice.
+   * Additional strictness can be added by extending "astro/tsconfigs/strictest"
+   * - https://www.typescriptlang.org/tsconfig#strict
+   */
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    // Check for type errors in JS files
+    "checkJs": true,
+    // The default astro target is ESNEXT, which is inconsistent across TS versions.
+    "target": "ES2022",
+    // Also ESNext, which may include support for Stage 3 proposals to ECMAScript modules.
+    "module": "ES2022",
+  }
 }
