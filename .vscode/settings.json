@@ -4,7 +4,7 @@
   "editor.linkedEditing": true,
   "files.associations": {
     "tsconfig.json": "jsonc"
-  }
+  },
   /*
         Formatting with Prettier
   */

@@ -12,10 +12,10 @@
     // The default astro target is ESNEXT, which is inconsistent across TS versions.
     "target": "ES2022",
     // Also ESNext, which may include support for Stage 3 proposals to ECMAScript modules.
-    "module": "ES2022",
+    "module": "ES2022"
   },
   "typeAcquisition": {
-	// Infer types from imported JS packages if they don't have declaration files
-	"enable": true
+    // Infer types from imported JS packages if they don't have declaration files
+    "enable": true
   }
 }
