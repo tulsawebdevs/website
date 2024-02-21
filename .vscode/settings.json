@@ -1,6 +1,6 @@
 {
-  //"javascript.preferences.renameMatchingJsxTags": true,
-  //"typescript.preferences.renameMatchingJsxTags": true,
+  "javascript.preferences.renameMatchingJsxTags": true,
+  "typescript.preferences.renameMatchingJsxTags": true,
   "editor.linkedEditing": true,
   /*
         Formatting with Prettier
