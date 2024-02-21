@@ -1,8 +1,7 @@
-# Expensify TypeScript Style Guide
+# Tulsa Web Devs TypeScript Style Guide
 
 ## Table of Contents
 
-- [Other Expensify Resources on TypeScript](#other-expensify-resources-on-typescript)
 - [General Rules](#general-rules)
 - [Guidelines](#guidelines)
   - [1.1 Naming Conventions](#naming-conventions)
@@ -19,20 +18,11 @@
   - [1.12 Utility Types](#utility-types)
   - [1.13 `object` Type](#object-type)
   - [1.14 Export Prop Types](#export-prop-types)
-  - [1.15 File Organization](#file-organization)
-  - [1.16 Reusable Types](#reusable-types)
-  - [1.17 `.tsx`](#tsx)
-  - [1.18 No inline prop types](#no-inline-prop-types)
-  - [1.19 Satisfies operator](#satisfies-operator)
-- [Exception to Rules](#exception-to-rules)
+  - [1.15 `.tsx`](#tsx)
+  - [1.16 No inline prop types](#no-inline-prop-types)
+  - [1.17 Satisfies operator](#satisfies-operator)
 - [Communication Items](#communication-items)
-- [Migration Guidelines](#migration-guidelines)
 - [Learning Resources](#learning-resources)
-
-## Other Expensify Resources on TypeScript
-
-- [Expensify TypeScript React Native CheatSheet](./TS_CHEATSHEET.md)
-- [Expensify TypeScript PropTypes Conversion Table](./PROPTYPES_CONVERSION_TABLE.md)
 
 ## General Rules
 
@@ -134,7 +124,7 @@ type Foo = {
 
 - [1.3](#type-alias-vs-interface) **Type Alias vs. Interface**: Do not use `interface`. Use `type`. eslint: [`@typescript-eslint/consistent-type-definitions`](https://typescript-eslint.io/rules/consistent-type-definitions/)
 
-  > Why? In TypeScript, `type` and `interface` can be used interchangeably to declare types. Use `type` for consistency.
+  > Why? In addition to consistency, [this artile](https://www.totaltypescript.com/type-vs-interface-which-should-you-use#default-to-type-not-interface) explains other benefits of using `type` over `interface`.
 
   ```ts
   // BAD
@@ -381,90 +371,13 @@ type Foo = {
 
 <a name="file-organization"></a><a name="1.15"></a>
 
-- [1.15](#file-organization) **File organization**: In modules with platform-specific implementations, create `types.ts` to define shared types. Import and use shared types in each platform specific files. Do not use [`satisfies` operator](#satisfies-operator) for platform-specific implementations, always define shared types that complies with all variants. 
-
-  > Why? To encourage consistent API across platform-specific implementations. If you're migrating module that doesn't have a default implement (i.e. `index.ts`, e.g. `getPlatform`), refer to [Migration Guidelines](#migration-guidelines) for further information.
-
-  Utility module example
-
-  ```ts
-  // types.ts
-  type GreetingModule = {
-    getHello: () => string;
-    getGoodbye: () => string;
-  };
-
-  // index.native.ts
-  import { GreetingModule } from "./types";
-  function getHello() {
-    return "hello from mobile code";
-  }
-  function getGoodbye() {
-    return "goodbye from mobile code";
-  }
-  const Greeting: GreetingModule = {
-    getHello,
-    getGoodbye,
-  };
-  export default Greeting;
-
-  // index.ts
-  import { GreetingModule } from "./types";
-  function getHello() {
-    return "hello from other platform code";
-  }
-  function getGoodbye() {
-    return "goodbye from other platform code";
-  }
-  const Greeting: GreetingModule = {
-    getHello,
-    getGoodbye,
-  };
-  export default Greeting;
-  ```
-
-  Component module example
-
-  ```ts
-    // types.ts
-    export type MyComponentProps = {
-      foo: string;
-    }
-
-    // index.ios.ts
-    import { MyComponentProps } from "./types";
-
-    export MyComponentProps;
-    export default function MyComponent({ foo }: MyComponentProps) { /* ios specific implementation */ }
-
-    // index.ts
-    import { MyComponentProps } from "./types";
-
-    export MyComponentProps;
-    export default function MyComponent({ foo }: MyComponentProps) { /* Default implementation */ }
-  ```
-
-<a name="reusable-types"></a><a name="1.16"></a>
-
-- [1.16](#reusable-types) **Reusable Types**: Reusable type definitions, such as models (e.g., Report), must have their own file and be placed under `src/types/`. The type should be exported as a default export.
-
-  ```ts
-  // src/types/Report.ts
-
-  type Report = {...};
-
-  export default Report;
-  ```
-
-  <a name="tsx"></a><a name="1.17"></a>
-
-- [1.17](#tsx) **tsx**: Use `.tsx` extension for files that contain React syntax.
+- [1.15](#tsx) **tsx**: Use `.tsx` extension for files that contain React syntax.
 
   > Why? It is a widely adopted convention to mark any files that contain React specific syntax with `.jsx` or `.tsx`.
 
   <a name="no-inline-prop-types"></a><a name="1.18"></a>
 
-- [1.18](#no-inline-prop-types) **No inline prop types**: Do not define prop types inline for components that are exported.
+- [1.16](#no-inline-prop-types) **No inline prop types**: Do not define prop types inline for components that are exported.
 
   > Why? Prop types might [need to be exported from component files](#export-prop-types). If the component is only used inside a file or module and not exported, then inline prop types can be used.
 
@@ -483,7 +396,7 @@ type Foo = {
 
   <a name="satisfies-operator"></a><a name="1.19"></a>
 
-- [1.19](#satisfies-operator) **Satisfies Operator**: Use the `satisfies` operator when you need to validate that the structure of an expression matches a specific type, without affecting the resulting type of the expression.
+- [1.17](#satisfies-operator) **Satisfies Operator**: Use the `satisfies` operator when you need to validate that the structure of an expression matches a specific type, without affecting the resulting type of the expression.
 
   > Why? TypeScript developers often want to ensure that an expression aligns with a certain type, but they also want to retain the most specific type possible for inference purposes. The `satisfies` operator assists in doing both.
 
@@ -509,24 +422,16 @@ type Foo = {
   } satisfies Record<string, ViewStyle>;
   ```
 
-## Exception to Rules
-
-Most of the rules are enforced in ESLint or checked by TypeScript. If you think your particular situation warrants an exception, post the context in the `#expensify-open-source` Slack channel with your message prefixed with `TS EXCEPTION:`. The internal engineer assigned to the PR should be the one that approves each exception, however all discussion regarding granting exceptions should happen in the public channel instead of the GitHub PR page so that the TS migration team can access them easily.
-
-When an exception is granted, link the relevant Slack conversation in your PR. Suppress ESLint or TypeScript warnings/errors with comments if necessary.
-
-This rule will apply until the migration is done. After the migration, discussion on granting exception can happen inside the PR page and doesn't need take place in the Slack channel.
-
 ## Communication Items
 
-> Comment in the `#expensify-open-source` Slack channel if any of the following situations are encountered. Each comment should be prefixed with `TS ATTENTION:`. Internal engineers will access each situation and prescribe solutions to each case. Internal engineers should refer to general solutions to each situation that follows each list item.
+> Tag a maintainer on GitHub if any of the following situations are encountered. Each comment should be prefixed with `TS ATTENTION:`. Internal engineers will access each situation and prescribe solutions to each case. Internal engineers should refer to general solutions to each situation that follows each list item.
 
 - I think types definitions in a third party library is incomplete or incorrect
 
-When the library indeed contains incorrect or missing type definitions and it cannot be updated, use module augmentation to correct them. All module augmentation code should be contained in `/src/types/modules/*.d.ts`, each library as a separate file.
+When the library indeed contains incorrect or missing type definitions and it cannot be updated, use module augmentation to correct them. All module augmentation code should be contained in `/src/ts-env.d.ts`.
 
 ```ts
-// external-library-name.d.ts
+// ts-env.d.ts
 
 declare module "external-library-name" {
   interface LibraryComponentProps {
@@ -536,38 +441,7 @@ declare module "external-library-name" {
 }
 ```
 
-## Migration Guidelines
-
-> This section contains instructions that are applicable during the migration.
-
-- 🚨 DO NOT write new code in TypeScript yet. The only time you write TypeScript code is when the file you're editing has already been migrated to TypeScript by the migration team. This guideline will be updated once it's time for new code to be written in TypeScript. If you're doing a major overhaul or refactoring of particular features or utilities of App and you believe it might be beneficial to migrate relevant code to TypeScript as part of the refactoring, please ask in the #expensify-open-source channel about it (and prefix your message with `TS ATTENTION:`).
-
-- If you're migrating a module that doesn't have a default implementation (i.e. `index.ts`, e.g. `getPlatform`), convert `index.website.js` to `index.ts`. Without `index.ts`, TypeScript cannot get type information where the module is imported.
-
-- Deprecate the usage of `underscore`. Use vanilla methods from JS instead. Only use `lodash` when there is no easy vanilla alternative (eg. `lodashMerge`). eslint: [`no-restricted-imports`](https://eslint.org/docs/latest/rules/no-restricted-imports)
-
-```ts
-// BAD
-var arr = [];
-_.each(arr, () => {});
-
-// GOOD
-var arr = [];
-arr.forEach(() => {});
-
-// BAD
-lodashGet(object, ['foo'], 'bar');
-
-// GOOD
-object?.foo ?? 'bar';
-```
-
-- Found type bugs. Now what?
-
-  If TypeScript migration uncovers a bug that has been “invisible,” there are two options an author of a migration PR can take:
-
-  - Fix issues if they are minor. Document each fix in the PR comment.
-  - Suppress a TypeScript error stemming from the bug with `@ts-expect-error`. Create a separate GH issue. Prefix the issue title with `[TS ERROR #<issue-number-of-migration-PR>]`. Cross-link the migration PR and the created GH issue. On the same line as `@ts-expect-error`, put down the GH issue number prefixed with `TODO:`.
+  If the error cannot be fixed via module augmentation, add `//@ts-expect-error` only once, at the source of the error (not every usage) and create a separate GH issue. Prefix the issue title with `[TS ERROR #<issue-number-of-migration-PR>]`. Cross link the original PR or issue and the created GH issue. On the same line as `@ts-expect-error`, put down the GH issue number prefixed with `TODO:`.
 
   > The `@ts-expect-error` annotation tells the TS compiler to ignore any errors in the line that follows it. However, if there's no error in the line, TypeScript will also raise an error.
 
