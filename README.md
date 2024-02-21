@@ -1,42 +1,20 @@
-# Tulsa Web Devs User Group Site
+# Tulsa Web Devs User Group Website
 
-## 🚀 Project Structure
+## Overview
+The Tulsa Web Devs (TWD) website is a dynamic platform designed to serve as a central resource for our community. Our goal is to facilitate events, share knowledge, and foster collaboration among tech enthusiasts and professionals in the Tulsa area.
 
-Inside of your Astro project, you'll see the following folders and files:
+## Features
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── components/
-│   │   └── Card.astro
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+- **Suggest and Vote on Topics for Presentations**: Influence the learning journey of our community. Your suggestions directly shape our upcoming events, collaboratively meeting the community's needs and interests.
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+- **Propose and Endorse Projects for Hack Nights**: Have a project idea? Share it! Your project could be the next big thing our community builds together during our collaborative hack nights.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+- **Engage with a Community-Driven Platform**: Your involvement helps shape the future of tech in Tulsa. Participate in discussions, share knowledge, and be a part of our growing tech landscape.
 
-Any static assets, like images, can be placed in the `public/` directory.
 
-## 🧞 Commands
+## Contributing
+We warmly welcome contributions from community members. Whether you're a developer, designer, content creator, or tech enthusiast, there are many ways to contribute. Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
-All commands are run from the root of the project, from a terminal:
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
