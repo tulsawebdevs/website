@@ -2,6 +2,9 @@
   "javascript.preferences.renameMatchingJsxTags": true,
   "typescript.preferences.renameMatchingJsxTags": true,
   "editor.linkedEditing": true,
+  "files.associations": {
+    "tsconfig.json": "jsonc"
+  }
   /*
         Formatting with Prettier
   */
