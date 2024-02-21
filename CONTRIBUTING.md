@@ -195,7 +195,7 @@ All commands are run from the root of the project, from a terminal:
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
 ## Reporting Bugs
-Report bugs by opening a new issue. Please include a clear description, as much relevant information as possible, and a code sample or an executable test case demonstrating the expected behavior that is not occurring.
+Report bugs by opening a new issue. Please include a clear description, as much relevant information as possible, and, most importantly, a [minimum reproducible example (instructions)](https://stackoverflow.com/help/minimal-reproducible-example).
 
 ## Code of Conduct
 Participants in the project must adhere to our Code of Conduct. Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details.
