@@ -4,3 +4,12 @@ repos:
     hooks:
     -   id: check-yaml
     -   id: check-added-large-files
+-   repo: https://github.com/pre-commit/mirrors-prettier
+    name: Prettier
+    rev: "3.2.5"
+    hooks:
+    -   id: prettier
+        additional_dependencies:
+        -   prettier@3.2.5
+        -   prettier-plugin-astro@0.13.0
+    	-   prettier-plugin-tailwindcss@0.5.11
