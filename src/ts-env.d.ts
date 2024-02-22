@@ -2,12 +2,13 @@
  * @fileoverview Augment modules or globals in this file, when necessary.
  */
 
-declare namespace NodeJS {
-  /**
-   * Fix errors from some untyped JS dependencies that use the unsound
-   * (but common) `['dep1', 'dep2'].map(require.resolve)` pattern.
-   */
-  interface RequireResolve {
-    (path: string): string;
-  }
+declare module 'eslint-plugin-unicorn' {
+  import type { Linter } from 'eslint';
+
+  const configs: {
+    'flat/recommended': Linter.RulesRecord;
+    'flat/all': Linter.RulesRecord;
+  };
+
+  export default { configs };
 }
