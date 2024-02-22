@@ -17,22 +17,19 @@ const compat = new eslintrc.FlatCompat({ baseDirectory: import.meta.dirname });
 export default tseslint.config(
   eslint.configs.recommended,
   ...compat.extends('eslint-config-airbnb', 'eslint-config-airbnb/hooks'),
+  {
+    ...unicorn.configs['flat/all'],
+    ignores: ['src/env.d.ts', 'src/ts-env.d.ts'],
+  },
   ...tseslint.configs.recommendedTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
   eslintPrettier,
-  unicorn.configs['flat/recommended'],
   {
     rules: {
-      /**
-       * These rules are causing spurious errors related to ESLint not being
-       * albe to resolve files that TypeScript can resolve without issue
-       */
+      'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
+      /** These on by default rules DO NOT work well for this project */
       'import/no-unresolved': 'off',
-      'import/no-extraneous-dependencies': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/no-unsafe-argument': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
+      /** These off by default rules DO work well with this project */
     },
     languageOptions: {
       parserOptions: {
