@@ -9,13 +9,23 @@
   "compilerOptions": {
     // Check for type errors in JS files
     "checkJs": true,
-    // The default astro target is ESNEXT, which is inconsistent across TS versions.
+    /*
+    The defaults for 'target' and 'module' in astro's tsconfig are both ESNEXT.
+    ESNext *target* is inconsistent across TS versions. ESNext *module* may 
+    add support for features not yet in the ECMAScript standard (stage 3)
+    See: https://www.typescriptlang.org/tsconfig#target
+    */
     "target": "ES2022",
-    // Also ESNext, which may include support for Stage 3 proposals to ECMAScript modules.
     "module": "ES2022"
   },
+  // improve type-checking for JS files
   "typeAcquisition": {
-    // Infer types from imported JS packages if they don't have declaration files
     "enable": true
-  }
+  },
+  "include": [
+    "./**/*",
+    "./node_modules/eslint-config-airbnb/index.js",
+    "./node_modules/eslint-config-airbnb/hooks.js",
+    "./node_modules/@eslint/js/src/index.js"
+  ]
 }
