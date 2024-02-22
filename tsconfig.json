@@ -22,6 +22,7 @@
   "typeAcquisition": {
     "enable": true
   },
+  "exclude": ["node_modules"],
   "include": [
     "./**/*",
     "./node_modules/eslint-config-airbnb/index.js",
