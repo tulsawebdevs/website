@@ -30,7 +30,7 @@ Strive to type as strictly as possible.
 
 ```ts
 type Foo = {
-  fetchingStatus: "loading" | "success" | "error"; // vs. fetchingStatus: string;
+  fetchingStatus: 'loading' | 'success' | 'error'; // vs. fetchingStatus: string;
   person: { name: string; age: number }; // vs. person: Record<string, unknown>;
 };
 ```
@@ -67,10 +67,10 @@ type Foo = {
 
     ```ts
     // BAD
-    type Colors = "red" | "blue" | "green";
+    type Colors = 'red' | 'blue' | 'green';
 
     // GOOD
-    type Color = "red" | "blue" | "green";
+    type Color = 'red' | 'blue' | 'green';
     ```
 
   - Use `{ComponentName}Props` pattern for prop types.
@@ -146,15 +146,15 @@ type Foo = {
 
   ```ts
   // Most simple form of union type.
-  type Color = "red" | "green" | "blue";
+  type Color = 'red' | 'green' | 'blue';
   function printColors(color: Color) {
     console.log(color);
   }
 
   // When the values need to be iterated upon.
-  import { TupleToUnion } from "type-fest";
+  import { TupleToUnion } from 'type-fest';
 
-  const COLORS = ["red", "green", "blue"] as const;
+  const COLORS = ['red', 'green', 'blue'] as const;
   type Color = TupleToUnion<typeof COLORS>; // type: 'red' | 'green' | 'blue'
 
   for (const color of COLORS) {
@@ -162,12 +162,12 @@ type Foo = {
   }
 
   // When the values should be accessed through object keys. (i.e. `COLORS.Red` vs. `"red"`)
-  import { ValueOf } from "type-fest";
+  import { ValueOf } from 'type-fest';
 
   const COLORS = {
-    Red: "red",
-    Green: "green",
-    Blue: "blue",
+    Red: 'red',
+    Green: 'green',
+    Blue: 'blue',
   } as const;
   type Color = ValueOf<typeof COLORS>; // type: 'red' | 'green' | 'blue'
 
@@ -193,14 +193,14 @@ type Foo = {
 
   ```ts
   // Array<T>
-  const a: Array<string | number> = ["a", "b"];
-  const b: Array<{ prop: string }> = [{ prop: "a" }];
+  const a: Array<string | number> = ['a', 'b'];
+  const b: Array<{ prop: string }> = [{ prop: 'a' }];
   const c: Array<() => void> = [() => {}];
 
   // T[]
-  const d: MyType[] = ["a", "b"];
-  const e: string[] = ["a", "b"];
-  const f: readonly string[] = ["a", "b"];
+  const d: MyType[] = ['a', 'b'];
+  const e: string[] = ['a', 'b'];
+  const f: readonly string[] = ['a', 'b'];
   ```
 
 <a name="ts-ignore"></a><a name="1.7"></a>
@@ -215,11 +215,11 @@ type Foo = {
 
   ```ts
   // BAD
-  import lodashGet from "lodash/get";
-  const name = lodashGet(user, "name", "default name");
+  import lodashGet from 'lodash/get';
+  const name = lodashGet(user, 'name', 'default name');
 
   // GOOD
-  const name = user?.name ?? "default name";
+  const name = user?.name ?? 'default name';
   ```
 
 <a name="type-inference"></a><a name="1.9"></a>
@@ -228,11 +228,11 @@ type Foo = {
 
   ```ts
   // BAD
-  const foo: string = "foo";
+  const foo: string = 'foo';
   const [counter, setCounter] = useState<number>(0);
 
   // GOOD
-  const foo = "foo";
+  const foo = 'foo';
   const [counter, setCounter] = useState(0);
   const [username, setUsername] = useState<string | undefined>(undefined); // Username is a union type of string and undefined, and its type cannot be inferred from the default value of undefined
   ```
@@ -361,12 +361,12 @@ type Foo = {
   }
 
   // BAD
-  import { ComponentProps } from "React";
-  import MyComponent from "./MyComponent";
+  import { ComponentProps } from 'React';
+  import MyComponent from './MyComponent';
   type MyComponentProps = ComponentProps<typeof MyComponent>;
 
   // GOOD
-  import MyComponent, { MyComponentProps } from "./MyComponent";
+  import MyComponent, { MyComponentProps } from './MyComponent';
   ```
 
 <a name="file-organization"></a><a name="1.15"></a>
@@ -404,20 +404,20 @@ type Foo = {
   // BAD
   const sizingStyles = {
     w50: {
-        width: '50%',
+      width: '50%',
     },
     mw100: {
-        maxWidth: '100%',
+      maxWidth: '100%',
     },
   } as const;
 
   // GOOD
   const sizingStyles = {
     w50: {
-        width: '50%',
+      width: '50%',
     },
     mw100: {
-        maxWidth: '100%',
+      maxWidth: '100%',
     },
   } satisfies Record<string, ViewStyle>;
   ```
@@ -433,7 +433,7 @@ When the library indeed contains incorrect or missing type definitions and it ca
 ```ts
 // ts-env.d.ts
 
-declare module "external-library-name" {
+declare module 'external-library-name' {
   interface LibraryComponentProps {
     // Add or modify typings
     additionalProp: string;
@@ -441,17 +441,17 @@ declare module "external-library-name" {
 }
 ```
 
-  If the error cannot be fixed via module augmentation, add `//@ts-expect-error` only once, at the source of the error (not every usage) and create a separate GH issue. Prefix the issue title with `[TS ERROR #<issue-number-of-migration-PR>]`. Cross link the original PR or issue and the created GH issue. On the same line as `@ts-expect-error`, put down the GH issue number prefixed with `TODO:`.
+If the error cannot be fixed via module augmentation, add `//@ts-expect-error` only once, at the source of the error (not every usage) and create a separate GH issue. Prefix the issue title with `[TS ERROR #<issue-number-of-original-PR>]`. Cross link the original PR or issue and the created GH issue. On the same line as `@ts-expect-error`, put down the GH issue number prefixed with `TODO:`.
 
-  > The `@ts-expect-error` annotation tells the TS compiler to ignore any errors in the line that follows it. However, if there's no error in the line, TypeScript will also raise an error.
+> The `@ts-expect-error` annotation tells the TS compiler to ignore any errors in the line that follows it. However, if there's no error in the line, TypeScript will also raise an error.
 
-  ```ts
-  // @ts-expect-error TODO: #21647
-  const x: number = "123"; // No TS error raised
+```ts
+// @ts-expect-error TODO: #21647
+const x: number = '123'; // No TS error raised
 
-  // @ts-expect-error
-  const y: number = 123; // TS error: Unused '@ts-expect-error' directive.
-  ```
+// @ts-expect-error
+const y: number = 123; // TS error: Unused '@ts-expect-error' directive.
+```
 
 ## Learning Resources
 

@@ -2,9 +2,9 @@ name: Frontend CI
 on:
   # Triggers the workflow on push or pull request events but only for the "dev" branch
   push:
-    branches: [ "dev" , "prod"]
+    branches: ['dev', 'prod']
   pull_request:
-    branches: [ "dev", "prod" ]
+    branches: ['dev', 'prod']
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -22,4 +22,3 @@ jobs:
         run: npm ci
       - name: build astro
         run: npm run build
-        
