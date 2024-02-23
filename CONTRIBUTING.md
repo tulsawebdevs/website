@@ -1,6 +1,7 @@
 # Contributing to the Tulsa Web Devs Website
 
 ## Table of Contents
+
 1. [Introduction](#introduction)
 2. [Getting Started](#getting-started)
 3. [Docker Setup](#docker-setup)
@@ -17,33 +18,38 @@
 14. [Code of Conduct](#code-of-conduct)
 15. [Contact Information](#contact-information)
 
-
 ## Introduction
+
 Contributions are what make the open-source community an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**. Please use this as a guide to assist in your contributions to our community. This guide aims to streamline the contribution process, making it easier for everyone to participate and contribute effectively to the Tulsa Web Devs Website. Whether you're fixing a bug, adding a new feature, or improving documentation, your efforts help us grow and improve.
 
 ## Getting Started
 
 1. **Fork the Repository**: Click the fork button to create a copy of the repository.
 2. **Clone Your Fork**: Clone the repository to your local machine.
-    ```
-    git clone <your-fork-url>
-    ```
+
+   ```
+   git clone <your-fork-url>
+   ```
+
 This project has been containerized with [Docker](https://docs.docker.com/) for OS and framework agnostic contributions and conveinence.
 
 3. **Launch the Project**: Navigate to the project directory and run if you are adding no dependencies:
-    ```
-    docker-compose up
-    ```
-**If you're not using Docker, just running `npm install` after you download the project will work too.**
+
+   ```
+   docker-compose up
+   ```
+
+   **If you're not using Docker, just running `npm install` after you download the project will work too.**
 
 ## Docker Setup
+
 To work on our project with Docker (a tool that makes it easy for everyone to run the project the same way), here's what to do:
 
 #### If the project is running and you want to add a new tool or library, type:
 
- `docker-compose exec app npm install [the name of what you're adding]`.
+`docker-compose exec app npm install [the name of what you're adding]`.
 
-####  If you're not running the project, but still want to add something, use:
+#### If you're not running the project, but still want to add something, use:
 
 `docker-compose run --rm app npm install [the name of what you're adding]`.
 This helps keep things simple and consistent for everyone, especially if you're new. It's best to use Docker for these steps.
@@ -61,7 +67,8 @@ We link all guides in one place for easy access.
 Everything’s organized around an API gateway, making it easier to combine our services for the website. Don’t worry if you’re new; this process helps everyone contribute effectively.
 
 ## Git Branch Naming Conventions
- These prefixes are among the most commonly used in branch naming conventions:
+
+These prefixes are among the most commonly used in branch naming conventions:
 
 - `feature/`: For new features or additions to the project.
 - `issue/`: For work related to a specific issue tracked in the project's issue tracker.
@@ -72,15 +79,17 @@ Check out this resources for more details
 [Best Practices to Follow](https://phoenixnap.com/kb/git-branch-name-convention)
 
 ## Pre-commit Setup
+
 To set up pre-commit hooks for your project, you'll need to install the pre-commit package manager.
 
 This can be done using pip with pip install pre-commit. Then, create a .pre-commit-config.yaml in your project's root directory to define which hooks you want to use.
 You can generate a basic configuration with pre-commit sample-config. After setting up your configuration, use pre-commit install to install git hook scripts, which will automatically run pre-commit on every commit. For detailed instructions and more options, visit [pre-commit.com](https://pre-commit.com/#:~:text=If%20you%20want%20to%20manually,first%20time%20may%20be%20slow.).
 
 - **This file has already been set up in this repository**
--  use **pre-commit install**
+- use **pre-commit install**
 
 ## Continuous Integration (CI) Process
+
 Our project uses GitHub Actions for continuous integration (CI) and deployment to ensure code quality and to automate the deployment process. Here’s a brief overview of our workflows and how they impact your contributions.
 
 ### Deploy to GitHub Pages Workflow
@@ -143,6 +152,7 @@ We follow the Conventional Commits specification which outlines a structured for
 Please see the [Conventional Commits website](https://www.conventionalcommits.org/en/v1.0.0/) for more details.
 
 ## Pull Requests Process
+
 1. Fork the Project
 2. Clone your Fork
 3. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
@@ -157,7 +167,6 @@ Please see the [Conventional Commits website](https://www.conventionalcommits.or
 ## Astro Project Structure
 
 This project is built using the Astro framework. For a deeper understanding and to troubleshoot any Astro-specific issues, please refer to the [Astro Documentation](https://docs.astro.build).
-
 
 Inside of your Astro project, you'll see the following folders and files:
 
@@ -195,12 +204,15 @@ All commands are run from the root of the project, from a terminal:
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
 ## Reporting Bugs
+
 Report bugs by opening a new issue. Please include a clear description, as much relevant information as possible, and, most importantly, a [minimum reproducible example (instructions)](https://stackoverflow.com/help/minimal-reproducible-example).
 
 ## Code of Conduct
+
 Participants in the project must adhere to our Code of Conduct. Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for details.
 
 ## Contact Information
+
 For any questions or concerns, please reach out to us via [GitHub Issues](https://github.com/tulsawebdevs/website/issues) or for members [#ug-tulsawebdevs Slack Channel](https://techlahoma.slack.com/archives/C0HM5SS7P).
 
 If you are not currently a member of Techlahoma please [Check out how to become a member here.](https://www.techlahoma.org/how-to-be-a-member)

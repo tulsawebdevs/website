@@ -2,9 +2,9 @@
 
 /** @type {PrettierConfig} */
 const config = {
-	experimentalTernaries: true,
-	singleQuote: true,
-  plugins: ["prettier-plugin-astro"],
+  experimentalTernaries: true,
+  singleQuote: true,
+  plugins: ['prettier-plugin-astro'],
 };
 
 export default config;
