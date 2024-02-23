@@ -1,0 +1,47 @@
+{
+  "javascript.preferences.renameMatchingJsxTags": true,
+  "typescript.preferences.renameMatchingJsxTags": true,
+  "editor.linkedEditing": true,
+  "files.associations": {
+    "tsconfig.json": "jsonc"
+  },
+  /*
+        Linting with ESLint
+  */
+  "eslint.experimental.useFlatConfig": true,
+  "eslint.codeActionsOnSave.mode": "problems",
+  "eslint.codeAction.showDocumentation": { "enable": true },
+  "eslint.codeAction.disableRuleComment": {
+    "enable": true,
+    "location": "separateLine",
+    "commentStyle": "line"
+  },
+  /*
+        Formatting with Prettier
+  */
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+  // Show a line for the prettier print width
+  "editor.rulers": [80, 120],
+  // Helps in edge-cases where prettier fails to resolve the config
+  "prettier.requireConfig": true,
+  "prettier.configPath": "./prettier.config.mjs",
+  // https://github.com/withastro/prettier-plugin-astro/blob/main/README.md#formatting-with-the-vs-code-prettier-extension-directly
+  "prettier.documentSelectors": ["**/*.astro"],
+  "[astro]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  // override any preconfigured defaults
+  "[html]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[css]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[javascriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[jsonc]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[jsx-tags]": {},
+  "[markdown]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}
