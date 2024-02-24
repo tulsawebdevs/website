@@ -4,6 +4,9 @@ dist/
 # generated types
 .astro/
 
+#vitest coverage
+coverage
+
 # dependencies
 node_modules/
 
