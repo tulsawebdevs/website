@@ -22,3 +22,7 @@ jobs:
         run: npm ci
       - name: build astro
         run: npm run build
+      - name: eslint
+        run: npm run lint
+      - name: vitest
+        run: npm test -- run --coverage
