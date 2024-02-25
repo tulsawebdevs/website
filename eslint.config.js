@@ -19,7 +19,11 @@ export default tseslint.config(
   ...compat.extends('eslint-config-airbnb', 'eslint-config-airbnb/hooks'),
   {
     ...unicorn.configs['flat/all'],
-    ignores: ['src/env.d.ts', 'src/ts-env.d.ts'],
+    ignores: [
+      'src/env.d.ts',
+      'src/ts-env.d.ts',
+      'playwright/tests-examples/*.ts',
+    ],
   },
   ...tseslint.configs.recommendedTypeChecked,
   ...tseslint.configs.stylisticTypeChecked,
