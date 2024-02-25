@@ -5,14 +5,13 @@ import { useMemo } from 'react';
 type Tab<TValue extends string> = {
   value: TValue;
   title: string;
-  title: string;
   renderContent: () => JSX.Element;
   disabled?: boolean;
 };
 
 export type TabsProps<TValue extends string> = {
   tabs: Tab<TValue | string>[];
-} & Omit<IUseTabsProps<NoInfer<TValue>>, 'tabs'>;
+} & Omit<IUseTabsProps<NoInfer<TValue | string>>, 'tabs'>;
 
 export function Tabs<const TValue extends string>(props: TabsProps<TValue>) {
   const { selectedValue, getTabListProps, getTabPanelProps, getTabProps } =
