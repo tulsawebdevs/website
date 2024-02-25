@@ -130,11 +130,11 @@ Contributions must pass all checks before merging.
 
 **Unit Testing**: Contributors should write unit tests for new code and updates. Aim for a high coverage percentage to ensure robustness.
 
-**Integration Testing**: Ensure that your changes integrate seamlessly with existing services. Use automated tools where possible.
+**Integration Testing**: Ensure that your changes integrate seamlessly with existing services. Write automated tests with Vitest when possible.
+- Run `npm run test` to execute any unit or integration tests.
 
 **End-to-End Testing**: For critical features, conduct end-to-end testing to simulate real-world scenarios.
-
-- Ensure to run `npm run test` to execute any unit tests.
+- Run `npm run test:e2e` to execute End to End browser tests with Playwright
 - For UI changes, visually inspect your changes in multiple browsers.
 
 ## Conventional Commits
