@@ -45,7 +45,7 @@
     "prettier": "3.2.5",
     "prettier-plugin-astro": "0.13.0",
     "prettier-plugin-tailwindcss": "0.5.11",
-    "typescript": "5.3.3",
+    "typescript": "5.4.1-rc",
     "typescript-eslint": "7.1.0"
   },
   "packageManager": "npm@10.4.0"

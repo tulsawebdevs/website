@@ -1,6 +1,7 @@
 {
   "javascript.preferences.renameMatchingJsxTags": true,
   "typescript.preferences.renameMatchingJsxTags": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
   "editor.linkedEditing": true,
   "files.associations": {
     "tsconfig.json": "jsonc"
