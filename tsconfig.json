@@ -5,37 +5,27 @@
    * Additional strictness can be added by extending "astro/tsconfigs/strictest"
    * - https://www.typescriptlang.org/tsconfig#strict
    */
-  "extends": "astro/tsconfigs/strict",
+  "extends": "astro/tsconfigs/strictest",
   "compilerOptions": {
     "plugins": [{ "name": "@astrojs/ts-plugin" }],
     "jsx": "react-jsx",
     "jsxImportSource": "react",
-    // Check for type errors in JS files
+    // Allow JS files but check them for errors
+    "allowJs": true,
     "checkJs": true,
+    // Nice in theory, but 3rd party types often don't get this right
+    "exactOptionalPropertyTypes": false,
+    // Linter should unused locals/parameters
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     /*
     The defaults for 'target' and 'module' in astro's tsconfig are both ESNEXT.
-    ESNext *target* is inconsistent across TS versions. ESNext *module* may 
+    ESNext *target* is inconsistent across TS versions. ESNext *module* may
     add support for features not yet in the ECMAScript standard (stage 3)
     See: https://www.typescriptlang.org/tsconfig#target
     */
     "target": "ES2022",
     "module": "ES2022"
   },
-  // improve type-checking for JS files
-  "typeAcquisition": {
-    "enable": true
-  },
-  "exclude": ["node_modules"],
-  "include": [
-    "**/*.js",
-    "**/*.jsx",
-    "**/*.mjs",
-    "**/*.cjs",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.mts",
-    "**/*.cts",
-    "**/*.d.ts",
-    "**/*.astro"
-  ]
+  "exclude": ["node_modules"]
 }
