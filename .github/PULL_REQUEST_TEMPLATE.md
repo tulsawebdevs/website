@@ -10,7 +10,7 @@
   - [ ] My commits conform to the [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) specification
 - [ ] This PR is not a duplicate of a similar PR ([how to search issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/filtering-and-searching-issues-and-pull-requests) for similar/duplicate PRs, which this is not
 - [ ] This PR targets the `dev` branch
-- [ ] I ran `npm test` and all tests pass
+- [ ] I ran the pre-commit hooks or `npm test && npm lint && npm test:e2e` and all tests pass
 
 <hr>
 
@@ -42,23 +42,16 @@ Please describe the tests that you ran to verify your changes.
     - [ ] Test A
     - [ ] Test B
 -->
-
+<!--
 **Test Configuration** (Optional):
 
 - Firmware version:
-<!--
     -  If you know the version of any specific software you used, list it here. If unsure, you can leave it blank.
--->
 - Hardware:
-<!--
     -  Mention your computer or device model if your changes are hardware-dependent. If not, it's okay to skip.
--->
 - Toolchain:
-<!--
     - This refers to the set of programming tools you used. For beginners, it could be the IDE (Integrated Development Environment) like Visual Studio Code.
--->
 - SDK:
-<!--
     - Mention any specific Software Development Kit versions you used. If you didn't use any, no need to include it.
 -->
 
@@ -69,11 +62,7 @@ Please describe the tests that you ran to verify your changes.
 ## Checklist:
 
 - [ ] My code follows the style guidelines of this project
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented on my code, particularly in hard-to-understand areas
 - [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings
-- [ ] Any dependent changes have been merged and published in downstream modules
 - [ ] I have removed all unnecessary comments and debug log statements
 - [ ] I have linked this PR to its corresponding issue
 
