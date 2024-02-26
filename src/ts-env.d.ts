@@ -5,13 +5,10 @@
 // Just to make ESLint happy, doesn't actually overwrite the global NoInfer type
 declare type NoInfer<A> = A;
 
-declare module 'eslint-plugin-unicorn' {
-  import type { Linter } from 'eslint';
+declare module '@eslint/eslintrc/universal' {
+  import type { ESLint } from 'eslint';
 
-  const configs: {
-    'flat/recommended': Linter.RulesRecord;
-    'flat/all': Linter.RulesRecord;
-  };
-
-  export default { configs };
+  export class Legacy {
+    static environments: Map<string, ESLint.Environment>;
+  }
 }
