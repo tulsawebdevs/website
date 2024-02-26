@@ -7,6 +7,7 @@
    */
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
+    "plugins": [{ "name": "@astrojs/ts-plugin" }],
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     // Check for type errors in JS files
