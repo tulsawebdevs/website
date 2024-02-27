@@ -1,5 +1,5 @@
 import { Tabs } from '../Tabs';
-import AboutTab from './AboutTab';
+import UpdatesTab from './UpdatesTab';
 import ProjectsTab from './ProjectsTab';
 import ResourcesTab from './ResourcesTab';
 
@@ -8,9 +8,9 @@ export default function HackNightTabs() {
     <Tabs
       tabs={[
         {
-          value: 'about',
-          title: 'About',
-          renderContent: () => <AboutTab />,
+          value: 'udpates',
+          title: 'Updates',
+          renderContent: () => <UpdatesTab />,
         },
         {
           value: 'projets',
