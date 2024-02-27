@@ -1,130 +1,165 @@
 ---
 // Import the Layout component at the top of your page file
+import Tabs from '../components/hacknight/Tabs.tsx';
 import Layout from '../layouts/Layout.astro';
-const heroPhoto =  '/twd-hero-img.webp';
+const heroPhoto = '/twd-hero-img.webp';
 ---
+
 <Layout title="Hack Night">
+  <div class="container">
+    <header>
+      <img src={heroPhoto} alt="TWD hero image" class="hero-image" />
+      <h1>Hack Night</h1>
+      <p style="font-weight: 700; font-size: calc(1rem + 1vw);">
+        Education. Connection. Opportunity.
+      </p>
+      <p style="font-weight: 500; font-size: calc(0.6rem + 0.65vw);">
+        —Every 4th Tuesday in Tulsa—
+      </p>
+      <p
+        style="font-weight: 300; font-size: calc(0.7rem + 0.7vw); font-style: italic;"
+      >
+        The Best Place in the World for Web Developers!
+      </p>
+    </header>
+  </div>
 
-        <header>
-            <img src={heroPhoto} alt="TWD hero image" class="hero-image" />
-            <h1>Tulsa Web Devs Hack Night</h1>
-            <p id="topic">Greenfield Democracy!</p>
-        </header>
-    <div class="container">
-        <section id="event-details">
-            <h2>Event Details</h2>
-            <p>February 27, 2024 - 6pm-9pm CST</p>
-            <p>This month we're exploring alternative voting systems and empowering YOU, our membership, to have an ongoing say in programming for the group!</p>
-        </section>
+  <div class="container">
+    <br />
+    <Tabs client:load />
 
-        <section id="challenge-description">
-            <h2>Challenge Description</h2>
-            <p>Participants are tasked with architecting solutions for user stories and constraints related to topic and project suggestions and voting systems.</p>
-            <p>Check out this resource: <a href="https://www.eac.gov/sites/default/files/electionofficials/Final_Alternative_Voting_Methods_in_the_United_States_508.pdf" target="_blank">Alternative Voting Methods</a></p>
-        </section>
+    <section id="event-details">
+      <p id="topic">Greenfield Democracy!</p>
+      <h2>Event Details</h2>
+      <p>February 27, 2024 - 6pm-9pm CST</p>
+      <p>
+        This month we're exploring alternative voting systems and empowering
+        YOU, our membership, to have an ongoing say in programming for the
+        group!
+      </p>
+    </section>
 
-        <section id="metrics-expectations">
-            <h2>Metrics and Expectations</h2>
-            <p>Successful solutions should feature a simple UI, ensure fairness in voting, and foster engagement among members.</p>
-        </section>
+    <section id="challenge-description">
+      <h2>Challenge Description</h2>
+      <p>
+        Participants are tasked with architecting solutions for user stories and
+        constraints related to topic and project suggestions and voting systems.
+      </p>
+      <p>
+        Check out this resource: <a
+          href="https://www.eac.gov/sites/default/files/electionofficials/Final_Alternative_Voting_Methods_in_the_United_States_508.pdf"
+          target="_blank">Alternative Voting Methods</a
+        >
+      </p>
+    </section>
 
-        <section id="team-formation">
-            <h2>Team Formation</h2>
-            <p>Teams will form, discuss the problem, and work towards hacking a prototype solution.</p>
-        </section>
+    <section id="metrics-expectations">
+      <h2>Metrics and Expectations</h2>
+      <p>
+        Successful solutions should feature a simple UI, ensure fairness in
+        voting, and foster engagement among members.
+      </p>
+    </section>
 
-        <section id="technology-stack">
-            <h2>Technology Stack</h2>
-            <p>The base site will be a static Astro site for the frontend, with backend microservices. Participants are encouraged to design, implement, or prototype as they see fit.</p>
-        </section>
+    <section id="team-formation">
+      <h2>Team Formation</h2>
+      <p>
+        Teams will form, discuss the problem, and work towards hacking a
+        prototype solution.
+      </p>
+    </section>
 
-        <section id="rsvp-information">
-            <h2>RSVP Information</h2>
-            <p>Please RSVP on Meetup for accurate headcount for food arrangements.</p>
-        </section>
-    </div>
+    <section id="technology-stack">
+      <h2>Technology Stack</h2>
+      <p>
+        The base site will be a static Astro site for the frontend, with backend
+        microservices. Participants are encouraged to design, implement, or
+        prototype as they see fit.
+      </p>
+    </section>
 
-    <style>
-        /* styles.css */
-    body, html {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        height: 100%;
-        font-family: 'Open Sans', sans-serif;
-        color: white;
-        }
+    <section id="rsvp-information">
+      <h2>RSVP Information</h2>
+      <p>Please RSVP on Meetup for accurate headcount for food arrangements.</p>
+    </section>
+  </div>
+
+  <style>
+    /* styles.css */
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: 'Open Sans', sans-serif;
+      color: white;
+    }
 
     .container {
-        max-width: 800px;
-        margin: auto;
-        padding: 20px;
+      max-width: 800px;
+      margin: auto;
+      padding-inline: 20px;
     }
 
     .hero-image {
-        width: 100vw;
-        height: auto;
-        object-fit: cover;
-        display: block;
-        margin-bottom: 10px;
+      width: 100vw;
+      height: auto;
+      object-fit: cover;
+      display: block;
     }
 
     h1 {
-        font-size: 32px;
-        color: rgb(var(--accent-light));
+      font-size: calc(2rem + 2.25vw);
+      color: rgb(var(--accent-light));
+      font-weight: 700;
+      padding-top: 10px;
     }
-    
+
     header {
-        text-align: center;
-        padding: 20px;
+      text-align: center;
     }
-    
+
+    header p {
+      line-height: 1.7;
+    }
+
     #topic {
-        font-size: 22px;
+      font-size: calc(1.5rem + 1.25vw);
+      align-self: center;
     }
 
     section {
-        margin: 40px 0;
-        padding: 20px;
+      margin: 40px 0;
+      padding: 20px;
     }
-    
+
     section h2 {
-        font-size: 18px;
-        padding-bottom: 10px;
-        color: rgb(var(--accent-light));
+      font-size: 18px;
+      padding-bottom: 10px;
+      color: rgb(var(--accent-light));
     }
-    
+
     a {
-        transition: color 0.3s ease;
+      transition: color 0.3s ease;
     }
-    
+
     a:hover {
-        color: rgb(var(--accent-light));
-        text-decoration: underline;
+      color: rgb(var(--accent-light));
+      text-decoration: underline;
     }
-    
+
     section {
-        margin: 20px 0;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      margin: 20px 0;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
     @media (max-width: 768px) {
-        .hero-image {
-            height: 200px;
-        }
-    
-        header {
-            padding: 10px;
-        }
-    
-        .hero-text {
-            font-size: 14px;
-        }
-        .container {
-            padding: 10px;
-        }
+      .container {
+        padding-inline: 10px;
+      }
     }
-    </style>
+  </style>
 </Layout>
