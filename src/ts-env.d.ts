@@ -2,13 +2,13 @@
  * @fileoverview Augment modules or globals in this file, when necessary.
  */
 
-declare module 'eslint-plugin-unicorn' {
-  import type { Linter } from 'eslint';
+// Just to make ESLint happy, doesn't actually overwrite the global NoInfer type
+declare type NoInfer<A> = A;
 
-  const configs: {
-    'flat/recommended': Linter.RulesRecord;
-    'flat/all': Linter.RulesRecord;
-  };
+declare module '@eslint/eslintrc/universal' {
+  import type { ESLint } from 'eslint';
 
-  export default { configs };
+  export class Legacy {
+    static environments: Map<string, ESLint.Environment>;
+  }
 }
