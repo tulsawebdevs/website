@@ -7,6 +7,8 @@
    */
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
     // Check for type errors in JS files
     "checkJs": true,
     /*
