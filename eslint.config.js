@@ -281,6 +281,7 @@ export default tseslint.config(
   },
   {
     files: [FILES.js, FILES.ts, FILES.react, FILES.astro, FILES.scripts],
+    ignores: ['playwright/tests-examples/*.ts'],
     rules: {
       ...eslint.configs.recommended.rules,
       ...getTsEslintRules('recommendedTypeChecked'),
