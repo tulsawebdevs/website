@@ -1,0 +1,129 @@
+---
+// Import the Layout component at the top of your page file
+import Layout from '../layouts/Layout.astro';
+const heroPhoto =  '/twd-hero-img.webp';
+---
+<Layout title="Hack Night">
+
+        <header>
+            <img src={heroPhoto} alt="TWD hero image" class="hero-image" />
+            <h1>Tulsa Web Devs Hack Night</h1>
+            <p id="topic">Greenfield Democracy!</p>
+        </header>
+    <div class="container">
+        <section id="event-details">
+            <h2>Event Details</h2>
+            <p>This month we're exploring alternative voting systems and empowering YOU, our membership, to have an ongoing say in programming for the group!</p>
+        </section>
+
+        <section id="challenge-description">
+            <h2>Challenge Description</h2>
+            <p>Participants are tasked with architecting solutions for user stories and constraints related to topic and project suggestions and voting systems.</p>
+            <p>Check out this resource: <a href="https://www.eac.gov/sites/default/files/electionofficials/Final_Alternative_Voting_Methods_in_the_United_States_508.pdf" target="_blank">Alternative Voting Methods</a></p>
+        </section>
+
+        <section id="metrics-expectations">
+            <h2>Metrics and Expectations</h2>
+            <p>Successful solutions should feature a simple UI, ensure fairness in voting, and foster engagement among members.</p>
+        </section>
+
+        <section id="team-formation">
+            <h2>Team Formation</h2>
+            <p>Teams will form, discuss the problem, and work towards hacking a prototype solution.</p>
+        </section>
+
+        <section id="technology-stack">
+            <h2>Technology Stack</h2>
+            <p>The base site will be a static Astro site for the frontend, with backend microservices. Participants are encouraged to design, implement, or prototype as they see fit.</p>
+        </section>
+
+        <section id="rsvp-information">
+            <h2>RSVP Information</h2>
+            <p>Please RSVP on Meetup for accurate headcount for food arrangements.</p>
+        </section>
+    </div>
+
+    <style>
+        /* styles.css */
+    body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        font-family: 'Open Sans', sans-serif;
+        color: white;
+        }
+
+    .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+    }
+
+    .hero-image {
+        width: 100vw;
+        height: auto;
+        object-fit: cover;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    h1 {
+        font-size: 32px;
+        color: rgb(var(--accent-light));
+    }
+    
+    header {
+        text-align: center;
+        padding: 20px;
+    }
+    
+    #topic {
+        font-size: 22px;
+    }
+
+    section {
+        margin: 40px 0;
+        padding: 20px;
+    }
+    
+    section h2 {
+        font-size: 18px;
+        padding-bottom: 10px;
+        color: rgb(var(--accent-light));
+    }
+    
+    a {
+        transition: color 0.3s ease;
+    }
+    
+    a:hover {
+        color: rgb(var(--accent-light));
+        text-decoration: underline;
+    }
+    
+    section {
+        margin: 20px 0;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    @media (max-width: 768px) {
+        .hero-image {
+            height: 200px;
+        }
+    
+        header {
+            padding: 10px;
+        }
+    
+        .hero-text {
+            font-size: 14px;
+        }
+        .container {
+            padding: 10px;
+        }
+    }
+    </style>
+</Layout>
