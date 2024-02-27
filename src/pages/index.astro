@@ -5,9 +5,21 @@ import Card from '../components/Card.astro';
 
 <Layout title="Tulsa Web Devs">
   <main>
-    <img alt="Tulsa Web Devs logo" src="/twd-logo.svg" />
+    <img
+      alt="Tulsa Web Devs logo"
+      src="/twd-logo.svg"
+      height="auto"
+      width="100%"
+    />
     <h1 class="text-gradient">Welcome to Tulsa Web Devs</h1>
     <nav class="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <div class="md:col-span-2">
+        <Card
+          title="Learn about Hack Night"
+          href="/hacknight"
+          body="We get together every Tuesday to work on projects, learn, and socialize"
+        />
+      </div>
       <Card
         title="Join us on Meetup"
         href="https://www.meetup.com/tulsa-web-devs"
