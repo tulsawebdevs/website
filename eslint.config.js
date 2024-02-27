@@ -1,46 +1,390 @@
 /**
  * @fileoverview
  * NOTE: While eslint claims to support .mjs extensions, they don't seem to work
+ * TODO: This needs cleanup, and it is probably not working entirely as expected
+ * TODO: Add HTML Linting
+ * TODO: Add Style Linting
  */
 
-import * as eslintrc from '@eslint/eslintrc';
+import { Legacy } from '@eslint/eslintrc/universal';
+import { FlatCompat } from '@eslint/eslintrc';
 import eslint from '@eslint/js';
-import unicorn from 'eslint-plugin-unicorn';
 import tseslint from 'typescript-eslint';
-import eslintPrettier from 'eslint-config-prettier';
+import jsonc from 'eslint-plugin-jsonc';
+import jsoncParser from 'jsonc-eslint-parser';
+import yml from 'eslint-plugin-yml';
+import yamlParser from 'yaml-eslint-parser';
+import mdx from 'eslint-plugin-mdx';
+import mdxParser from 'eslint-mdx';
+import prettier from 'eslint-config-prettier';
+import astro from 'eslint-plugin-astro';
+import astroParser from 'astro-eslint-parser';
 
+/**
+ * @typedef {import('eslint').Linter.RulesRecord} RulesRecord
+ * @typedef {import('eslint').Linter.RuleEntry} RuleEntry
+ * @typedef {import('eslint').Linter.FlatConfig} FlatConfig
+ * @typedef {import('eslint').Linter.ParserOptions} ParserOptions
+ * @typedef {import('@typescript-eslint/utils/ts-eslint').FlatConfig.Config} InputConfig
+ * @typedef {InputConfig & {extends?: InputConfig[]}} ConfigWithExtends
+ * @typedef {import('@typescript-eslint/eslint-plugin')['rules']} TypeScriptRules
+ * @typedef {import('@typescript-eslint/eslint-plugin')['meta']} TypeScriptMeta
+ * @typedef {{rules: TypeScriptRules, meta: TypeScriptMeta}} TypeScriptPlugin
+ * @typedef {FlatConfig['languageOptions']} LanguageOptions
+ */
 const baseDirectory = import.meta.dirname;
+const compat = new FlatCompat({ baseDirectory });
 
-/** @see https://eslint.org/docs/latest/use/configure/migration-guide#using-eslintrc-configs-in-flat-config  */
-const compat = new eslintrc.FlatCompat({ baseDirectory: import.meta.dirname });
+const _rules = {
+  prettier: prettier.rules,
+  jsonc_base: jsonc.configs.base.overrides[0]?.rules,
+  jsonc_auto: jsonc.configs['auto-config']?.rules,
+  jsonc_json: jsonc.configs['recommended-with-json']?.rules,
+  jsonc_jsonc: jsonc.configs['recommended-with-jsonc']?.rules,
+  jsonc_prettier: jsonc.configs.prettier.rules,
+  yaml_base: yml.configs.base.overrides[0]?.rules,
+  yaml_standard: yml.configs.standard?.rules,
+  yaml_recommended: yml.configs.recommended?.rules,
+  yaml_prettier: yml.configs.prettier?.rules,
+  mdx_base: mdx.configs.flat?.rules,
+  mdx_blocks: mdx.configs.flatCodeBlocks?.rules,
+  mdx_recommended: mdx.configs.recommended.overrides?.[0]?.rules,
+  mdx_blocks_recommended: mdx.configs.recommended.overrides?.[1]?.rules,
+  md_prettier: mdx.configs.recommended.overrides?.[2]?.rules,
+  mdx_prettier: mdx.configs.recommended.overrides?.[3]?.rules,
+  astro_recommended: astro.configs.recommended?.rules,
+};
+
+const rules = /** @type {{[key in keyof _rules]: RulesRecord}} */ (_rules);
+
+const FILES = /** @type {const} */ ({
+  js: '**/*.?(m|c)js',
+  ts: '**/*?(.d).?(m|c)ts',
+  react: '**/*.+(j|t)sx',
+  astro: '**/*.astro',
+  declaration: '**/*.d.ts',
+  scripts: '**/*.astro/*.?(m|c)+(j|t)s',
+  md: '**/*.md',
+  mdx: '**/*.mdx',
+  json: '**/*.json',
+  jsonc: '**/*.jsonc',
+  yaml: '**/*.y?(a)ml',
+  blocks: {
+    all: '**/*.md?(x)/**',
+    js: '**/*.md?(x)/*.?(m|c)js',
+    ts: '**/*.md?(x)/*?(.d).?(m|c)ts',
+    react: '**/*.md?(x)/*.+(j|t)sx',
+    astro: '**/*.md?(x)/*.astro',
+  },
+  pages: {
+    all: 'src/pages/**/*',
+    astro: 'src/pages/**/*.astro',
+    api: { js: 'src/pages/**/*.?(m|c)js', ts: 'src/pages/**/*.?(m|c)ts' },
+    md: 'src/pages/**/*.md?(x)',
+  },
+});
+
+/** @param {keyof Omit<typeof tseslint.configs, 'base'|'eslintRecommended'>} preset */
+const getTsEslintRules = (preset) => {
+  const selected = tseslint.configs[preset];
+  if (Array.isArray(selected)) return selected[2]?.rules;
+  return selected.rules;
+};
+
+/** @type {ParserOptions} */
+const tsParserOptions = {
+  ...Legacy.environments.get('2022')?.parserOptions,
+  project: './tsconfig.json',
+  tsconfigRootDir: baseDirectory,
+  jsDocParsingMode: 'all',
+  EXPERIMENTAL_useProjectService: true,
+  EXPERIMENTAL_useSourceOfProjectReferenceRedirect: true,
+  warnOnUnsupportedTypeScriptVersion: true,
+  ecmaFeatures: {
+    ...Legacy.environments.get('2022')?.parserOptions?.ecmaFeatures,
+    impliedStrict: true,
+  },
+};
+
+const tsLanguageOptions = {
+  parser: tseslint.parser,
+  parserOptions: tsParserOptions,
+  globals: /** @type {const} */ ({
+    ...Legacy.environments.get('2022')?.globals,
+    NoInfer: 'readonly',
+  }),
+};
+
+// TODO: `Legacy.environments` probably isn't the right way to inject the `astro` env
+/** @type {ParserOptions} */
+const astroParserOptions = {
+  ...tsParserOptions,
+  ...Legacy.environments.get('astro/astro')?.parserOptions,
+  ecmaFeatures: {
+    ...tsParserOptions.ecmaFeatures,
+    ...Legacy.environments.get('astro/astro')?.parserOptions?.ecmaFeatures,
+  },
+  parser: tseslint.parser,
+  extraFileExtensions: ['.astro'],
+};
+
+const astroLanguageOptions = {
+  parser: astroParser,
+  parserOptions: astroParserOptions,
+  globals: /** @type {const} */ ({
+    ...tsLanguageOptions.globals,
+    ...Legacy.environments.get('astro/astro')?.globals,
+    // TODO: I don't think this is the right way to inject the 'astro' env, either
+    'astro/astro': 'readonly',
+  }),
+};
+
+// Pages can contain server-side code
+/** @type {ParserOptions} */
+const tsPageParserOptions = {
+  ...tsParserOptions,
+  ...Legacy.environments.get('node')?.parserOptions,
+  ecmaFeatures: {
+    ...tsParserOptions.ecmaFeatures,
+    ...Legacy.environments.get('node')?.parserOptions?.ecmaFeatures,
+  },
+};
+
+const tsPageLanguageOptions = {
+  parser: tseslint.parser,
+  parserOptions: tsPageParserOptions,
+  globals: {
+    ...tsLanguageOptions.globals,
+    ...Legacy.environments.get('node')?.globals,
+  },
+};
+
+/** @type {ParserOptions} */
+const astroPageParserOptions = {
+  ...astroParserOptions,
+  ...Legacy.environments.get('node')?.parserOptions,
+  ecmaFeatures: {
+    ...astroParserOptions.ecmaFeatures,
+    ...Legacy.environments.get('node')?.parserOptions?.ecmaFeatures,
+  },
+};
+
+const astroPageLanguageOptions = {
+  parser: astroParser,
+  parserOptions: astroPageParserOptions,
+  globals: {
+    ...astroLanguageOptions.globals,
+    ...Legacy.environments.get('node')?.globals,
+  },
+};
 
 export default tseslint.config(
-  eslint.configs.recommended,
-  ...compat.extends('eslint-config-airbnb', 'eslint-config-airbnb/hooks'),
+  // Base config for all files, just register plugins
+  ...compat.plugins(
+    'unicorn',
+    'yml',
+    'mdx',
+    'jsonc',
+    'astro',
+    '@typescript-eslint',
+  ),
   {
-    ...unicorn.configs['flat/all'],
-    ignores: [
-      'src/env.d.ts',
-      'src/ts-env.d.ts',
-      'playwright/tests-examples/*.ts',
+    files: [FILES.json],
+    ignores: ['.vscode/settings.json', 'tsconfig.json'],
+    rules: { ...rules.jsonc_base, ...rules.jsonc_json },
+    languageOptions: {
+      parser: jsoncParser,
+      parserOptions: { jsonSyntax: 'JSONC' },
+    },
+  },
+  {
+    files: [FILES.jsonc, '.vscode/settings.json', 'tsconfig.json'],
+    rules: { ...rules.jsonc_base, ...rules.jsonc_jsonc },
+    languageOptions: {
+      parser: jsoncParser,
+      parserOptions: { jsonSyntax: 'JSONC' },
+    },
+  },
+
+  {
+    files: [FILES.json, FILES.jsonc],
+    rules: { ...rules.jsonc_auto, ...rules.jsonc_prettier },
+  },
+  {
+    files: [FILES.yaml],
+    languageOptions: { parser: yamlParser },
+    rules: {
+      ...rules.yaml_base,
+      ...rules.yaml_recommended,
+      ...rules.yaml_prettier,
+    },
+  },
+  {
+    // Codeblocks produce a virtual file to be handled by it's respective parser
+    files: [FILES.md, FILES.mdx],
+    languageOptions: { ...mdx.configs.flat.languageOptions, parser: mdxParser },
+    rules: { ...rules.mdx_base, ...rules.mdx_recommended },
+  },
+  {
+    files: [FILES.md],
+    rules: { ...rules.md_prettier },
+  },
+  {
+    files: [FILES.mdx],
+    rules: { ...rules.mdx_prettier },
+  },
+  {
+    files: [FILES.blocks.all],
+    rules: { ...rules.mdx_blocks, ...rules.mdx_blocks_recommended },
+  },
+  {
+    files: [FILES.md, FILES.mdx],
+    ignores: [FILES.pages.all, FILES.blocks.all, FILES.scripts],
+    rules: {
+      'unicorn/filename-case': [
+        'error',
+        { case: 'snakeCase', ignore: ['^[A-Z0-9_]+\\.mdx?'] }, // Allow SCREAM_CASE
+      ],
+    },
+  },
+  {
+    // Scripts produce a virtual *.(j|t)s file to be handled by the TS parser
+    files: [FILES.astro],
+    languageOptions: astroLanguageOptions,
+    extends: [
+      ...compat.extends(
+        'airbnb',
+        'airbnb/hooks',
+        'plugin:astro/jsx-a11y-recommended',
+        'plugin:unicorn/recommended',
+      ),
     ],
   },
-  ...tseslint.configs.recommendedTypeChecked,
-  ...tseslint.configs.stylisticTypeChecked,
-  eslintPrettier,
   {
+    files: [FILES.pages.astro],
+    processor: astro.processors['client-side-ts'],
+    languageOptions: astroPageLanguageOptions,
+  },
+  {
+    files: [FILES.js, FILES.ts, FILES.react],
+    ignores: ['playwright/tests-examples/*.ts'],
+    languageOptions: tsLanguageOptions,
+    extends: compat.extends(
+      'airbnb',
+      'airbnb/hooks',
+      'plugin:unicorn/recommended',
+    ),
+  },
+  {
+    files: [FILES.pages.api.js, FILES.pages.api.ts],
+    languageOptions: tsPageLanguageOptions,
+  },
+  {
+    files: [FILES.js, FILES.ts, FILES.react, FILES.astro, FILES.scripts],
+    ignores: ['playwright/tests-examples/*.ts'],
     rules: {
-      'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
-      /** These on by default rules DO NOT work well for this project */
+      ...eslint.configs.recommended.rules,
+      ...getTsEslintRules('recommendedTypeChecked'),
+      ...getTsEslintRules('stylisticTypeChecked'),
+      'no-underscore-dangle': 'off',
       'import/no-unresolved': 'off',
-      /** These off by default rules DO work well with this project */
+      'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
+      'import/prefer-default-export': 'off',
+      '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          ignoreRestSiblings: true,
+          varsIgnorePattern: '(^_)|(^Props$)',
+          argsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+        },
+      ],
+      'react/react-in-jsx-scope': 'off',
+      'react/destructuring-assignment': 'off',
+      'react/jsx-props-no-spreading': [
+        'error',
+        { html: 'ignore', exceptions: [] },
+      ],
+      'react/jsx-filename-extension': [
+        'error',
+        { extensions: ['.astro', '.jsx', '.tsx'] },
+      ],
+      'no-use-before-define': [
+        'error',
+        { functions: false, allowNamedExports: true },
+      ],
+      'no-restricted-syntax': [
+        'error',
+        'ForInStatement',
+        'LabeledStatement',
+        'WithStatement',
+      ],
+      'unicorn/no-array-for-each': 'off',
+      'unicorn/prevent-abbreviations': [
+        'warn',
+        {
+          ignore: [/ref/i, /err/i, /fn/i, /args/i, /props/i, /params/i, /env/i],
+        },
+      ],
+      ...rules.prettier,
     },
-    languageOptions: {
-      parserOptions: {
-        project: './tsconfig.json',
-        tsconfigRootDir: baseDirectory,
-        warnOnUnsupportedTypeScriptVersion: true,
-      },
+  },
+  {
+    files: [FILES.astro, FILES.scripts],
+    rules: {
+      ...rules.astro_recommended,
+      // astro plugin replaces this rule
+      // TODO: Disable other jsx-ally rules that are replaced by astro
+      'jsx-a11y/alt-text': 'off',
+      // TODO: This should allow astro attributes in astro JSX, but it doesn't
+      'react/no-unknown-property': 'off',
+      // Needed for the `inferface Props` pattern
+      '@typescript-eslint/consistent-type-definitions': 'off',
+      // ESLint can't tell `strictNullChecks` is on in `.astro` files
+      '@typescript-eslint/no-unnecessary-condition': [
+        'error',
+        { allowRuleToRunWithoutStrictNullChecksIKnowWhatIAmDoing: true },
+      ],
+      '@typescript-eslint/strict-boolean-expressions': [
+        'error',
+        { allowRuleToRunWithoutStrictNullChecksIKnowWhatIAmDoing: true },
+      ],
+      '@typescript-eslint/prefer-nullish-coalescing': [
+        'error',
+        { allowRuleToRunWithoutStrictNullChecksIKnowWhatIAmDoing: true },
+      ],
     },
+  },
+  {
+    files: [FILES.js, FILES.ts, FILES.react],
+    ignores: [FILES.pages.all, FILES.blocks.all, FILES.scripts],
+    rules: {
+      'unicorn/filename-case': [
+        'error',
+        { cases: { camelCase: true, pascalCase: true } },
+      ],
+    },
+  },
+  {
+    files: [FILES.declaration],
+    rules: {
+      'unicorn/filename-case': 'off',
+      'unicorn/no-static-only-class': 'off',
+    },
+  },
+  {
+    files: [FILES.astro],
+    ignores: [FILES.pages.all, FILES.blocks.all, FILES.scripts],
+    rules: { 'unicorn/filename-case': ['error', { case: 'pascalCase' }] },
+  },
+  {
+    files: [FILES.scripts],
+    processor: astro.processors['client-side-ts'],
+  },
+  {
+    files: [FILES.json, FILES.jsonc, FILES.yaml, FILES.pages.all],
+    ignores: [FILES.pages.all, FILES.blocks.all, FILES.scripts],
+    rules: { 'unicorn/filename-case': ['error', { case: 'kebabCase' }] },
   },
 );
