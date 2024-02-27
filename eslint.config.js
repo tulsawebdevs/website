@@ -34,7 +34,6 @@ import astroParser from 'astro-eslint-parser';
  */
 const baseDirectory = import.meta.dirname;
 const compat = new FlatCompat({ baseDirectory });
-tseslint.config = config;
 
 const _rules = {
   prettier: prettier.rules,
@@ -388,33 +387,3 @@ export default tseslint.config(
     rules: { 'unicorn/filename-case': ['error', { case: 'kebabCase' }] },
   },
 );
-
-/**
- * `typescript-eslint` exports a `config` helper function that passes through the
- * `files` property to all the configs it extends. This is a helper function
- * that does the same, but also passes through the `ignores` property.
- * @param {ConfigWithExtends[]} configs
- */
-function config(...configs) {
-  return configs.flatMap((configWithExtends) => {
-    const { extends: extendsArray, ...restConfig } = configWithExtends;
-    if (extendsArray === undefined || extendsArray.length === 0) {
-      return restConfig;
-    }
-
-    const output = [];
-    const { files, ignores } = restConfig;
-
-    if (!!files || !!ignores) {
-      output.push(
-        ...extendsArray.map((config_) => ({
-          ...config_,
-          ...(!!files && { files }),
-          ...(!!ignores && { ignores }),
-        })),
-      );
-    }
-    output.push(restConfig);
-    return output;
-  });
-}
