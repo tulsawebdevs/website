@@ -1,7 +1,7 @@
-import { Tabs } from '../Tabs';
-import UpdatesTab from './UpdatesTab';
-import ProjectsTab from './ProjectsTab';
-import ResourcesTab from './ResourcesTab';
+import { Tabs } from '../Tabs/index.tsx';
+import UpdatesTab from './UpdatesTab.tsx';
+import ProjectsTab from './ProjectsTab.tsx';
+import ResourcesTab from './ResourcesTab.tsx';
 
 export default function HackNightTabs() {
   return (
