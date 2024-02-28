@@ -11,7 +11,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "format": "npx prettier --write .",
-    "lint": "npx eslint ."
+    "lint": "npx eslint .",
+    "typecheck": "npx tsc --noEmit"
   },
   "dependencies": {
     "@astrojs/react": "3.0.10",
