@@ -1,8 +1,9 @@
 # build output
-dist/
+**/dist/**
 
 # generated types
 .astro/
+**/_astro/**
 
 #vitest coverage
 coverage
