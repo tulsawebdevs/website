@@ -1,10 +1,30 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Voting from '../components/voting/Voting';
 import Card from '../components/Card.astro';
+
+const proposals = [
+  { name: 'docker', score: 100 },
+  { name: 'docker', score: 100 },
+  { name: 'docker', score: 100 },
+  { name: 'docker', score: 100 },
+  { name: 'docker', score: 100 },
+  { name: 'docker', score: 100 },
+  { name: 'docker', score: 100 },
+  { name: 'docker', score: 100 },
+  { name: 'docker', score: 100 },
+  { name: 'docker', score: 100 },
+  { name: 'docker', score: 100 },
+  { name: 'docker', score: 100 },
+  { name: 'docker', score: 100 },
+  { name: 'docker', score: 100 },
+  { name: 'docker', score: 100 },
+  { name: 'docker', score: 100 },
+];
 ---
 
 <Layout title="Tulsa Web Devs">
   <main class="grid w-screen h-screen bg-white text-4xl place-items-center">
-    Voting Feature Here!
+    <Voting proposals={proposals} />
   </main>
 </Layout>
