@@ -62,7 +62,9 @@ const FILES = /** @type {const} */ ({
   ts: '**/*?(.d).?(m|c)ts',
   react: '**/*.+(j|t)sx',
   astro: '**/*.astro',
+  cssDotTs: '**/*.css.ts',
   declaration: '**/*.d.ts',
+  tests: { test: '**/*.test.**', spec: '**/*.spec.**' },
   scripts: '**/*.astro/*.?(m|c)+(j|t)s',
   md: '**/*.md',
   mdx: '**/*.mdx',
@@ -357,6 +359,18 @@ export default tseslint.config(
     },
   },
   {
+    files: [FILES.tests.test, FILES.tests.spec],
+    rules: { 'unicorn/filename-case': ['warn', { case: 'kebab-case' }] },
+  },
+  {
+    files: [FILES.cssDotTs],
+    rules: {
+      camelcase: 'off',
+      'unicorn/no-null': 'off',
+      'unicorn/prevent-abbreviations': 'off',
+    },
+  },
+  {
     files: [FILES.js, FILES.ts, FILES.react],
     ignores: [FILES.pages.all, FILES.blocks.all, FILES.scripts],
     rules: {
@@ -365,6 +379,10 @@ export default tseslint.config(
         { cases: { camelCase: true, pascalCase: true } },
       ],
     },
+  },
+  {
+    files: [FILES.tests.test, FILES.tests.spec],
+    rules: { 'unicorn/filename-case': ['warn', { case: 'kebabCase' }] },
   },
   {
     files: [FILES.declaration],

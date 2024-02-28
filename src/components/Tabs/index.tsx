@@ -1,3 +1,4 @@
+import type React from 'react';
 import type { IUseTabsProps } from '@zendeskgarden/container-tabs';
 import { useTabs } from '@zendeskgarden/container-tabs';
 import { useMemo } from 'react';
@@ -5,7 +6,7 @@ import { useMemo } from 'react';
 type Tab<TValue extends string> = {
   value: TValue;
   title: string;
-  renderContent: () => JSX.Element;
+  renderContent: () => React.JSX.Element;
   disabled?: boolean;
 };
 
@@ -18,8 +19,8 @@ export function Tabs<const TValue extends string>(props: TabsProps<TValue>) {
     useTabs(props);
 
   const components = useMemo(() => {
-    const tabComponents = [];
-    const tabPanelComponents = [];
+    const tabComponents: React.JSX.Element[] = [];
+    const tabPanelComponents: React.JSX.Element[] = [];
 
     props.tabs.forEach(({ renderContent, ...tab }) => {
       tabComponents.push(
@@ -46,14 +47,14 @@ export function Tabs<const TValue extends string>(props: TabsProps<TValue>) {
   const horizontal = 'flex flex-col';
   const vertical = 'flex flex-row';
 
-  const [containerDir, listDir] =
+  const [containerDirection, listDirection] =
     props.orientation === 'vertical' ?
       [vertical, horizontal]
     : [horizontal, vertical];
 
   return (
-    <div className={containerDir}>
-      <ul {...getTabListProps()} className={listDir}>
+    <div className={containerDirection}>
+      <ul {...getTabListProps()} className={listDirection}>
         {components.tabs}
       </ul>
       {components.panels}
