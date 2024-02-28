@@ -1,6 +1,12 @@
 import styles from './styles.module.css';
 
 export default function ResourcesTab() {
+  const slackLink =
+    // TODO: Remove if expired (or update with new link for another Hack-Night)
+    Date.now() < 1_709_082_305_579 + 1000 * 60 * 60 * 20 ?
+      `https://join.slack.com/t/techlahoma/shared_invite/zt-2dtlc0zzl-84XlXrT6owu2ZCgQiCis6A`
+    : `https://slack.techlahoma.org`;
+
   return (
     <div className={styles.container}>
       <section className={styles.section} id="resources">
@@ -47,8 +53,7 @@ export default function ResourcesTab() {
           </ul>
         </div>
         <p className={styles.section_footer}>
-          Reach out to us on{' '}
-          <a href="https://slack.techlahoma.org">Slack at #ug-tulsa-webdevs </a>
+          Reach out to us on <a href={slackLink}>Slack at #ug-tulsa-webdevs </a>
           if you have any questions!
         </p>
       </section>
