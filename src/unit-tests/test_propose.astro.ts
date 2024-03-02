@@ -1,9 +1,8 @@
-
 import { render, screen, fireEvent } from '@testing-library/astro';
 import { it, expect } from 'vitest';
 import ProposePage from '../pages/propose.astro';
 
-test('renders ProposePage', async () => {
+it('renders ProposePage', async () => {
   render(<ProposePage />);
 
   // Assert that the page title is rendered correctly
@@ -38,7 +37,7 @@ test('renders ProposePage', async () => {
   expect(submitButton).toBeInTheDocument();
 });
 
-test('submits form', async () => {
+it('submits form', async () => {
   render(<ProposePage />);
 
   // Fill out the form inputs
@@ -70,4 +69,3 @@ test('submits form', async () => {
   // Assert that the form is submitted successfully
   // Add your assertions here
 });
----
