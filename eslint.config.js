@@ -18,7 +18,6 @@ import mdx from 'eslint-plugin-mdx';
 import mdxParser from 'eslint-mdx';
 import prettier from 'eslint-config-prettier';
 import astro from 'eslint-plugin-astro';
-import astroParser from 'astro-eslint-parser';
 
 /**
  * @typedef {import('eslint').Linter.RulesRecord} RulesRecord
@@ -117,30 +116,6 @@ const tsLanguageOptions = {
   }),
 };
 
-// TODO: `Legacy.environments` probably isn't the right way to inject the `astro` env
-/** @type {ParserOptions} */
-const astroParserOptions = {
-  ...tsParserOptions,
-  ...Legacy.environments.get('astro/astro')?.parserOptions,
-  ecmaFeatures: {
-    ...tsParserOptions.ecmaFeatures,
-    ...Legacy.environments.get('astro/astro')?.parserOptions?.ecmaFeatures,
-  },
-  parser: tseslint.parser,
-  extraFileExtensions: ['.astro'],
-};
-
-const astroLanguageOptions = {
-  parser: astroParser,
-  parserOptions: astroParserOptions,
-  globals: /** @type {const} */ ({
-    ...tsLanguageOptions.globals,
-    ...Legacy.environments.get('astro/astro')?.globals,
-    // TODO: I don't think this is the right way to inject the 'astro' env, either
-    'astro/astro': 'readonly',
-  }),
-};
-
 // Pages can contain server-side code
 /** @type {ParserOptions} */
 const tsPageParserOptions = {
@@ -161,35 +136,9 @@ const tsPageLanguageOptions = {
   },
 };
 
-/** @type {ParserOptions} */
-const astroPageParserOptions = {
-  ...astroParserOptions,
-  ...Legacy.environments.get('node')?.parserOptions,
-  ecmaFeatures: {
-    ...astroParserOptions.ecmaFeatures,
-    ...Legacy.environments.get('node')?.parserOptions?.ecmaFeatures,
-  },
-};
-
-const astroPageLanguageOptions = {
-  parser: astroParser,
-  parserOptions: astroPageParserOptions,
-  globals: {
-    ...astroLanguageOptions.globals,
-    ...Legacy.environments.get('node')?.globals,
-  },
-};
-
 export default tseslint.config(
   // Base config for all files, just register plugins
-  ...compat.plugins(
-    'unicorn',
-    'yml',
-    'mdx',
-    'jsonc',
-    'astro',
-    '@typescript-eslint',
-  ),
+  ...compat.plugins('unicorn', 'yml', 'mdx', 'jsonc', '@typescript-eslint'),
   {
     files: [FILES.json],
     ignores: ['.vscode/settings.json', 'tsconfig.json'],
@@ -249,24 +198,50 @@ export default tseslint.config(
       ],
     },
   },
-  {
-    // Scripts produce a virtual *.(j|t)s file to be handled by the TS parser
-    files: [FILES.astro],
-    languageOptions: astroLanguageOptions,
-    extends: [
-      ...compat.extends(
-        'airbnb',
-        'airbnb/hooks',
-        'plugin:astro/jsx-a11y-recommended',
-        'plugin:unicorn/recommended',
-      ),
+  ...compat.config({
+    overrides: [
+      {
+        // Define the configuration for `.astro` file.
+        files: [FILES.astro],
+        // Enable this plugin
+        plugins: ['astro', 'unicorn'],
+        extends: [
+          'airbnb',
+          'airbnb/hooks',
+          'plugin:astro/recommended',
+          'plugin:astro/jsx-a11y-recommended',
+          'plugin:unicorn/recommended',
+        ],
+        // Enables global variables available in Astro components.
+        env: { node: true, 'astro/astro': true, es2020: true },
+        // Allows Astro components to be parsed.
+        parser: 'astro-eslint-parser',
+        // Parse the script in `.astro` as TypeScript by adding the following configuration.
+        // It's the setting you need when using TypeScript.
+        parserOptions: {
+          parser: '@typescript-eslint/parser',
+          extraFileExtensions: ['.astro'],
+          // The script of Astro components uses ESM.
+          sourceType: 'module',
+          project: './tsconfig.json',
+        },
+      },
+      {
+        // Define the configuration for `<script>` tag.
+        // Script in `<script>` is assigned a virtual file name with the `.js` extension.
+        files: [FILES.scripts],
+        env: { browser: true, es2020: true },
+        plugins: ['astro', 'unicorn'],
+        extends: [
+          'airbnb',
+          'airbnb/hooks',
+          'plugin:astro/jsx-a11y-recommended',
+          'plugin:unicorn/recommended',
+        ],
+        parserOptions: { sourceType: 'module', project: './tsconfig.json' },
+      },
     ],
-  },
-  {
-    files: [FILES.pages.astro],
-    processor: astro.processors['client-side-ts'],
-    languageOptions: astroPageLanguageOptions,
-  },
+  }),
   {
     files: [FILES.js, FILES.ts, FILES.react],
     ignores: ['playwright/tests-examples/*.ts'],
