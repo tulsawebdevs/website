@@ -20,7 +20,7 @@ const section = sprinkles({
   shadowColor: '$black',
 });
 
-const section_h2 = sprinkles({
+const sectionH2 = sprinkles({
   fontSize: '$8',
   paddingBottom: '$2',
   color: '$twd-blue-400',
@@ -30,20 +30,20 @@ const section_h2 = sprinkles({
   borderBottomWidth: '$0.5',
 });
 
-const section_h3 = sprinkles({
+const sectionH3 = sprinkles({
   fontSize: '$6',
   paddingBottom: '$2',
   color: '$twd-blue-400',
 });
 
-const section_footer = sprinkles({
+const sectionFooter = sprinkles({
   fontSize: '$7',
   paddingX: '$2',
   fontWeight: 600,
   textAlign: 'center',
 });
 
-const section_footer_hover = sprinkles({
+const sectionFooterHover = sprinkles({
   textDecoration: 'underline',
 });
 
@@ -64,7 +64,7 @@ const tip = sprinkles({
   borderRadius: '$4',
 });
 
-const tip_text = sprinkles({
+const tipText = sprinkles({
   fontStyle: 'italic',
   flexGrow: 1,
   textAlign: 'center',
@@ -75,13 +75,13 @@ const link = sprinkles({
   textDecoration: 'underline',
 });
 
-const two_column_outer = sprinkles({
+const twoColumnOuter = sprinkles({
   display: 'flex',
   flexDirection: 'row',
   placeItems: 'space-around',
 });
 
-const two_column_side = sprinkles({
+const twoColumnSide = sprinkles({
   flex: '$1',
   maxWidth: '100%',
 });
@@ -90,17 +90,17 @@ export {
   container,
   topic,
   section,
-  section_h2,
-  section_h3,
-  section_footer,
-  section_footer_hover,
+  sectionH2,
+  sectionH3,
+  sectionFooter,
+  sectionFooterHover,
   emphasis,
   list,
   tip,
-  tip_text,
+  tipText,
   link,
-  two_column_outer,
-  two_column_side,
+  twoColumnOuter,
+  twoColumnSide,
 };
 // .container {
 //   max-width: 800px;

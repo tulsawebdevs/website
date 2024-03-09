@@ -2,11 +2,11 @@ import {
   container,
   section,
   topic,
-  section_h2,
-  two_column_outer,
+  sectionH2,
+  twoColumnOuter,
   list,
-  section_h3,
-  section_footer,
+  sectionH3,
+  sectionFooter,
 } from './styles.css.ts';
 
 export default function ResourcesTab() {
@@ -20,16 +20,13 @@ export default function ResourcesTab() {
         <p id="topic" className={topic.className} style={topic.style}>
           Resources
         </p>
-        <h2 className={section_h2.className} style={section_h2.style}>
+        <h2 className={sectionH2.className} style={sectionH2.style}>
           Stuff we use
         </h2>
         <br />
-        <div
-          className={two_column_outer.className}
-          style={two_column_outer.style}
-        >
+        <div className={twoColumnOuter.className} style={twoColumnOuter.style}>
           <ul className={list.className} style={list.style}>
-            <h3 className={section_h3.className} style={section_h3.style}>
+            <h3 className={sectionH3.className} style={sectionH3.style}>
               Collaboration Tools
             </h3>
             <li>
@@ -53,7 +50,7 @@ export default function ResourcesTab() {
           </ul>
 
           <ul className={list.className} style={list.style}>
-            <h3 className={section_h3.className} style={section_h3.style}>
+            <h3 className={sectionH3.className} style={sectionH3.style}>
               Learning Resources
             </h3>
             <li>
@@ -71,9 +68,9 @@ export default function ResourcesTab() {
           </ul>
         </div>
         <p
-          className={section_footer.className}
+          className={sectionFooter.className}
           id="section_footer"
-          style={section_footer.style}
+          style={sectionFooter.style}
         >
           Reach out to us on{' '}
           <a href="https://slack.techlahoma.org">Slack at #ug-tulsa-webdevs </a>
