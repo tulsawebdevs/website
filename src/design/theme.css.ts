@@ -27,13 +27,22 @@ export const schemeThemeContract = createThemeContract({
 });
 
 const base = {
-  borderColor: colors.$invisible,
-  shadowColor: colors.$invisible,
-  outlineColor: colors.$invisible,
+  borderColor: colors.invisible,
+  shadowColor: colors.invisible,
+  outlineColor: colors.invisible,
 };
 
-const light = { ...base, color: colors.$black, backgroundColor: colors.$white };
-const dark = { ...base, color: colors.$white, backgroundColor: colors.$black };
+const light = {
+  ...base,
+  color: colors['twd-gray-900'],
+  backgroundColor: colors['twd-blue-400'],
+};
+
+const dark = {
+  ...base,
+  color: colors['twd-blue-200'],
+  backgroundColor: colors['twd-gray-700'],
+};
 
 export const baseColorTheme = createThemeContract({
   light: {
