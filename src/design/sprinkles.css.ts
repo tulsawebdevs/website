@@ -110,6 +110,18 @@ const visibilityProperties = defineProperties({
   },
 });
 
+const borderTypes = {
+  solid: 'solid',
+  dashed: 'dashed',
+  dotted: 'dotted',
+  double: 'double',
+  groove: 'groove',
+  ridge: 'ridge',
+  inset: 'inset',
+  outset: 'outset',
+  none: 'none',
+} as const;
+
 const perimeterProperties = defineProperties({
   dynamicProperties: {
     borderTopWidth: size,
@@ -120,6 +132,10 @@ const perimeterProperties = defineProperties({
     borderBottomRadius: radius,
     borderLeftRadius: radius,
     borderRightRadius: radius,
+    borderTopStyle: borderTypes,
+    borderBottomStyle: borderTypes,
+    borderLeftStyle: borderTypes,
+    borderRightStyle: borderTypes,
     outlineOffset: size,
     outlineWidth: size,
     outlineStyle: {
@@ -139,6 +155,12 @@ const perimeterProperties = defineProperties({
     shadowOffsetY: size,
   },
   shorthands: {
+    borderStyle: [
+      'borderTopStyle',
+      'borderBottomStyle',
+      'borderLeftStyle',
+      'borderRightStyle',
+    ],
     borderWidthVertical: ['borderTopWidth', 'borderBottomWidth'],
     borderWidthHorizontal: ['borderLeftWidth', 'borderRightWidth'],
     borderWidth: [
@@ -195,6 +217,8 @@ const dimensionalProperties = defineProperties({
     },
     flexDirection: { row: 'row', column: 'column' },
     flexWrap: { wrap: 'wrap', nowrap: 'nowrap' },
+    flexGrow: { 0: '0', 1: '1' },
+    flexShrink: { 0: '0', 1: '1' },
     position: {
       relative: 'relative',
       absolute: 'absolute',
@@ -251,6 +275,7 @@ const dimensionalProperties = defineProperties({
   },
   shorthands: {
     gap: ['rowGap', 'columnGap'],
+    flex: ['flexGrow', 'flexShrink'],
     padding: ['paddingTop', 'paddingBottom', 'paddingLeft', 'paddingRight'],
     paddingX: ['paddingLeft', 'paddingRight'],
     paddingY: ['paddingTop', 'paddingBottom'],
