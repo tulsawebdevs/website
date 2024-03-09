@@ -41,7 +41,7 @@ it.each([
   { a: '', b: 'v0', expected: 0 },
   { a: '', b: 'v1', expected: -1 },
   { a: 'v0', b: '', expected: 0 },
-])('compareVersion(%o, %o) returns %o', ({ a, b, expected }, id) => {
+])('compareVersion(%o, %o) returns %o', ({ a, b, expected }) => {
   const result = compareVersion(parseVersion(a), parseVersion(b));
   expect(result === expected, `${a} vs ${b} => ${result} !== ${expected}`);
 });

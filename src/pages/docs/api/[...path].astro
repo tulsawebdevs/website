@@ -1,8 +1,8 @@
 ---
 import 'swagger-ui-react/swagger-ui.css';
-import Layout from '../../../layouts/Layout.astro';
 import SwaggerUI from 'swagger-ui-react';
-import { compareVersion, parseVersion } from '../../../features/semver';
+import Layout from '../../../layouts/Layout.astro';
+import { compareVersion, parseVersion } from '../../../features/semver.ts';
 
 export const getStaticPaths = () => [
   { params: { path: undefined } },
@@ -24,7 +24,7 @@ const isCurrent = compareVersion(version, current ?? latest) === 0;
 const isOutdated = compareVersion(version, current ?? latest) < 0;
 ---
 
-<Layout title={`API Documentation - ${version}`}>
+<Layout title={`API Documentation - ${version.prefixed}`}>
   {
     !isCurrent && (
       <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">
