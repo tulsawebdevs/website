@@ -210,7 +210,7 @@ export default tseslint.config(
           'airbnb/hooks',
           'plugin:astro/recommended',
           'plugin:astro/jsx-a11y-recommended',
-          'plugin:unicorn/recommended',
+          // 'plugin:unicorn/recommended',
         ],
         // Enables global variables available in Astro components.
         env: { node: true, 'astro/astro': true, es2020: true },
@@ -236,7 +236,7 @@ export default tseslint.config(
           'airbnb',
           'airbnb/hooks',
           'plugin:astro/jsx-a11y-recommended',
-          'plugin:unicorn/recommended',
+          // 'plugin:unicorn/recommended',
         ],
         parserOptions: { sourceType: 'module', project: './tsconfig.json' },
       },
@@ -249,7 +249,7 @@ export default tseslint.config(
     extends: compat.extends(
       'airbnb',
       'airbnb/hooks',
-      'plugin:unicorn/recommended',
+      // 'plugin:unicorn/recommended',
     ),
   },
   {
