@@ -1,0 +1,46 @@
+---
+import 'swagger-ui-react/swagger-ui.css';
+import SwaggerUI from 'swagger-ui-react';
+import Layout from '../../../layouts/Layout.astro';
+import { compareVersion, parseVersion } from '../../../features/semver.ts';
+
+export const getStaticPaths = () => [
+  { params: { path: undefined } },
+  ...Object.keys(import.meta.glob('/public/docs/api/*/openapi.json')).map(
+    (path) => ({ params: { path: path.split('/').at(-2) } }),
+  ),
+];
+
+const requested = parseVersion(Astro.params.path);
+const current = parseVersion(`v${import.meta.env.API_VERSION}`);
+const latest = getStaticPaths()
+  .map(({ params }) => parseVersion(params.path ?? ''))
+  .filter(Boolean)
+  .sort(compareVersion)
+  .shift()!;
+
+const version = requested ?? current ?? latest;
+const isCurrent = compareVersion(version, current ?? latest) === 0;
+const isOutdated = compareVersion(version, current ?? latest) < 0;
+---
+
+<Layout title={`API Documentation - ${version.prefixed}`}>
+  {
+    !isCurrent && (
+      <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">
+        <p class="font-bold text-center">
+          You are viewing an {isOutdated ? 'older' : 'unreleased'} version of
+          the API documentation.
+        </p>
+        <p class="text-center">
+          <a href={`/docs/api/${version.prefixed}`} class="underline">
+            View the current documentation
+          </a>
+        </p>
+      </div>
+    )
+  }
+  <div class="container mx-auto max-w-[1000px] bg-white">
+    <SwaggerUI url={`/docs/api/${version.prefixed}/openapi.json`} client:load />
+  </div>
+</Layout>
