@@ -3,26 +3,73 @@ import 'swagger-ui-react/swagger-ui.css';
 import Layout from '../../../layouts/Layout.astro';
 import SwaggerUI from 'swagger-ui-react';
 
+/*
+  Todo: This could be made more robust by using a semver library to handle
+        any valid semver string.
+*/
+
 export const getStaticPaths = () => [
   { params: { path: undefined } },
   ...Object.keys(import.meta.glob('/public/docs/api/*/openapi.json')).map(
-    (str) => ({
-      params: /\/api\/(?<path>.+)\/openapi.json/.exec(str)?.groups ?? {},
-    }),
+    (path) => ({ params: { path: path.split('/').at(-2) } }),
   ),
 ];
 
-const params = Astro.params;
-const current = import.meta.env.API_VERSION;
-const version = params.path?.split('/').shift() ?? current;
+const requested = parseVersion(Astro.params.path);
+const current = parseVersion(`v${import.meta.env.API_VERSION}`);
+const latest = getStaticPaths()
+  .map(({ params }) => {
+    console.log(params);
+    return parseVersion(params.path ?? '');
+  })
+  .filter(Boolean)
+  .sort(compare)
+  .shift()!;
 
-const getMajor = (str: string) => /v(?<major>\d+)/.exec(version)!.groups!.major;
+const version = requested ?? current ?? latest;
+const isCurrent = compare(version, current ?? latest) === 0;
+const isOutdated = compare(version, current ?? latest) < 0;
 
-const isCurrent = version === current;
-const isOutdated = getMajor(version) > getMajor(current);
+console.log({ requested, current, latest, version, isCurrent, isOutdated });
+
+function parseVersion(version: string | undefined = '') {
+  const regex = /v(?<major>[0-9]+)(\.(?<minor>[0-9]+))?(\.(?<patch>[0-9]+))?$/;
+  const { major, minor = '', patch = '' } = regex.exec(version)?.groups ?? {};
+  console.log({ major, minor, patch });
+  if (!major) return undefined;
+
+  const full = `${major}${minor !== '' ? `.${minor}` : ''}${patch !== '' ? `.${patch}` : ''}`;
+  return { major, minor, patch, full, prefixed: `v${full}` as `v${string}` };
+}
+
+/**
+ * @Returns
+ * One of:
+ * - a negative number if `a` is less than `b`
+ * - a positive number if `a` is greater than `b`
+ * - 0 if they are equal.
+ */
+function compare(
+  a: ReturnType<typeof parseVersion>,
+  b: ReturnType<typeof parseVersion>,
+) {
+  switch (true) {
+    case !b?.major || b.major === '0':
+      return !a?.major || a.major === '0' ? 0 : 1;
+    case !a?.major || a.major === '0':
+      return -1;
+    case a!.major !== b!.major:
+      return parseInt(a!.major) - parseInt(b.major);
+    case a!.minor !== b!.minor:
+      return parseInt(a.minor || '0') - parseInt(b.minor || '0');
+    case a!.patch !== b!.patch:
+      return parseInt(a.patch || '0') - parseInt(b.patch || '0');
+    default:
+      return 0;
+  }
+}
 ---
 
-<script></script>
 <Layout title={`API Documentation - ${version}`}>
   {
     !isCurrent && (
@@ -32,14 +79,14 @@ const isOutdated = getMajor(version) > getMajor(current);
           the API documentation.
         </p>
         <p class="text-center">
-          <a href={`/docs/api/${current}`} class="underline">
-            View the docs for the latest release
+          <a href={`/docs/api/${version.prefixed}`} class="underline">
+            View the current documentation
           </a>
         </p>
       </div>
     )
   }
   <div class="container mx-auto max-w-[1000px] bg-white">
-    <SwaggerUI url={`/docs/api/${version}/openapi.json`} client:load />
+    <SwaggerUI url={`/docs/api/${version.prefixed}/openapi.json`} client:load />
   </div>
 </Layout>
