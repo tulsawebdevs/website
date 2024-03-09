@@ -1,6 +1,10 @@
 // TODO: Values borrowed from Tamagui - Replace with actual design tokens
 
-export * as font from './fonts/index.css';
+import { fontFace } from '@vanilla-extract/css';
+
+/*
+    Dimensions
+*/
 
 export const space = {
   $0: '0',
@@ -83,27 +87,9 @@ export const radius = {
   $12: '50',
 };
 
-export const fontSize = {
-  $true: '16',
-  '$0.25': '6',
-  '$0.5': '8',
-  $1: '10',
-  $2: '12',
-  $3: '14',
-  $4: '16',
-  $5: '20',
-  $6: '24',
-  $7: '28',
-  $8: '32',
-  $9: '40',
-  $10: '48',
-  $11: '56',
-  $12: '64',
-  $13: '80',
-  $14: '96',
-  $15: '112',
-  $16: '128',
-};
+/*
+    Colors
+*/
 
 const twdBlue = {
   '$twd-blue-100': '#bfe0f8',
@@ -136,3 +122,84 @@ export const colors = {
   ...twdBlue,
   ...twdGray,
 } as const;
+
+/*
+    Fonts
+*/
+
+const fontSettings = {
+  ReneBieder2_500: {
+    src: 'url("./RBNo2.1a-Medium.otf") format("opentype")',
+    fontWeight: 500,
+  },
+  ReneBieder2_700: {
+    src: 'url("./RBNo2.1b-Black.otf") format("opentype")',
+    fontWeight: 700,
+  },
+  ReneBieder3_300: {
+    src: 'url("./RBNo3.1-Light.otf") format("opentype")',
+    fontWeight: 300,
+  },
+  ReneBieder3_400: {
+    src: 'url("./RBNo3.1-Book.otf") format("opentype")',
+    fontWeight: 400,
+  },
+  ReneBieder3_700: {
+    src: 'url("./RBNo3.1-Bold.otf") format("opentype")',
+    fontWeight: 700,
+  },
+  ReneBieder3_900: {
+    src: 'url("./RBNo3.1-Black.otf") format("opentype")',
+    fontWeight: 900,
+  },
+} satisfies Record<string, Parameters<typeof fontFace>[0]>;
+
+const fonts = Object.entries(fontSettings).reduce(
+  (acc, [key, value]) => {
+    acc[key as keyof typeof acc] = fontFace(value, key);
+    return acc;
+  },
+  {} as Record<keyof typeof fontSettings, string>,
+);
+
+// Variable Font Faces
+
+const ReneBieder3 = fontFace(
+  Object.entries(fontSettings)
+    .filter(([key]) => key.startsWith('ReneBieder3'))
+    .map(([_, value]) => value),
+);
+
+const ReneBieder2 = fontFace(
+  Object.entries(fontSettings)
+    .filter(([key]) => key.startsWith('ReneBieder2'))
+    .map(([_, value]) => value),
+);
+
+export const font = {
+  ...fonts,
+  ReneBieder3,
+  ReneBieder2,
+};
+
+export const fontSize = {
+  $true: '16',
+  '$0.25': '6',
+  '$0.5': '8',
+  $1: '10',
+  $2: '12',
+  $3: '14',
+  $4: '16',
+  $5: '20',
+  $6: '24',
+  $7: '28',
+  $8: '32',
+  $9: '40',
+  $10: '48',
+  $11: '56',
+  $12: '64',
+  $13: '80',
+  $14: '96',
+  $15: '112',
+  $16: '128',
+};

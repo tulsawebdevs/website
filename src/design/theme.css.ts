@@ -127,8 +127,8 @@ const fontThemeContract = createThemeContract({
 
 export const fontTheme = createTheme(fontThemeContract, {
   fonts: {
-    normal: font.ReneBieder3Variable,
-    display: font.ReneBieder2Variable,
+    normal: font.ReneBieder3,
+    display: font.ReneBieder2,
     body: {
       light: font.ReneBieder3_300,
       regular: font.ReneBieder3_400,
