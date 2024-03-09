@@ -1,0 +1,81 @@
+---
+if (Astro.request.method === 'POST') {
+  try {
+    const data = await Astro.request.formData();
+    const name = data.get('name');
+    const email = data.get('email');
+    const topic = data.get('topic');
+    const summary = data.get('summary');
+
+    // Retrieve all selected values for checkboxes
+    const proposalTypes = data.getAll('proposal-type');
+
+    // Do something with the data
+    console.log('Name:', name);
+    console.log('Email:', email);
+    console.log('Topic:', topic);
+    console.log('Summary:', summary);
+    console.log('Proposal Types:', proposalTypes);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    }
+  }
+}
+---
+
+<Layout>
+  <main>
+    <h1>Propose an idea!</h1>
+    <h2 class="text-2xl">Have an idea?! Submit it!</h2>
+    <h3 class="text-xl">Fill out the form below!</h3>
+    <form method="POST">
+      <label for="name" class="text-l font-semibold"></label>
+      Name:
+      <input type="text" name="name" required minlength="6" />
+      <label for="email" class="text-l font-semibold"></label>
+      Email:
+      <input type="email" name="email" />
+      <label for="topic" class="text-l font-semibold">Topic:</label>
+      <textarea
+        id="topic"
+        name="topic"
+        required
+        minlength="6"
+        class="rounded-sm w-full"></textarea>
+      <label for="summary" class="text-l font-semibold">Summary: </label>
+      <textarea
+        id="summary"
+        name="summary"
+        required
+        minlength="6"
+        rows="5"
+        class="rounded-sm w-full"></textarea>
+
+      <div
+        class="checkboxes border-t-4 border-b-4 flex items-center justify-start text-left mb-4 gap-5"
+      >
+        <input
+          type="checkbox"
+          id="project"
+          name="proposal-type"
+          value="project"
+        />
+        <label for="project" class="text-l font-semibold"> Project! </label>
+        <br />
+        <input type="checkbox" id="talk" name="proposal-type" value="talk" />
+        <label for="talk" class="text-l font-semibold"> Talk! </label>
+        <br />
+        <input type="checkbox" id="lab" name="proposal-type" value="lab" />
+        <label for="lab" class="text-l font-semibold">
+          {' '}
+          Lab!
+        </label>
+        <br />
+      </div>
+      <button type="submit" class="bg-black text-white uppercase px-3 py-7"
+        >Submit</button
+      >
+    </form>
+  </main>
+</Layout>
