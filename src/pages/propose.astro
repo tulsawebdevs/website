@@ -64,7 +64,7 @@ function isValidEmail(email: string | null): boolean {
 
     <form method="POST" id="proposalForm" class="m-4">
       <div class="p-4 flex flex-col">
-        <div id="name-fields" class="shrink p-2 w-3/4">
+        <div id="name-fields" class="shrink p-2">
           <label for="name" class="text-l font-semibold">Name:</label>
           <input
             type="text"
@@ -72,16 +72,16 @@ function isValidEmail(email: string | null): boolean {
             required
             minlength={6}
             placeholder="Enter your name, nickname, or alias..."
-            class="rounded-small"
+            class="rounded-small w-3/4"
           />
         </div>
-        <div id="email-field" class="shrink p-2 w-3/4">
+        <div id="email-field" class="shrink p-2">
           <label for="email" class="text-l font-semibold">Email:</label>
           <input
             type="email"
             name="email"
             placeholder="myemailaddress@example.com..."
-            class="rounded-small"
+            class="rounded-small w-3/4"
           />
         </div>
       </div>
