@@ -1,91 +1,111 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-if (Astro.request.method === 'POST') {
-  try {
-    const data = await Astro.request.formData();
-    const name = data.get('name');
-    const email = data.get('email');
-    const topic = data.get('topic');
-    const summary = data.get('summary');
+export async function fetchContent({ request, response }) {
+  if (request.method === 'POST') {
+    try {
+      const data = await request.formData();
+      const name = data.get('name') as string;
+      const email = data.get('email') as string;
+      const topic = data.get('topic') as string;
+      const summary = data.get('summary') as string;
 
-    // Check if name has at least 6 characters
-    if (name && name.length < 6) {
-      throw new Error('Name must be at least 6 characters long');
-    }
+      // Check if name has at least 6 characters
+      if (name && name.length < 6) {
+        throw new Error('Name must be at least 6 characters long');
+      }
 
-    // Check if email is valid (you can add more complex validation)
-    if (email && !isValidEmail(email)) {
-      throw new Error('Invalid email address');
-    }
+      // Check if email is valid (you can add more complex validation)
+      if (email && !isValidEmail(email)) {
+        throw new Error('Invalid email address');
+      }
 
-    // Check if topic and summary have at least 6 characters
-    if ((topic && topic.length < 6) || (summary && summary.length < 6)) {
-      throw new Error('Topic and summary must be at least 6 characters long');
-    }
+      // Check if topic and summary have at least 6 characters
+      if ((topic && topic.length < 6) || (summary && summary.length < 6)) {
+        throw new Error('Topic and summary must be at least 6 characters long');
+      }
 
-    // Retrieve all selected values for checkboxes
-    const proposalTypes = data.getAll('proposal-type');
+      // Retrieve all selected values for checkboxes
+      const proposalTypes = data.getAll('proposal-type');
 
-    // Do something with the data
-    console.log('Name:', name);
-    console.log('Email:', email);
-    console.log('Topic:', topic);
-    console.log('Summary:', summary);
-    console.log('Proposal Types:', proposalTypes);
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.message);
-      // Handle the error message, you can display it to the user
+      // This is POST request, so it's not going to be visible in the browser.
+      // Check Network tab in Inspect Mode of Google Chrome or Firefox to see the request.
+      console.log('Name:', name);
+      console.log('Email:', email);
+      console.log('Topic:', topic);
+      console.log('Summary:', summary);
+      console.log('Proposal Types:', proposalTypes);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+        // Handle the error message, you can display it to the user
+      }
     }
   }
 }
 
 // Add a simple email validation function
 function isValidEmail(email: string | null): boolean {
-  // Implement your email validation logic here
   // For simplicity, just check if it contains '@'
   return !!email && email.includes('@');
 }
 ---
 
-<Layout title="Tulsa Web Devs">
-  <main class="grid w-screen h-screen bg-white text-4xl place-items-center">
-    <div class="container my-0 mx-auto py-0 px-3 max-w-5xl">
-      <h2 class="text-2xl">Have an idea?! Submit it!</h2>
-      <h3 class="text-xl">Fill out the form below!</h3>
-      <form>
-        <label for="name" class="text-l font-semibold">Name:</label>
-        <input type="text" id="name" name="name" class="w-full">
-        <label for="email" class="text-l font-semibold">
-          <p class="font-bold">Email:</p>
-          <p>In case we need to contact you</p>
+<Layout title="propose">
+  <main>
+    <h1>Propose an idea!</h1>
+    <h2 class="text-2xl">Have an idea?! Submit it!</h2>
+    <h3 class="text-xl">Fill out the form below!</h3>
+    <form method="POST" id="proposalForm">
+      <label for="name" class="text-l font-semibold">Name:</label>
+      <input type="text" name="name" required minlength={6} />
+      <label for="email" class="text-l font-semibold">Email:</label>
+      <input type="email" name="email" />
+      <label for="topic" class="text-l font-semibold">Topic:</label>
+      <textarea
+        id="topic"
+        name="topic"
+        required
+        minlength={6}
+        class="rounded-sm w-full"></textarea>
+      <label for="summary" class="text-l font-semibold">Summary:</label>
+      <textarea
+        id="summary"
+        name="summary"
+        required
+        minlength={6}
+        rows={5}
+        class="rounded-sm w-full"></textarea>
+      <div
+        class="checkboxes border-t-4 border-b-4 flex items-center justify-start text-left mb-4 gap-5"
+      >
+        <input
+          type="checkbox"
+          id="project"
+          name="proposal-type"
+          value="project"
+        />
+        <label for="project" class="text-l font-semibold">
+          {' '}
+          Project!{' '}
         </label>
-        <input type="email" id="email" name="email" value={userEmail} required class="w-full">
-        <label for="topic" class="text-l font-semibold">
-          <p class="font-bold">Topic:</p>
-          <p>What's the name of your topic</p>
+        <br />
+        <input type="checkbox" id="talk" name="proposal-type" value="talk" />
+        <label for="talk" class="text-l font-semibold">
+          {' '}
+          Talk!{' '}
         </label>
-        <textarea id="topic" name="topic" required class="rounded-sm w-full"></textarea>
-        <label for="summary" class="text-l font-semibold">
-          <p class="font-bold">Summary:</p>
-          <p>Describe your topic</p>
+        <br />
+        <input type="checkbox" id="lab" name="proposal-type" value="lab" />
+        <label for="lab" class="text-l font-semibold">
+          {' '}
+          Lab!
         </label>
-        <textarea id="summary" name="summary" required rows="5" class="rounded-sm w-full"></textarea>
-        <div class="checkboxes border-t-4 border-b-4 flex items-center justify-start text-left mb-4 gap-5">
-          <input type="checkbox" id="project" name="proposal-type" value="project">
-          <label for="project" class="text-l font-semibold">Project!</label><br>
-          <input type="checkbox" id="talk" name="proposal-type" value="talk">
-          <label for="talk" class="text-l font-semibold">Talk!</label><br>
-          <input type="checkbox" id="lab" name="proposal-type" value="lab">
-          <label for="lab" class="text-l font-semibold"> Lab!</label><br>
-        </div>
-        <div>
-<!-- Date Picker here!!! -->
-        </div>
-
-        <button type="submit" class="bg-black text-white uppercase px-3 py-7">Submit!</button>
-      </form>
-    </div>
+        <br />
+      </div>
+      <button type="submit" class="bg-black text-white uppercase px-3 py-7">
+        Submit
+      </button>
+    </form>
   </main>
 </Layout>
