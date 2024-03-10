@@ -121,18 +121,16 @@ function isValidEmail(email: string | null): boolean {
     </form>
     <h2 class="text-2xl p-6">What else can I do?</h2>
     <nav class="grid grid-cols-2 md:grid-cols-1 gap-2">
-      <div class="md:col-span-2">
-        <Card
-          title="Vote on Topics and Projects"
-          href="/vote"
-          body="We want input from you on what we program!"
-        />
-        <Card
-          title="Go Back!"
-          href="/"
-          body="Return to the home page to see what we're all about!"
-        />
-      </div>
+      <Card
+        title="Vote on Topics and Projects"
+        href="/vote"
+        body="We want input from you on what we program!"
+      />
+      <Card
+        title="Go Back!"
+        href="/"
+        body="Return to the home page to see what we're all about!"
+      />
     </nav>
   </main>
 </Layout>
