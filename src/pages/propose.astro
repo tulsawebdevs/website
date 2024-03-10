@@ -54,9 +54,14 @@ function isValidEmail(email: string | null): boolean {
       height="auto"
       width="100%"
     />
-    <h1 class="text-3xl">Propose an idea!</h1>
-    <h2 class="text-2xl">Have an idea?! Submit it!</h2>
-    <h3 class="text-xl">Fill out the form below!</h3>
+
+    <div class="m-auto">
+      <h1 class="text-3xl">Propose an idea!</h1>
+      <h2 class="text-2xl">
+        Have an idea?! Submit it! Just fill out the form below!
+      </h2>
+    </div>
+
     <form method="POST" id="proposalForm" class="m-4">
       <div class="p-4">
         <label for="name" class="text-l font-semibold">Name:</label>
@@ -84,7 +89,7 @@ function isValidEmail(email: string | null): boolean {
       </div>
 
       <div
-        class="checkboxes border-t-4 border-b-4 flex items-center justify-start text-left mb-4 gap-5"
+        class="checkboxes border-t-4 border-b-4 flex items-center justify-start text-left m-5 pb-4 gap-5"
       >
         <input
           type="checkbox"
