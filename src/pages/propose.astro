@@ -65,9 +65,21 @@ function isValidEmail(email: string | null): boolean {
     <form method="POST" id="proposalForm" class="m-4">
       <div class="p-4">
         <label for="name" class="text-l font-semibold">Name:</label>
-        <input type="text" name="name" required minlength={6} />
+        <input
+          type="text"
+          name="name"
+          required
+          minlength={6}
+          placeholder="Enter your name, nickname, or alias..."
+          class="rounded-small w-1/2"
+        />
         <label for="email" class="text-l font-semibold">Email:</label>
-        <input type="email" name="email" />
+        <input
+          type="email"
+          name="email"
+          placeholder="myemailaddress@example.com..."
+          class="rounded-sm w-1/2"
+        />
       </div>
 
       <div class="p-4">
@@ -77,7 +89,8 @@ function isValidEmail(email: string | null): boolean {
           name="topic"
           required
           minlength={6}
-          class="rounded-sm w-full"></textarea>
+          class="rounded-sm w-full"
+          placeholder="Topic title, framework name, main subject..."></textarea>
         <label for="summary" class="text-l font-semibold">Summary:</label>
         <textarea
           id="summary"
@@ -85,7 +98,8 @@ function isValidEmail(email: string | null): boolean {
           required
           minlength={6}
           rows={5}
-          class="rounded-sm w-full"></textarea>
+          class="rounded-sm w-full"
+          placeholder="Tell us more about it here..."></textarea>
       </div>
 
       <div
