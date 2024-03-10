@@ -29,17 +29,11 @@ export async function fetchContent({ request, response }) {
       // Retrieve all selected values for checkboxes
       const proposalTypes = data.getAll('proposal-type');
 
-      // This is POST request, so it's not going to be visible in the browser.
-      // Check Network tab in Inspect Mode of Google Chrome or Firefox to see the request.
-      console.log('Name:', name);
-      console.log('Email:', email);
-      console.log('Topic:', topic);
-      console.log('Summary:', summary);
-      console.log('Proposal Types:', proposalTypes);
+      // This is POST request. It's not going to be visible in browser.
+      // Check Network tab in Inspect Mode of Google Chrome or Firefox to see request.
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
-        // Handle the error message, you can display it to the user
       }
     }
   }
@@ -47,7 +41,7 @@ export async function fetchContent({ request, response }) {
 
 // Add a simple email validation function
 function isValidEmail(email: string | null): boolean {
-  // For simplicity, just check if it contains '@'
+  // Just check if it contains '@'
   return !!email && email.includes('@');
 }
 ---
