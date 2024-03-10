@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Card from '../components/Card.astro';
 
 export async function fetchContent({ request, response }) {
   if (request.method === 'POST') {
@@ -107,5 +108,20 @@ function isValidEmail(email: string | null): boolean {
         Submit
       </button>
     </form>
+    <nav class="grid grid-cols-1 md:grid-cols-2 gap-2">
+      <div class="md:col-span-2">
+        <h2 class="text-2xl">What else can I do?</h2>
+        <Card
+          title="Vote on Topics and Projects"
+          href="/vote"
+          body="We want input from you on what we program!"
+        />
+        <Card
+          title="Go Back!"
+          href="/home"
+          body="Return to the home page to see what we're all about!"
+        />
+      </div>
+    </nav>
   </main>
 </Layout>
