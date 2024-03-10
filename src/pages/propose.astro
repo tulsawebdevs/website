@@ -64,7 +64,7 @@ function isValidEmail(email: string | null): boolean {
 
     <form method="POST" id="proposalForm" class="m-4">
       <div class="p-4 flex flex-col">
-        <div id="name" class="p-2">
+        <div id="name-fields" class="p-2">
           <label for="name" class="text-l font-semibold">Name:</label>
           <input
             type="text"
@@ -75,7 +75,7 @@ function isValidEmail(email: string | null): boolean {
             class="rounded-small w-1/2"
           />
         </div>
-        <div id="email" class="p-2">
+        <div id="email-field" class="p-2">
           <label for="email" class="text-l font-semibold">Email:</label>
           <input
             type="email"
@@ -86,7 +86,7 @@ function isValidEmail(email: string | null): boolean {
         </div>
       </div>
 
-      <div class="p-4">
+      <div class="p-4" id="topic-summary-fields">
         <label for="topic" class="text-l font-semibold">Topic:</label>
         <textarea
           id="topic"
@@ -108,6 +108,7 @@ function isValidEmail(email: string | null): boolean {
 
       <div
         class="checkboxes border-t-4 border-b-4 flex items-center justify-start text-left m-5 p-4 gap-5"
+        id="checkboxes"
       >
         <input
           type="checkbox"
@@ -138,7 +139,7 @@ function isValidEmail(email: string | null): boolean {
       </button>
     </form>
     <h2 class="text-2xl p-6">What else can I do?</h2>
-    <nav class="grid grid-cols-2 md:grid-cols-1 gap-2">
+    <nav class="grid grid-cols-2 md:grid-cols-1 gap-2" id="footer-nav">
       <Card
         title="Vote on Topics and Projects"
         href="/vote"
