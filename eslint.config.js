@@ -269,9 +269,13 @@ export default tseslint.config(
       ...getTsEslintRules('recommendedTypeChecked'),
       ...getTsEslintRules('stylisticTypeChecked'),
       'no-underscore-dangle': 'off',
+      'react/require-default-props': 'off',
+      'consistent-return': 'off',
+      'no-void': 'off',
       'import/no-unresolved': 'off',
       'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
       'import/prefer-default-export': 'off',
+      '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
       '@typescript-eslint/no-unused-vars': [
         'warn',
@@ -368,6 +372,7 @@ export default tseslint.config(
   {
     files: [FILES.declaration],
     rules: {
+      '@typescript-eslint/triple-slash-reference': 'off',
       'unicorn/filename-case': 'off',
       'unicorn/no-static-only-class': 'off',
     },
