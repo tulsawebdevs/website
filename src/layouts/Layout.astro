@@ -1,4 +1,6 @@
 ---
+import Header from '../features/navigation/Header.tsx';
+
 interface Props {
   title: string;
 }
@@ -7,6 +9,14 @@ const { title } = Astro.props;
 ---
 
 <!doctype html>
+<script>
+  import { initializeClerk } from '../features/auth/clerk.ts';
+  /* eslint-disable-next-line
+    @typescript-eslint/no-unsafe-call -- Astro parse error, this is a valid call
+  */
+  initializeClerk();
+</script>
+
 <html lang="en">
   <head>
     <meta charset="utf8" />
@@ -17,9 +27,11 @@ const { title } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
+    <Header client:only="react" />
     <slot />
   </body>
 </html>
+
 <style is:global>
   :root {
     --accent: 41, 93, 155;
