@@ -1,7 +1,8 @@
 import { style } from '@vanilla-extract/css';
-import { colors } from '../../design/tokens.css.ts';
+import { colors, font } from '../../design/tokens.css.ts';
 
 export const headerNav = style({
+  fontFamily: font.ReneBieder2,
   maxWidth: '800px',
   margin: 'auto',
   alignSelf: 'center',
@@ -15,7 +16,9 @@ export const headerNav = style({
   backgroundColor: colors['twd-blue-300'],
   paddingTop: '.5rem',
   paddingBottom: '.5rem',
-  paddingLeft: '16px',
-  paddingRight: '16px',
+  paddingLeft: '35px',
+  paddingRight: '35px',
   color: colors.black,
+  borderBottomLeftRadius: '8px',
+  borderBottomRightRadius: '8px',
 });
