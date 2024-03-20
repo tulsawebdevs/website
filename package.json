@@ -48,7 +48,7 @@
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-prettier": "9.1.0",
     "eslint-mdx": "3.1.5",
-    "eslint-plugin-astro": "0.31.4",
+    "eslint-plugin-astro": "0.32.0",
     "eslint-plugin-import": "2.29.1",
     "eslint-plugin-jsonc": "2.14.1",
     "eslint-plugin-jsx-a11y": "6.8.0",
