@@ -115,23 +115,18 @@ function isValidEmail(email: string | null): boolean {
 
       <div
         class="checkboxes border-t-4 border-b-4 flex items-center justify-start text-left m-5 p-4 gap-5"
-        id="checkboxes"
+        id="radio-buttons"
       >
-        <input
-          type="checkbox"
-          id="project"
-          name="proposal-type"
-          value="project"
-        />
+        <input type="radio" id="project" name="type" value="project" />
         <label for="project" class="text-l font-semibold">
           {' '}
           Project!{' '}
         </label>
-        <input type="checkbox" id="talk" name="proposal-type" value="talk" />
+        <input type="radio" id="talk" name="type" value="talk" />
         <label for="talk" class="text-l font-semibold">
           {' Talk! '}
         </label>
-        <input type="checkbox" id="lab" name="proposal-type" value="lab" />
+        <input type="radio" id="lab" name="type" value="lab" />
         <label for="lab" class="text-l font-semibold">
           {' '}
           Lab!
