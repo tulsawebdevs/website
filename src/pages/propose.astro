@@ -2,42 +2,42 @@
 import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
 
-export async function fetchContent({ request, response }) {
-  if (request.method === 'POST') {
-    try {
-      const data = await request.formData();
-      const name = data.get('name') as string;
-      const email = data.get('email') as string;
-      const topic = data.get('topic') as string;
-      const summary = data.get('summary') as string;
+// export async function fetchContent({ request, response }) {
+//   if (request.method === 'POST') {
+//     try {
+//       const data = await request.formData();
+//       const name = data.get('name') as string;
+//       const email = data.get('email') as string;
+//       const topic = data.get('topic') as string;
+//       const summary = data.get('summary') as string;
 
-      // Check if name has at least 6 characters
-      if (name && name.length < 6) {
-        throw new Error('Name must be at least 6 characters long');
-      }
+//       // Check if name has at least 6 characters
+//       if (name && name.length < 6) {
+//         throw new Error('Name must be at least 6 characters long');
+//       }
 
-      // Check if email is valid (you can add more complex validation)
-      if (email && !isValidEmail(email)) {
-        throw new Error('Invalid email address');
-      }
+//       // Check if email is valid (you can add more complex validation)
+//       if (email && !isValidEmail(email)) {
+//         throw new Error('Invalid email address');
+//       }
 
-      // Check if topic and summary have at least 6 characters
-      if ((topic && topic.length < 6) || (summary && summary.length < 6)) {
-        throw new Error('Topic and summary must be at least 6 characters long');
-      }
+//       // Check if topic and summary have at least 6 characters
+//       if ((topic && topic.length < 6) || (summary && summary.length < 6)) {
+//         throw new Error('Topic and summary must be at least 6 characters long');
+//       }
 
-      // Retrieve all selected values for checkboxes
-      const proposalTypes = data.getAll('proposal-type');
+//       // Retrieve all selected values for checkboxes
+//       const proposalTypes = data.getAll('proposal-type');
 
-      // This is POST request. It's not going to be visible in browser.
-      // Check Network tab in Inspect Mode of Google Chrome or Firefox to see request.
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      }
-    }
-  }
-}
+//       // This is POST request. It's not going to be visible in browser.
+//       // Check Network tab in Inspect Mode of Google Chrome or Firefox to see request.
+//     } catch (error) {
+//       if (error instanceof Error) {
+//         console.error(error.message);
+//       }
+//     }
+//   }
+// }
 
 // Add a simple email validation function
 function isValidEmail(email: string | null): boolean {
