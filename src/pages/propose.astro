@@ -108,9 +108,22 @@ function isValidEmail(email: string | null): boolean {
           name="summary"
           required
           minlength={6}
+          rows={3}
+          class="rounded-sm w-full text-yellow-200 placeholder-yellow-100"
+          placeholder="Tell us about it..."
+          maxlength="200"></textarea>
+
+        <label for="description" class="text-l font-semibold"
+          >Description:</label
+        >
+        <textarea
+          id="description"
+          name="description"
+          minlength={6}
           rows={5}
           class="rounded-sm w-full text-yellow-200 placeholder-yellow-100"
-          placeholder="Tell us more about it here..."></textarea>
+          placeholder="Tell us more about it here..."
+          maxlength="600"></textarea>
       </div>
 
       <div
