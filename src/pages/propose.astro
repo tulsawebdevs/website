@@ -45,13 +45,12 @@ function isValidEmail(email: string | null): boolean {
   return !!email && email.includes('@');
 }
 
-const host = import.meta.env.API_HOST;
+// const host = import.meta.env.API_HOST;
+// const pathname = '/proposals';
 
-const pathname = '/proposals';
+// if (!host) throw new Error('API_HOST environment variable not found');
 
-if (!host) throw new Error('API_HOST environment variable not found');
-
-const action = new URL(pathname, host);
+// const action = new URL(pathname, host);
 ---
 
 <Layout title="propose">
