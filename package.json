@@ -43,7 +43,7 @@
     "@typescript-eslint/eslint-plugin": "7.0.2",
     "@vanilla-extract/vite-plugin": "4.0.7",
     "@vitest/coverage-v8": "1.4.0",
-    "astro-eslint-parser": "0.16.3",
+    "astro-eslint-parser": "0.17.0",
     "eslint": "8.57.0",
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-prettier": "9.1.0",
