@@ -17,18 +17,21 @@ import {
 } from './ui/pagination.tsx';
 
 export type Proposal = {
-  id: string;
   status: 'draft' | 'rfc' | 'open' | 'closed';
-  type: 'topic' | 'project';
+  id: string;
+  created: string;
+  updated: string;
   title: string;
   summary: string;
   description: string;
-  created: string;
-  updated: string;
-  author?: string;
+  type: 'topic' | 'project';
 };
 
-type VoteListProps = {
+export type VoteListProps = {
+  // eslint-disable-next-line react/require-default-props, react/no-unused-prop-types -- TODO
+  cursor?: string;
+  // eslint-disable-next-line react/require-default-props, react/no-unused-prop-types -- TODO
+  limit?: number;
   proposals: Proposal[];
   hasNextPage: boolean;
   hasPreviousPage: boolean;
