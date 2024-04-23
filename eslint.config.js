@@ -137,6 +137,11 @@ const tsPageLanguageOptions = {
 };
 
 export default tseslint.config(
+  /**
+   * Acts like a global ignore for the files listed.
+   * @see @link https://eslint.org/docs/latest/use/configure/ignore#ignoring-files
+   */
+  { ignores: ['.astro/'] },
   // Base config for all files, just register plugins
   ...compat.plugins('unicorn', 'yml', 'mdx', 'jsonc', '@typescript-eslint'),
   {
@@ -279,6 +284,7 @@ export default tseslint.config(
       ],
       'react/react-in-jsx-scope': 'off',
       'react/destructuring-assignment': 'off',
+      'react/require-default-props': 'off',
       'react/jsx-props-no-spreading': [
         'error',
         { html: 'ignore', exceptions: [] },
