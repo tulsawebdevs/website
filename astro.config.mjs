@@ -8,7 +8,7 @@ export default defineConfig({
   site: 'https://tulsawebdevs.github.io',
   integrations: [tailwind(), react()],
   vite: {
-    plugins: [vanillaExtractPlugin()]
+    plugins: [vanillaExtractPlugin()],
   },
   server: {
     host: true,
