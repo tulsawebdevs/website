@@ -1,12 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import VoteList from '../components/VoteList.tsx';
+import VoteList from '../components/ProposalsPagenatedList.tsx';
 ---
 
 <script>
-  import type { Proposal } from '../components/VoteList.tsx';
+  import type { Proposal } from '../components/ProposalsPagenatedList.tsx';
 
-  type ProposalResponseData = {
+  export type ProposalResponseData = {
     cursor: string;
     total: number;
     list: Proposal[];
@@ -38,9 +38,10 @@ import VoteList from '../components/VoteList.tsx';
     });
 
     const response = await fetch(target);
-    const json = (await response.json()) as ProposalResponseData;
+    const json = (await response.json()) as unknown;
 
-    return json;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- parsing error
+    return json as ProposalResponseData;
   };
 </script>
 <Layout title="Tulsa Web Devs">
