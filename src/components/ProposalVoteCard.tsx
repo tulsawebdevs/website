@@ -5,14 +5,14 @@ import { ThumbsUpIcon, ThumbsDownIcon, MinusIcon } from 'lucide-react';
 import Card from './Card.astro';
 import { CardHeader, CardContent } from './ui/card.tsx';
 
-type CardProps = {
+export type ProposalVoteCardProps = {
   title: string;
   description: string;
   author: string;
   created: string;
 };
 
-export function ProposalsCard(props: CardProps) {
+export function ProposalVoteCard(props: ProposalVoteCardProps) {
   return (
     <Card>
       <CardHeader className="pb-0 pt-6">
