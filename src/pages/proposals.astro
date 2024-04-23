@@ -1,0 +1,50 @@
+---
+import Layout from '../layouts/Layout.astro';
+import VoteList from '../components/VoteList.tsx';
+---
+
+<script>
+  import type { Proposal } from '../components/VoteList.tsx';
+
+  type ProposalResponseData = {
+    cursor: string;
+    total: number;
+    list: Proposal[];
+  };
+
+  const fetchProposals = async (
+    params:
+      | {
+          cursor: string;
+          limit: number;
+        }
+      | undefined,
+  ): Promise<ProposalResponseData> => {
+    const searchParams =
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/strict-boolean-expressions -- parsing error
+      params &&
+      new URLSearchParams({
+        cursor: params.cursor,
+        limit: params.limit.toString(),
+      });
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- parsing error
+    const target = new URL({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, no-undef -- parsing error
+      ...Astro.url,
+      pathname: '/api/proposals',
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- parsing error
+      search: searchParams?.toString() ?? '',
+    });
+
+    const response = await fetch(target);
+    const json = (await response.json()) as ProposalResponseData;
+
+    return json;
+  };
+</script>
+<Layout title="Tulsa Web Devs">
+  <main class="grid w-screen h-screen bg-white text-4xl place-items-center">
+    <VoteList />
+  </main>
+</Layout>
