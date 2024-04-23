@@ -2,13 +2,12 @@ import { Avatar, AvatarImage, AvatarFallback } from '@radix-ui/react-avatar';
 import { Label } from '@radix-ui/react-label';
 import { RadioGroup, RadioGroupItem } from '@radix-ui/react-radio-group';
 import { ThumbsUpIcon, ThumbsDownIcon, MinusIcon } from 'lucide-react';
-import Card from './Card.astro';
-import { CardHeader, CardContent } from './ui/card.tsx';
+import { CardHeader, CardContent, Card } from './ui/card.tsx';
 
 export type ProposalVoteCardProps = {
+  author?: string;
   title: string;
   description: string;
-  author: string;
   created: string;
 };
 
@@ -49,7 +48,9 @@ export function ProposalVoteCard(props: ProposalVoteCardProps) {
               minute: 'numeric',
               hour12: true,
             })} by `}
-            <span className="font-bold dark:text-gray-200">{props.author}</span>
+            <span className="font-bold dark:text-gray-200">
+              {props.author ?? 'Anonymous'}
+            </span>
           </div>
         </div>
         <div className="flex items-center gap-2">
