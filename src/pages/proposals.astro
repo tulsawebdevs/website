@@ -44,8 +44,10 @@ import VoteList from '../components/ProposalsPagenatedList.tsx';
     return json as ProposalResponseData;
   };
 </script>
+
+
 <Layout title="Tulsa Web Devs">
   <main class="grid w-screen h-screen bg-white text-4xl place-items-center">
-    <VoteList />
+    <VoteList proposals={[]} />
   </main>
 </Layout>
