@@ -4,7 +4,6 @@ import VoteList from '../components/ProposalsPagenatedList.tsx';
 ---
 
 <script>
-  import { date } from 'astro/zod';
   import type { Proposal } from '../components/ProposalsPagenatedList.tsx';
 
   export type ProposalResponseData = {
@@ -51,8 +50,18 @@ import VoteList from '../components/ProposalsPagenatedList.tsx';
     <VoteList
       proposals={[
         {
-          created: new Date().toLocaleDateString(),
-          updated: new Date().toLocaleDateString(),
+          created: new Date().toLocaleString(undefined, {
+            timeZone: 'America/Chicago',
+            dateStyle: 'short',
+            timeStyle: 'short',
+            hourCycle: 'h12',
+          }),
+          updated: new Date().toLocaleString(undefined, {
+            timeZone: 'America/Chicago',
+            dateStyle: 'short',
+            timeStyle: 'short',
+            hourCycle: 'h12',
+          }),
           id: '1',
           description: "I'm interested in learning more about CMSs",
           status: 'open',
