@@ -4,6 +4,7 @@ import VoteList from '../components/ProposalsPagenatedList.tsx';
 ---
 
 <script>
+  import { date } from 'astro/zod';
   import type { Proposal } from '../components/ProposalsPagenatedList.tsx';
 
   export type ProposalResponseData = {
@@ -45,9 +46,21 @@ import VoteList from '../components/ProposalsPagenatedList.tsx';
   };
 </script>
 
-
 <Layout title="Tulsa Web Devs">
   <main class="grid w-screen h-screen bg-white text-4xl place-items-center">
-    <VoteList proposals={[]} />
+    <VoteList
+      proposals={[
+        {
+          created: new Date().toLocaleDateString(),
+          updated: new Date().toLocaleDateString(),
+          id: '1',
+          description: "I'm interested in learning more about CMSs",
+          status: 'open',
+          summary: 'I want to learn more about CMSs',
+          title: 'CMS Hack-night',
+          type: 'topic',
+        },
+      ]}
+    />
   </main>
 </Layout>
