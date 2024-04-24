@@ -34,7 +34,7 @@
     "rainbow-sprinkles": "0.17.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "swagger-ui-react": "5.17.0",
+    "swagger-ui-react": "5.17.1",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "vitest": "1.5.1"
