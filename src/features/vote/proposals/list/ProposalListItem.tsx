@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { Label } from '@radix-ui/react-label';
-import { RadioGroup, RadioGroupItem } from '@radix-ui/react-radio-group';
 import { ThumbsUpIcon, ThumbsDownIcon, MinusIcon } from 'lucide-react';
 import {
   CardHeader,
@@ -9,18 +8,40 @@ import {
   CardTitle,
   CardDescription,
 } from '../../../../components/ui/card.tsx';
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from '../../../../components/ui/radio-group.tsx';
 import type { Proposal } from '../../../../types/proposal.ts';
+import { cn } from '../../../../utils.ts';
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from '../../../../components/ui/avatar.tsx';
+import { Button } from '../../../../components/ui/button.tsx';
 
-export type Props = {
+export type ProposalListItemProps = {
   proposal: Proposal;
 };
 
-export default function ProposalListItem({ proposal }: Props) {
+export type Vote =
+  | '-2' // Strongly Disinterested
+  | '-1' // Slightly Disinterested
+  | '0' // Neutral
+  | '1' // Slightly Interested
+  | '2'; // Strongly Interested
+
+export type VotePayload = {
+  initiativeId: string;
+  vote: Vote;
+  comment: string;
+  authorId: string;
+  authorName: string;
+  authorEmail: string;
+};
+
+export default function ProposalListItem({ proposal }: ProposalListItemProps) {
   const proposedDate = new Date(proposal.created).toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
@@ -40,17 +61,55 @@ export default function ProposalListItem({ proposal }: Props) {
     return 'A';
   }, [authorName]);
 
+  const numberUpvotes = 72; // TODO: Replace with actual data
+  const numberDownvotes = 18; // TODO: Replace with actual data
+
+  const handleInterestVote = (value: Vote) => {
+    const votePayload: VotePayload = {
+      initiativeId: proposal.id.toString(10),
+      vote: value,
+      comment: '',
+      authorId: '1234', // TODO: Replace with auth data
+      authorName: proposal.authorName,
+      authorEmail: '', // TODO: Replace with auth data
+    };
+
+    console.log('cast vote', votePayload);
+
+    fetch(`https://api.tulsawebdevs.org/proposals/${proposal.id}/vote`, {
+      credentials: 'include',
+      headers: {
+        Authorization: '3fa85f64-5717-4562-b3fc-2c963f66afa6', // TODO: Add auth token
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify(votePayload),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('do something with data', data);
+      })
+      .catch((error) => {
+        // TODO: Handle inability to cast vote
+        console.error(error);
+      });
+  };
+
+  // TODO: Implement like vote functionality. What API to call?
+  const handleLikeVote = (type: 'up' | 'down') => {
+    console.log('handle like vote', type);
+  };
+
   return (
     <Card>
       <CardHeader className="pb-0 pt-6 flex flex-row justify-between">
-        <CardTitle>{proposal.title}</CardTitle>
+        <CardTitle className="content-center">{proposal.title}</CardTitle>
 
-        <div className="flex items-center gap-2">
-          <ThumbsUpIcon className="w-5 h-5 text-green-500" />
-          <span className="text-green-500 font-medium">72</span>
-          <ThumbsDownIcon className="w-5 h-5 text-red-500" />
-          <span className="text-red-500 font-medium">18</span>
-        </div>
+        <ProposalLikeButtons
+          handleLikeVote={handleLikeVote}
+          numberUpvotes={numberUpvotes}
+          numberDownvotes={numberDownvotes}
+        />
       </CardHeader>
 
       <CardContent className="my-3">
@@ -69,106 +128,122 @@ export default function ProposalListItem({ proposal }: Props) {
 
             <div>
               <div className="font-bold dark:text-gray-200">
-                {proposal.authorName ?? 'Anonymous'}
+                {proposal.authorName}
               </div>
-              <div>
+              <div className="text-sm text-gray-500 dark:text-gray-400 content-center">
                 Proposed {proposedDate} at {proposedTime} by{' '}
               </div>
             </div>
           </div>
 
-          <CardDescription>{proposal.description}</CardDescription>
+          <CardDescription className="py-4">
+            {proposal.description}
+          </CardDescription>
         </div>
 
         <div>
-          <RadioGroup
-            aria-label="Vote"
-            className="flex flex-col md:flex-row md:items-center gap-2"
-            defaultValue="0"
-          >
-            <Label
-              className="flex items-center gap-2 cursor-pointer"
-              htmlFor="vote-strongly-disinterested"
-            >
-              <RadioGroupItem
-                className="peer sr-only"
-                id="vote-strongly-disinterested"
-                value="-2"
-              />
-              <div className="w-5 h-5 flex items-center justify-center rounded-full border border-gray-300 peer-checked:bg-red-500 peer-checked:border-red-500 dark:border-gray-600 dark:peer-checked:bg-red-500 dark:peer-checked:border-red-500">
-                <ThumbsDownIcon className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                Strongly Disinterested
-              </span>
-            </Label>
-            <Label
-              className="flex items-center gap-2 cursor-pointer"
-              htmlFor="vote-slightly-disinterested"
-            >
-              <RadioGroupItem
-                className="peer sr-only"
-                id="vote-slightly-disinterested"
-                value="-1"
-              />
-              <div className="w-5 h-5 flex items-center justify-center rounded-full border border-gray-300 peer-checked:bg-red-500 peer-checked:border-red-500 dark:border-gray-600 dark:peer-checked:bg-red-500 dark:peer-checked:border-red-500">
-                <ThumbsDownIcon className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                Slightly Disinterested
-              </span>
-            </Label>
-            <Label
-              className="flex items-center gap-2 cursor-pointer"
-              htmlFor="vote-neutral"
-            >
-              <RadioGroupItem
-                className="peer sr-only"
-                id="vote-neutral"
-                value="0"
-              />
-              <div className="w-5 h-5 flex items-center justify-center rounded-full border border-gray-300 peer-checked:bg-gray-500 peer-checked:border-gray-500 dark:border-gray-600 dark:peer-checked:bg-gray-500 dark:peer-checked:border-gray-500">
-                <MinusIcon className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                Neutral
-              </span>
-            </Label>
-            <Label
-              className="flex items-center gap-2 cursor-pointer"
-              htmlFor="vote-slightly-interested"
-            >
-              <RadioGroupItem
-                className="peer sr-only"
-                id="vote-slightly-interested"
-                value="1"
-              />
-              <div className="w-5 h-5 flex items-center justify-center rounded-full border border-gray-300 peer-checked:bg-green-500 peer-checked:border-green-500 dark:border-gray-600 dark:peer-checked:bg-green-500 dark:peer-checked:border-green-500">
-                <ThumbsUpIcon className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                Slightly Interested
-              </span>
-            </Label>
-            <Label
-              className="flex items-center gap-2 cursor-pointer"
-              htmlFor="vote-strongly-interested"
-            >
-              <RadioGroupItem
-                className="peer sr-only"
-                id="vote-strongly-interested"
-                value="2"
-              />
-              <div className="w-5 h-5 flex items-center justify-center rounded-full border border-gray-300 peer-checked:bg-green-500 peer-checked:border-green-500 dark:border-gray-600 dark:peer-checked:bg-green-500 dark:peer-checked:border-green-500">
-                <ThumbsUpIcon className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                Strongly Interested
-              </span>
-            </Label>
-          </RadioGroup>
+          <ProposalInterestVote onVoteSelect={handleInterestVote} />
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+const voteOptions = [
+  {
+    label: 'Strongly Disinterested',
+    value: '-2',
+    id: 'vote-strongly-disinterested',
+  },
+  {
+    label: 'Slightly Disinterested',
+    value: '-1',
+    id: 'vote-slightly-disinterested',
+  },
+  { label: 'Neutral', value: '0', id: 'vote-neutral' },
+  { label: 'Slightly Interested', value: '1', id: 'vote-slightly-interested' },
+  { label: 'Strongly Interested', value: '2', id: 'vote-strongly-interested' },
+];
+
+function ProposalInterestVote({
+  onVoteSelect,
+}: {
+  onVoteSelect: (vote: Vote) => void;
+}) {
+  return (
+    <RadioGroup
+      aria-label="Vote"
+      className="flex flex-col md:flex-row md:items-center gap-2"
+      defaultValue="0" // TODO: Replace with user's selected vote
+      onValueChange={onVoteSelect}
+    >
+      {voteOptions.map((option) => {
+        const value = parseInt(option.value, 10);
+
+        return (
+          <Label
+            key={option.id}
+            className="flex items-center gap-2 cursor-pointer"
+            htmlFor={option.id}
+          >
+            <RadioGroupItem
+              className="peer sr-only"
+              id={option.id}
+              value={option.value}
+            />
+            <div
+              className={cn(
+                'p-0.5 w-5 h-5 flex items-center justify-center rounded-full border-2 border-gray-400',
+                {
+                  'peer-aria-checked:bg-red-500 peer-aria-checked:border-red-500 dark:border-gray-600 dark:peer-aria-checked:bg-red-500 dark:peer-aria-checked:border-red-500':
+                    value < 0,
+                  'peer-aria-checked:bg-gray-500 peer-aria-checked:border-gray-500 dark:border-gray-600 dark:peer-aria-checked:bg-gray-500 dark:peer-aria-checked:border-gray-500':
+                    value === 0,
+                  'peer-aria-checked:bg-green-500 peer-aria-checked:border-green-500 dark:border-gray-600 dark:peer-aria-checked:bg-green-500 dark:peer-aria-checked:border-green-500':
+                    value > 0,
+                },
+              )}
+            >
+              {value < 0 && <ThumbsDownIcon className="w-4 h-4 text-white" />}
+              {value === 0 && <MinusIcon className="w-4 h-4 text-white" />}
+              {value > 0 && <ThumbsUpIcon className="w-4 h-4 text-white" />}
+            </div>
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              {option.label}
+            </span>
+          </Label>
+        );
+      })}
+    </RadioGroup>
+  );
+}
+
+type ProposalLikeButtonsProps = {
+  handleLikeVote: (type: 'up' | 'down') => void;
+  numberUpvotes: number;
+  numberDownvotes: number;
+};
+
+function ProposalLikeButtons({
+  handleLikeVote,
+  numberUpvotes,
+  numberDownvotes,
+}: ProposalLikeButtonsProps) {
+  return (
+    <div className="flex items-center gap-2">
+      <Button size="sm" variant="outline" onClick={() => handleLikeVote('up')}>
+        <ThumbsUpIcon className="w-5 h-5 text-green-500 mr-1" />
+        <span className="text-green-500 font-medium">{numberUpvotes}</span>
+      </Button>
+
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => handleLikeVote('down')}
+      >
+        <ThumbsDownIcon className="w-5 h-5 text-red-500 mr-1" />
+        <span className="text-red-500 font-medium">{numberDownvotes}</span>
+      </Button>
+    </div>
   );
 }
