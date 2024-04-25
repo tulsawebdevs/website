@@ -43,8 +43,6 @@ export default function ProposalForm() {
     const formData = new FormData(formElement);
 
     const isDraft = formData.get('status') === 'draft';
-    console.log('isDraft:', isDraft);
-    console.log('target:', event.target)
 
     const proposal: Proposal = {
       status: isDraft ? 'draft' : 'open',
@@ -65,6 +63,7 @@ export default function ProposalForm() {
       },
     })
       .then((response) => {
+        // eslint-disable-next-line no-console
         console.log('response:', response);
         if (response.status === 201) return formElement.reset();
         if (response.status === 401) throw new Error('Unauthorized');
@@ -72,6 +71,7 @@ export default function ProposalForm() {
         throw new Error('Unknown Error');
       })
       .catch((error) => {
+        // eslint-disable-next-line no-console
         console.error('There was a problem with your fetch operation:', error);
       });
   }, []);
