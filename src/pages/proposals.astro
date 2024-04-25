@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import VoteList from '../components/ProposalsPagenatedList.tsx';
+import ProposeForm from '../components/ProposalForm.tsx';
 ---
 
 <script>
@@ -48,6 +49,7 @@ import VoteList from '../components/ProposalsPagenatedList.tsx';
 <Layout title="Tulsa Web Devs">
   <main class="grid w-screen h-screen bg-white text-4xl place-items-center">
     <VoteList
+      client:load
       proposals={[
         {
           created: new Date().toLocaleString(undefined, {
@@ -72,4 +74,5 @@ import VoteList from '../components/ProposalsPagenatedList.tsx';
       ]}
     />
   </main>
+<ProposeForm client:load/>
 </Layout>
