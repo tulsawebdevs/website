@@ -699,9 +699,6 @@
                 "allOf": [
                   {
                     "$ref": "#/components/schemas/Vote"
-                  },
-                  {
-                    "$ref": "#/components/schemas/Authored"
                   }
                 ]
               }
