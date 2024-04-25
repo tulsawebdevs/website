@@ -108,7 +108,6 @@ export default function ProposalForm() {
                   placeholder="you@example.com"
                   required
                   type="email"
-                  pattern=".+@.+"
                 />
               </div>
             </div>
