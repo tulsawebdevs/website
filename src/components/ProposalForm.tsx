@@ -3,8 +3,7 @@
  * @see https://v0.dev/t/G4ftnlAGIX0
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-import React from 'react';
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 import {
   CardTitle,
   CardDescription,
@@ -42,6 +41,9 @@ export default function ProposalForm() {
     const url = 'https://api.tulsawebdevs.org/proposals';
     const formElement = event.currentTarget;
     const formData = new FormData(formElement);
+
+    const isDraft = formData.get('status') === 'draft';
+    console.log('isDraft:', isDraft);
     console.log('target:', event.target)
 
     const proposal: Proposal = {
