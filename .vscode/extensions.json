@@ -3,7 +3,8 @@
     "astro-build.astro-vscode",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
-    "mattpocock.ts-error-translator"
+    "mattpocock.ts-error-translator",
+    "ms-vscode.vscode-typescript-next"
   ],
   "unwantedRecommendations": []
 }
