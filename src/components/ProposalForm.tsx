@@ -45,7 +45,7 @@ export default function ProposalForm() {
     const isDraft = formData.get('status') === 'draft';
 
     const proposal: Proposal = {
-      status: isDraft ? 'draft' : 'open',
+//      status: isDraft ? 'draft' : 'open',
       authorId: '1',
       authorName: formData.get('authorName') as string,
       authorEmail: formData.get('authorEmail') as string,
