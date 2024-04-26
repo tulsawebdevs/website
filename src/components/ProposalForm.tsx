@@ -38,14 +38,14 @@ export default function ProposalForm() {
   const onSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const url = 'https://api.tulsawebdevs.org/proposals';
+    const url = 'https://api.tulsawebdevs.org/proposals/proposals';
     const formElement = event.currentTarget;
     const formData = new FormData(formElement);
 
     // const isDraft = formData.get('status') === 'draft';
 
     const proposal: Proposal = {
-//      status: isDraft ? 'draft' : 'open',
+      //      status: isDraft ? 'draft' : 'open',
       authorId: '1',
       authorName: formData.get('authorName') as string,
       authorEmail: formData.get('authorEmail') as string,
@@ -159,7 +159,7 @@ export default function ProposalForm() {
               />
             </div>
             <div className="flex justify-end">
-{/* //              <Button
+              {/* //              <Button
 //                className="mr-2"
 //                type="submit"
 //                name="status-draft"
