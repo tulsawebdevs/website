@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/astro';
+// import { render, screen, fireEvent } from '@testing-library/astro';
 // import { it, expect } from 'vitest';
 // import ProposePage from '../pages/propose.astro';
 
