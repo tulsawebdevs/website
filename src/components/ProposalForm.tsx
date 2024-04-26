@@ -124,7 +124,7 @@ export default function ProposalForm() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="type">Type</Label>
-              <Select defaultValue="topic" defaultOpen={false}>
+              <Select required name="type" defaultOpen={false}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select Type" defaultValue="topic" />
                 </SelectTrigger>
