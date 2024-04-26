@@ -3,7 +3,6 @@
  */
 
 // Just to make ESLint happy, doesn't actually overwrite the global NoInfer type
-declare type NoInfer<A> = A;
 
 declare module '@eslint/eslintrc/universal' {
   import type { ESLint } from 'eslint';
