@@ -42,7 +42,7 @@ export default function ProposalForm() {
     const formElement = event.currentTarget;
     const formData = new FormData(formElement);
 
-    const isDraft = formData.get('status') === 'draft';
+    // const isDraft = formData.get('status') === 'draft';
 
     const proposal: Proposal = {
 //      status: isDraft ? 'draft' : 'open',
