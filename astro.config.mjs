@@ -1,7 +1,6 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
-// @ts-expect-error: Importing a non-TypeScript module
 import react from '@astrojs/react';
 
 export default defineConfig({
