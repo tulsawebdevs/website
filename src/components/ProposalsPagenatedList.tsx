@@ -3,7 +3,7 @@
  * @see https://v0.dev/t/G5YG5bM9kDB
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-import type React from 'react';
+import React from 'react';
 import { Button } from './ui/button.tsx';
 import { ProposalVoteCard } from './ProposalVoteCard.tsx';
 import {
