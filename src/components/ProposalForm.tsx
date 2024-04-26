@@ -24,7 +24,7 @@ import { Textarea } from './ui/textarea.tsx';
 import { Button } from './ui/button.tsx';
 
 export type Proposal = {
-  status: 'draft' | 'open'; // | 'rfc'
+  // status: 'draft' | 'open'; // | 'rfc'
   authorId: string;
   authorName: string;
   authorEmail: string;
