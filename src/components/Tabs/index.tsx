@@ -1,4 +1,4 @@
-import type React from 'react';
+import React from 'react';
 import type { IUseTabsProps } from '@zendeskgarden/container-tabs';
 import { useTabs } from '@zendeskgarden/container-tabs';
 import { useMemo } from 'react';
