@@ -159,14 +159,14 @@ export default function ProposalForm() {
               />
             </div>
             <div className="flex justify-end">
-              <Button
-                className="mr-2"
-                type="submit"
-                name="status-draft"
-                variant="outline"
-              >
-                Save Draft
-              </Button>
+//              <Button
+//                className="mr-2"
+//                type="submit"
+//                name="status-draft"
+//                variant="outline"
+//              >
+//                Save Draft
+//              </Button>
               <Button name="status-open" type="submit" variant="default">
                 Submit Proposal
               </Button>
