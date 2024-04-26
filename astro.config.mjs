@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
-// @ts-ignore
+// @ts-expect-error
 import react from '@astrojs/react';
 
 export default defineConfig({
