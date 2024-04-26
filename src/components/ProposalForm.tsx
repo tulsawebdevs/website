@@ -3,7 +3,7 @@
  * @see https://v0.dev/t/G4ftnlAGIX0
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-import React, { useCallback } from 'react';
+import type React, { useCallback } from 'react';
 import {
   CardTitle,
   CardDescription,
