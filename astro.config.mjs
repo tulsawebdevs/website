@@ -3,9 +3,9 @@ import tailwind from '@astrojs/tailwind';
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 import react from '@astrojs/renderer-react';
 
-// https://astro.build/config
 export default defineConfig({
   site: 'https://tulsawebdevs.github.io',
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   integrations: [tailwind(), react()],
   vite: {
     plugins: [vanillaExtractPlugin()],
