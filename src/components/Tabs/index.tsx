@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
+import type React from 'react';
 import type { IUseTabsProps } from '@zendeskgarden/container-tabs';
 import { useTabs } from '@zendeskgarden/container-tabs';
-
+import { useMemo } from 'react';
 
 type Tab<TValue extends string> = {
   value: TValue;
