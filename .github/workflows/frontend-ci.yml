@@ -2,7 +2,7 @@ name: Frontend CI
 on:
   # Triggers the workflow on push or pull request events but only for the "dev" branch
   pull_request:
-    branches: ['dev', 'prod']
+    branches: ['main']
 
   # Allow for reuse call in deploy job
   # eslint-disable-next-line yml/no-empty-mapping-value
