@@ -1,14 +1,14 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Tulsa WebDevs API",
+    "title": "Tulsa WebDevs Voting Service",
     "description": "API for casting votes on various topics/projects and submitting and managing proposals with a ranking and voting system.",
-    "version": "0.0.0"
+    "version": "0.0.1"
   },
   "servers": [
     {
-      "url": "http://api.example.com/v0",
-      "description": "Main production server"
+      "url": "http://vote.tulsawebdevs.org",
+      "description": "Voting Service API"
     }
   ],
   "paths": {
@@ -64,6 +64,9 @@
                               },
                               {
                                 "$ref": "#/components/schemas/TimeStamped"
+                              },
+                              {
+                                "$ref": "#/components/schemas/Authored"
                               }
                             ]
                           }
@@ -150,6 +153,9 @@
                               },
                               {
                                 "$ref": "#/components/schemas/TimeStamped"
+                              },
+                              {
+                                "$ref": "#/components/schemas/Authored"
                               }
                             ]
                           }
@@ -246,6 +252,9 @@
                               },
                               {
                                 "$ref": "#/components/schemas/TimeStamped"
+                              },
+                              {
+                                "$ref": "#/components/schemas/Authored"
                               }
                             ]
                           }
@@ -418,6 +427,9 @@
                     },
                     {
                       "$ref": "#/components/schemas/TimeStamped"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Authored"
                     }
                   ]
                 }
@@ -886,12 +898,8 @@
       },
       "Authored": {
         "type": "object",
-        "required": ["authorId", "authorEmail"],
+        "required": ["authorName", "authorEmail"],
         "properties": {
-          "authorId": {
-            "type": "integer",
-            "format": "int32"
-          },
           "authorName": {
             "type": "string",
             "maxLength": 48
