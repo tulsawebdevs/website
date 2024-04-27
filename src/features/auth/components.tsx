@@ -2,7 +2,7 @@ import type React from 'react';
 import { useRef, useEffect } from 'react';
 import { useClerk } from './hooks.ts';
 
-import { signInButton } from './components.ts';
+import { signInButton } from './components.css.ts';
 
 export function RenderWhenLoggedIn({
   children,
