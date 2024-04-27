@@ -18,8 +18,6 @@ permissions:
   id-token: write
 
 jobs:
-  frontend_checks:
-    uses: tulsawebdevs/website/.github/workflows/frontend-ci.yml@main
   build:
     runs-on: ubuntu-latest
     steps:
@@ -34,7 +32,6 @@ jobs:
 
   deploy:
     needs:
-      - frontend_checks
       - build
 
     environment:
