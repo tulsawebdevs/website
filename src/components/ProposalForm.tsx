@@ -52,7 +52,7 @@ export default function ProposalForm() {
     (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      const url = 'https://api.tulsawebdevs.org/proposals/proposals';
+      const url = 'https://vote.tulsawebdevs.org/proposals';
       const formElement = event.currentTarget;
       const formData = new FormData(formElement);
 
