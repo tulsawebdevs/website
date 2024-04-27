@@ -7,3 +7,13 @@ export function useClerk() {
     clerkStore.get.bind(clerkStore),
   );
 }
+
+export function useUser() {
+  const { user } = useClerk() ?? {};
+  return user;
+}
+
+export function useSession() {
+  const { session } = useClerk() ?? {};
+  return session;
+}
