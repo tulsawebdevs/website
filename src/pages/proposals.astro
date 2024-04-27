@@ -1,7 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import VoteList from '../components/ProposalsPagenatedList.tsx';
-import ProposeForm from '../components/ProposalForm.tsx';
 ---
 
 <script>
@@ -49,6 +48,8 @@ import ProposeForm from '../components/ProposalForm.tsx';
 <Layout title="Tulsa Web Devs">
   <main class="grid w-screen h-screen bg-white text-4xl place-items-center">
     <VoteList
+      hasNextPage={false}
+      hasPreviousPage={false}
       client:load
       proposals={[
         {
@@ -74,5 +75,4 @@ import ProposeForm from '../components/ProposalForm.tsx';
       ]}
     />
   </main>
-<ProposeForm client:load/>
 </Layout>
