@@ -110,7 +110,7 @@ Steps:
 
 ### Frontend CI Workflow
 
-**Trigger**: This workflow is activated on push or pull request events for the prod branch. It supports manual triggers as well.
+**Trigger**: This workflow is activated on push or pull request events for the `main` branch. It supports manual triggers as well.
 
 **Purpose**: To ensure that frontend changes (e.g., style updates, JavaScript modifications) do not break the build. It helps maintain the integrity of our codebase.
 
@@ -161,7 +161,7 @@ Please see the [Conventional Commits website](https://www.conventionalcommits.or
 4. Commit your Changes (`git commit -m 'feat: Add some AmazingFeature'`)
    **[see above commit prefixes](#conventional-commits)**
 5. Push to the Branch (`git push origin feature/AmazingFeature`)
-6. Open a Pull Request against the `tulsawebdevs/website:prod` branch
+6. Open a Pull Request against the `tulsawebdevs/website:main` branch
 
 - Ensure any install or build dependencies are removed before the end of the layer when doing a build.
 - Update the README.md with details of changes to the interface, including new environment variables, exposed ports, useful file locations, and container parameters.
