@@ -1,16 +1,46 @@
 import type React from 'react';
 import { useRef, useEffect } from 'react';
-import { useClerk } from './hooks.ts';
+import { useClerk, useSession, useUser } from './hooks.ts';
 
 import { signInButton } from './components.css.ts';
 
-export function RenderWhenLoggedIn({
+type User = NonNullable<ReturnType<typeof useUser>>;
+type Session = NonNullable<ReturnType<typeof useSession>>;
+
+type AuthConditions = Parameters<Session['checkAuthorization']>[0];
+type Maybe<T> = T | null | undefined;
+
+type RenderIfAuthorizedProps = {
+  conditions?: Maybe<AuthConditions>;
+  children: (props: { user: User; session: Session }) => React.ReactNode;
+  renderFallback: (props: {
+    user?: Maybe<User>;
+    session?: Maybe<Session>;
+  }) => React.ReactNode;
+};
+
+/**
+ * **IMPORTANT!!** Anything hidden by this component is still accessible to a user with the right tools.
+ * @param props
+ * @param props.conditions - The conditions to check for authorization. If not provided, the user must only be signed in.
+ * @param props.fallback - The component to render if the user is not authorized according to the conditions.
+ * @param props.children - The component to render if the user is signed in and authorized.
+ * @returns The component to render based on the user's authorization status.
+ */
+export function RenderIfAuthorized({
+  conditions,
+  renderFallback,
   children,
-}: {
-  children: React.ReactNode;
-}) {
-  const { user } = useClerk() ?? {};
-  return user ? children : null;
+}: RenderIfAuthorizedProps) {
+  const session = useSession();
+  const user = useUser();
+
+  const isSignedIn = session && user;
+  const isAuthorized = !conditions || session?.checkAuthorization(conditions);
+
+  return isSignedIn && isAuthorized ?
+      children({ user, session })
+    : renderFallback({ user, session });
 }
 
 export function RenderWhenLoggedOut({
@@ -22,16 +52,19 @@ export function RenderWhenLoggedOut({
   return user ? null : children;
 }
 
-export function SignInButton() {
+export function SignInButton(props: {
+  children?: React.ReactNode;
+  className?: string;
+}) {
   const clerk = useClerk();
 
   return (
     <button
       type="button"
-      className={signInButton}
+      className={props.className ?? signInButton}
       onClick={() => clerk?.openSignIn()}
     >
-      Sign in
+      {props.children ?? 'Sign In'}
     </button>
   );
 }
