@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardContent,
   Card,
+  CardFooter,
 } from './ui/card.tsx';
 import { Label } from './ui/label.tsx';
 import { Input } from './ui/input.tsx';
@@ -33,6 +34,8 @@ export type Proposal = {
   description: string;
   type: 'topic' | 'project';
 };
+
+// TODO: Replace `card` components with `dialogue` components
 
 export default function ProposalForm() {
   const [isDraft, setIsDraft] = useState(false);
@@ -172,7 +175,7 @@ export default function ProposalForm() {
                 maxLength={200}
               />
             </div>
-            <div className="flex justify-end">
+            <CardFooter className="flex justify-end p-2">
               <Button
                 className="mr-2"
                 type="submit"
@@ -190,7 +193,7 @@ export default function ProposalForm() {
               >
                 Submit Proposal
               </Button>
-            </div>
+            </CardFooter>
           </form>
         </CardContent>
       </Card>
