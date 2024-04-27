@@ -38,8 +38,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: dump context
-        run: echo "${{ toJson(github) }}"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
