@@ -3,8 +3,7 @@ import { useMemo } from 'react';
 import { headerNav } from './Header.css.ts';
 
 import { useClerk } from '../auth/hooks.ts';
-import SignInButton from '../auth/SignInButton.tsx';
-import UserButton from '../auth/UserButton.tsx';
+import { SignInButton, UserButton } from '../auth/components.tsx';
 
 export default function Header() {
   const { user } = useClerk() ?? {};
