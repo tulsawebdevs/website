@@ -9,14 +9,21 @@ type Session = NonNullable<ReturnType<typeof useSession>>;
 
 type AuthConditions = Parameters<Session['checkAuthorization']>[0];
 type Maybe<T> = T | null | undefined;
+type AuthorizedRenderFunction = (props: {
+  user: User;
+  session: Session;
+}) => React.ReactNode;
+type UnauthorizedRenderFunction = (props: {
+  user?: Maybe<User>;
+  session?: Maybe<Session>;
+}) => React.ReactNode;
 
-type RenderIfAuthorizedProps = {
+type IfAuthorizedProps = {
   conditions?: Maybe<AuthConditions>;
-  children: (props: { user: User; session: Session }) => React.ReactNode;
-  renderFallback: (props: {
-    user?: Maybe<User>;
-    session?: Maybe<Session>;
-  }) => React.ReactNode;
+  children: [
+    render: AuthorizedRenderFunction,
+    fallback?: UnauthorizedRenderFunction,
+  ];
 };
 
 /**
@@ -27,11 +34,7 @@ type RenderIfAuthorizedProps = {
  * @param props.children - The component to render if the user is signed in and authorized.
  * @returns The component to render based on the user's authorization status.
  */
-export function RenderIfAuthorized({
-  conditions,
-  renderFallback,
-  children,
-}: RenderIfAuthorizedProps) {
+export function IfAuthorized({ conditions, children }: IfAuthorizedProps) {
   const session = useSession();
   const user = useUser();
 
@@ -39,17 +42,8 @@ export function RenderIfAuthorized({
   const isAuthorized = !conditions || session?.checkAuthorization(conditions);
 
   return isSignedIn && isAuthorized ?
-      children({ user, session })
-    : renderFallback({ user, session });
-}
-
-export function RenderWhenLoggedOut({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const { user } = useClerk() ?? {};
-  return user ? null : children;
+      children[0]({ user, session })
+    : children[1]?.({ user, session }) ?? null;
 }
 
 export function SignInButton(props: {
