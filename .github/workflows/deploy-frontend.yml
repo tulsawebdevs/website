@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   frontend_checks:
-    uses: tulsawebdevs/website/.github/workflows/frontend-ci.yml@dev
+    uses: tulsawebdevs/website/.github/workflows/frontend-ci.yml@prod
   build:
     needs: frontend_checks
     runs-on: ubuntu-latest
