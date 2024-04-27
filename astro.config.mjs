@@ -4,7 +4,7 @@ import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 import react from '@astrojs/react';
 
 export default defineConfig({
-  site: 'https://tulsawebdevs.github.io',
+  site: 'https://tulsawebdevs.org',
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   integrations: [tailwind(), react()],
   vite: {
