@@ -78,6 +78,8 @@ These prefixes are among the most commonly used in branch naming conventions:
 Check out this resources for more details
 [Best Practices to Follow](https://phoenixnap.com/kb/git-branch-name-convention)
 
+_While working in your own fork you are welcome to work off your own `main` branch and label pull requests descriptively instead if preferred_
+
 ## Pre-commit Setup
 
 To set up pre-commit hooks for your project, you'll need to install the pre-commit package manager.
@@ -94,8 +96,6 @@ Our project uses GitHub Actions for continuous integration (CI) and deployment t
 
 ### Deploy to GitHub Pages Workflow
 
-**Trigger**: This workflow is triggered on pushes to the dev branch and can also be run manually via GitHub's Actions tab.
-
 **Purpose**: It's designed to build the project using Astro and deploy it to GitHub Pages. This ensures that our development progress is automatically compiled and made visible for testing and preview.
 
 Steps:
@@ -104,13 +104,13 @@ Steps:
 
 - **Build and Upload**: The site is built using Astro, and the output is prepared for deployment.
 
-- **Deployment**: The built site is deployed to GitHub Pages.
+- **Deployment**: The built site is deployed to GitHub Pages. It will be deployed when commits are tagged for relase with semver.
 
 **Contributors should target their feature branches towards the dev branch for any site updates or changes. This branch is our staging area for the website.**
 
 ### Frontend CI Workflow
 
-**Trigger**: This workflow is activated on push or pull request events for the dev and prod branches. It supports manual triggers as well.
+**Trigger**: This workflow is activated on push or pull request events for the prod branch. It supports manual triggers as well.
 
 **Purpose**: To ensure that frontend changes (e.g., style updates, JavaScript modifications) do not break the build. It helps maintain the integrity of our codebase.
 
@@ -157,11 +157,11 @@ Please see the [Conventional Commits website](https://www.conventionalcommits.or
 
 1. Fork the Project
 2. Clone your Fork
-3. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Create your Feature Branch if desired (`git checkout -b feature/AmazingFeature`)
 4. Commit your Changes (`git commit -m 'feat: Add some AmazingFeature'`)
    **[see above commit prefixes](#conventional-commits)**
 5. Push to the Branch (`git push origin feature/AmazingFeature`)
-6. Open a Pull Request
+6. Open a Pull Request against the `tulsawebdevs/website:prod` branch
 
 - Ensure any install or build dependencies are removed before the end of the layer when doing a build.
 - Update the README.md with details of changes to the interface, including new environment variables, exposed ports, useful file locations, and container parameters.
