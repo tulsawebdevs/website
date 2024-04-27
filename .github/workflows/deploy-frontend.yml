@@ -21,7 +21,6 @@ jobs:
   frontend_checks:
     uses: tulsawebdevs/website/.github/workflows/frontend-ci.yml@prod
   build:
-    needs: frontend_checks
     runs-on: ubuntu-latest
     steps:
       - name: Checkout your repository using git
@@ -34,11 +33,15 @@ jobs:
         #   package-manager: pnpm@latest # The Node package manager that should be used to install dependencies and build your site. Automatically detected based on your lockfile. (optional)
 
   deploy:
-    needs: build
-    runs-on: ubuntu-latest
+    needs:
+      - frontend_checks
+      - build
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
