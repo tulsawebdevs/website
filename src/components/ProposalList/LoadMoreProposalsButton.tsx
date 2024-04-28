@@ -37,12 +37,15 @@ export default function LoadMoreProposalsButton(props: Props) {
           <ProposalListItem proposal={proposal} />
         </li>
       ))}
-      {cursor && !loading && (
-        <Button onClick={fetchMoreProposals} className="my-2">
-          Load More
-        </Button>
-      )}
-      {loading && <p className="text-center">Loading...</p>}
+
+      <div className="text-center">
+        {cursor && !loading && (
+          <Button onClick={fetchMoreProposals} className="my-2">
+            Load More
+          </Button>
+        )}
+        {loading && <p>Loading...</p>}
+      </div>
     </>
   );
 }
