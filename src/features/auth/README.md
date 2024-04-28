@@ -1,4 +1,5 @@
 ---
+title: Authentication with Clerk
 ---
 
 This project uses [Clerk](https://clerk.com/docs) for authentication and user management. Clerk is a modern, secure, and scalable user authentication and identity management platform. It provides a complete user management system, including user registration, login, and password reset. This guide will illustrate how to use Clerk in this project.
