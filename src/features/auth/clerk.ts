@@ -1,4 +1,4 @@
-import Clerk from '@clerk/clerk-js';
+import { Clerk } from '@clerk/clerk-js';
 import { dark } from '@clerk/themes';
 import { atom } from 'nanostores';
 import { colors, font } from '../../design/tokens.css';
@@ -19,7 +19,7 @@ export const initializeClerk = async () => {
       baseTheme: dark,
       variables: {
         borderRadius: '8px',
-        fontSize: '20px',
+        fontSize: '16px',
         spacingUnit: '20px',
         fontFamily: font.ReneBieder2,
         fontFamilyButtons: font.ReneBieder2,
@@ -29,7 +29,8 @@ export const initializeClerk = async () => {
         colorText: colors['twd-blue-300'],
         colorInputBackground: colors['twd-blue-300'],
         colorInputText: colors.black,
-        colorAlphaShade: colors['twd-gray-400'],
+        colorNeutral: colors.white,
+        colorShimmer: 'rgba(255, 255, 255, 0.2)',
         colorTextOnPrimaryBackground: colors.black,
       },
     },

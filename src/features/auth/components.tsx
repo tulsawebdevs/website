@@ -84,7 +84,7 @@ export function UserButton(
   useEffect(() => {
     const userButton = userButtonRef.current;
 
-    if (!clerk?.isReady() || !userButton) return;
+    if (!clerk?.loaded || !userButton) return;
 
     if (clerk.user) clerk.mountUserButton(userButton, props);
     else clerk.unmountUserButton(userButton);
