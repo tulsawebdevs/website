@@ -288,7 +288,6 @@ export default tseslint.config(
       ],
       'react/react-in-jsx-scope': 'off',
       'react/destructuring-assignment': 'off',
-      'react/require-default-props': 'off',
       'react/jsx-props-no-spreading': [
         'error',
         { html: 'ignore', exceptions: [] },
