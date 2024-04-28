@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, forwardRef } from 'react';
 import { useClerk, useSession, useUser } from './hooks.ts';
 
 import { signInButton } from './components.css.ts';
@@ -46,10 +46,13 @@ export function IfAuthorized({ conditions, children }: IfAuthorizedProps) {
     : children[1]?.({ user, session }) ?? null;
 }
 
-export function SignInButton(props: {
+export const SignInButton = forwardRef<
+  HTMLButtonElement,
+  {
   children?: React.ReactNode;
   className?: string;
-}) {
+  }
+>((props, ref) => {
   const clerk = useClerk();
 
   return (
@@ -57,11 +60,12 @@ export function SignInButton(props: {
       type="button"
       className={props.className ?? signInButton}
       onClick={() => clerk?.openSignIn()}
+      ref={ref}
     >
       {props.children ?? 'Sign In'}
     </button>
   );
-}
+});
 
 export function UserButton() {
   const userButtonRef = useRef<HTMLDivElement>(null);
