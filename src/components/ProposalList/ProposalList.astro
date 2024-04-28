@@ -1,0 +1,35 @@
+---
+import type { Proposal } from '../../types/proposal';
+import EmptyList from './EmptyList.astro';
+import LoadMoreProposalsButton from './LoadMoreProposalsButton';
+import ProposalListItem from './ProposalListItem.tsx';
+
+interface Props {
+  proposals: Proposal[];
+  cursor?: string;
+}
+
+const { proposals, cursor } = Astro.props;
+---
+
+<div>
+  <ul class="flex flex-col">
+    {
+      proposals.map((proposal) => (
+        <li class="mb-2">
+          <ProposalListItem client:load proposal={proposal} />
+        </li>
+      ))
+    }
+
+    <LoadMoreProposalsButton client:load cursor={cursor} />
+
+    {
+      proposals.length === 0 && (
+        <li>
+          <EmptyList />
+        </li>
+      )
+    }
+  </ul>
+</div>
