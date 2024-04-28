@@ -2,8 +2,9 @@ import Clerk from '@clerk/clerk-js';
 import { dark } from '@clerk/themes';
 import { atom } from 'nanostores';
 import { colors, font } from '../../design/tokens.css';
+import { PUBLIC_CLERK_PUBLISHABLE_KEY } from '../../constants.ts';
 
-const CLERK_PUBLIC_KEY = import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
+const CLERK_PUBLIC_KEY = PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 export const clerkStore = atom<Clerk | null>(null);
 
