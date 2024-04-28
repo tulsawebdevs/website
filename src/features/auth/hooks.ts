@@ -5,6 +5,7 @@ export function useClerk() {
   return useSyncExternalStore(
     clerkStore.subscribe.bind(clerkStore),
     clerkStore.get.bind(clerkStore),
+    () => null,
   );
 }
 
