@@ -27,7 +27,7 @@ const { title } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
-    <Header client:only="react" />
+    <Header client:only="react" location={Astro.url.href} />
     <slot />
   </body>
 </html>

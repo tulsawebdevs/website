@@ -56,23 +56,28 @@ export const SignInButton = forwardRef<
   {
     children?: React.ReactNode;
     className?: string;
-  }
+  } & Parameters<NonNullable<ReturnType<typeof useClerk>>['openSignIn']>[0]
 >((props, ref) => {
   const clerk = useClerk();
+  const { className, children, ...signInProps } = props;
 
   return (
     <button
       type="button"
-      className={props.className ?? signInButton}
-      onClick={() => clerk?.openSignIn()}
+      className={className ?? signInButton}
+      onClick={() => clerk?.openSignIn(signInProps)}
       ref={ref}
     >
-      {props.children ?? 'Sign In'}
+      {children ?? 'Sign In'}
     </button>
   );
 });
 
-export function UserButton() {
+export function UserButton(
+  props: Parameters<
+    NonNullable<ReturnType<typeof useClerk>>['mountUserButton']
+  >[1],
+) {
   const userButtonRef = useRef<HTMLDivElement>(null);
   const clerk = useClerk();
 
@@ -81,11 +86,11 @@ export function UserButton() {
 
     if (!clerk?.isReady() || !userButton) return;
 
-    if (clerk.user) clerk.mountUserButton(userButton, { afterSignOutUrl: '/' });
+    if (clerk.user) clerk.mountUserButton(userButton, props);
     else clerk.unmountUserButton(userButton);
 
     return () => clerk.unmountUserButton(userButton);
-  }, [clerk]);
+  }, [clerk, props]);
 
   return <div ref={userButtonRef} />;
 }
