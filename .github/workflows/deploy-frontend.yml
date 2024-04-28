@@ -31,6 +31,8 @@ jobs:
           package-manager: npm@latest # The Node package manager that should be used to install dependencies and build your site. Automatically detected based on your lockfile. (optional)
 
   deploy:
+    env:
+      PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_ZW5vcm1vdXMtYnVnLTMxLmNsZXJrLmFjY291bnRzLmRldiQ
     needs: build
     runs-on: ubuntu-latest
     environment:
