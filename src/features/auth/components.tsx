@@ -4,18 +4,22 @@ import { useClerk, useSession, useUser } from './hooks.ts';
 
 import { signInButton } from './components.css.ts';
 
+type Maybe<T> = T | null | undefined;
+
 type User = NonNullable<ReturnType<typeof useUser>>;
 type Session = NonNullable<ReturnType<typeof useSession>>;
-
 type AuthConditions = Parameters<Session['checkAuthorization']>[0];
-type Maybe<T> = T | null | undefined;
+
 type AuthorizedRenderFunction = (props: {
   user: User;
   session: Session;
+  conditions?: Maybe<AuthConditions>;
 }) => React.ReactNode;
+
 type UnauthorizedRenderFunction = (props: {
   user?: Maybe<User>;
   session?: Maybe<Session>;
+  conditions?: Maybe<AuthConditions>;
 }) => React.ReactNode;
 
 type IfAuthorizedProps = {
@@ -37,20 +41,21 @@ type IfAuthorizedProps = {
 export function IfAuthorized({ conditions, children }: IfAuthorizedProps) {
   const session = useSession();
   const user = useUser();
+  const [render, fallback = () => null] = children;
 
   const isSignedIn = session && user;
   const isAuthorized = !conditions || session?.checkAuthorization(conditions);
 
   return isSignedIn && isAuthorized ?
-      children[0]({ user, session })
-    : children[1]?.({ user, session }) ?? null;
+      render({ user, session, conditions })
+    : fallback({ user, session, conditions });
 }
 
 export const SignInButton = forwardRef<
   HTMLButtonElement,
   {
-  children?: React.ReactNode;
-  className?: string;
+    children?: React.ReactNode;
+    className?: string;
   }
 >((props, ref) => {
   const clerk = useClerk();
