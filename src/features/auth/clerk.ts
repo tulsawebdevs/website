@@ -1,12 +1,19 @@
-import { Clerk } from '@clerk/clerk-js';
+/** // ! Note:
+ * Importing '@clerk/clerk-js' with a default export doesn't work during development,
+ * but works when the app is built for production. Conversely, importing Clerk as a
+ * named export works during development, but not in production. For this reason,
+ * we must import the module using a synthetic default import and destructure it.
+ */
+import * as ClerkJs from '@clerk/clerk-js';
 import { dark } from '@clerk/themes';
 import { atom } from 'nanostores';
 import { colors, font } from '../../design/tokens.css';
 import { PUBLIC_CLERK_PUBLISHABLE_KEY } from '../../constants.ts';
 
+const { Clerk } = ClerkJs;
 const CLERK_PUBLIC_KEY = PUBLIC_CLERK_PUBLISHABLE_KEY;
 
-export const clerkStore = atom<Clerk | null>(null);
+export const clerkStore = atom<ClerkJs.Clerk | null>(null);
 
 export const initializeClerk = async () => {
   if (clerkStore.get()) return; // Already initialized
