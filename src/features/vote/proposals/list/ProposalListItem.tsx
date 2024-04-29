@@ -131,7 +131,7 @@ export default function ProposalListItem({ proposal }: ProposalListItemProps) {
                 {proposal.authorName}
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400 content-center">
-                Proposed {proposedDate} at {proposedTime} by{' '}
+                Proposed {proposedDate} at {proposedTime}
               </div>
             </div>
           </div>
