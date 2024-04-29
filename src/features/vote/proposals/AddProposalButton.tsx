@@ -1,4 +1,4 @@
-import ProposalForm from './ProposalForm.tsx';
+import ProposalForm from '../../../components/ProposalForm.tsx';
 import { Button } from '../../../components/ui/button.tsx';
 import {
   Dialog,
