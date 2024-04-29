@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Button } from '../ui/button.tsx';
-import { getProposals } from '../../services/proposal.ts';
-import type { Proposal } from '../../types/proposal.ts';
+import { Button } from '../../../../components/ui/button.tsx';
+import { getProposals } from '../services/proposal.ts';
+import type { Proposal } from '../types.ts';
 import ProposalListItem from './ProposalListItem.tsx';
 
 type Props = {

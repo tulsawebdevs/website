@@ -1,6 +1,10 @@
 import ProposalForm from './ProposalForm.tsx';
-import { Button } from './ui/button.tsx';
-import { Dialog, DialogContent, DialogTrigger } from './ui/dialog.tsx';
+import { Button } from '../../../components/ui/button.tsx';
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from '../../../components/ui/dialog.tsx';
 
 export default function AddProposalButton() {
   return (

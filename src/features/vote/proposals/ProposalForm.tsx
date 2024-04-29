@@ -12,18 +12,18 @@ import {
   CardContent,
   Card,
   CardFooter,
-} from './ui/card.tsx';
-import { Label } from './ui/label.tsx';
-import { Input } from './ui/input.tsx';
+} from '../../../components/ui/card.tsx';
+import { Label } from '../../../components/ui/label.tsx';
+import { Input } from '../../../components/ui/input.tsx';
 import {
   SelectValue,
   SelectTrigger,
   SelectItem,
   SelectContent,
   Select,
-} from './ui/select.tsx';
-import { Textarea } from './ui/textarea.tsx';
-import { Button } from './ui/button.tsx';
+} from '../../../components/ui/select.tsx';
+import { Textarea } from '../../../components/ui/textarea.tsx';
+import { Button } from '../../../components/ui/button.tsx';
 
 import {
   ProposalForm401Error,

@@ -1,8 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import AddProposalButton from '../components/AddProposalButton.tsx';
-import ProposalList from '../components/ProposalList/ProposalList.astro';
-import { getProposals } from '../services/proposal.ts';
+import AddProposalButton from '../features/vote/proposals/AddProposalButton.tsx';
+import ProposalList from '../features/vote/proposals/list/ProposalList.astro';
+import { getProposals } from '../features/vote/proposals/services/proposal.ts';
 
 const { cursor, proposals } = await getProposals();
 ---
