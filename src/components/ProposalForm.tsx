@@ -49,7 +49,8 @@ export type Proposal = {
 
 export default function ProposalForm() {
   const [isDraft, setIsDraft] = useState(false);
-  const throwError = useErrorToast();
+  const [loading, setLoading] = useState(false);
+  const toss = useErrorToast();
 
   const onDraftButtonClick = useCallback(() => {
     setIsDraft(true);
@@ -61,6 +62,7 @@ export default function ProposalForm() {
 
   const onSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
+      setLoading(true);
       event.preventDefault();
 
       const url = 'https://vote.tulsawebdevs.org/proposals';
@@ -98,13 +100,12 @@ export default function ProposalForm() {
             err instanceof Error ? err.message : undefined,
           );
         })
-        .then(
-          (err) =>
-            err &&
-            throwError({ title: err.message, description: err.displayText }),
-        );
+        .then((err) => {
+          if (err) toss({ title: err.message, description: err.displayText });
+          setLoading(false);
+        });
     },
-    [isDraft, throwError],
+    [isDraft, toss],
   );
 
   return (
@@ -196,6 +197,8 @@ export default function ProposalForm() {
                 name="status-draft"
                 variant="outline"
                 onClick={onDraftButtonClick}
+                disabled={loading}
+                busy={isDraft && loading}
               >
                 Save Draft
               </Button>
@@ -204,6 +207,8 @@ export default function ProposalForm() {
                 type="submit"
                 variant="default"
                 onClick={onSubmitButtonClick}
+                disabled={loading}
+                busy={!isDraft && loading}
               >
                 Submit Proposal
               </Button>
