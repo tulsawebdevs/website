@@ -50,7 +50,9 @@ export default function ProposalInterestVote({
         return (
           <Label
             key={`${proposal.id}-${option.id}`}
-            className="flex items-center gap-2 cursor-pointer"
+            className={cn('flex items-center gap-2', {
+              'cursor-pointer': !disabled,
+            })}
             htmlFor={`${proposal.id}-${option.id}`}
           >
             <RadioGroupItem
