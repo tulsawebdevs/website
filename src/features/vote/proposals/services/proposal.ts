@@ -1,14 +1,12 @@
-import type { Proposal } from '../types/proposal';
-
-type GetProposalResponse = Promise<{
-  cursor?: string;
-  proposals: Proposal[];
-}>;
+import type { Proposal } from '../../../../types/proposal';
 
 /**
  * @todo switch to the real API once it's ready.
  */
-export async function getProposals(cursor?: string): GetProposalResponse {
+export async function getProposals(cursor?: string): Promise<{
+  cursor?: string;
+  proposals: Proposal[];
+}> {
   // const url = 'https://vote.tulsawebdevs.org/proposals';
 
   // if (cursor) {
@@ -20,7 +18,10 @@ export async function getProposals(cursor?: string): GetProposalResponse {
   return simulateFetchProposals(cursor);
 }
 
-async function simulateFetchProposals(cursor?: string): GetProposalResponse {
+async function simulateFetchProposals(cursor?: string): Promise<{
+  cursor?: string;
+  proposals: Proposal[];
+}> {
   const proposalsData: Proposal[] = [
     {
       title: 'profession',

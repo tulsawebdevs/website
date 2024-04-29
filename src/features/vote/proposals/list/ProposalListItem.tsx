@@ -8,9 +8,13 @@ import {
   Card,
   CardTitle,
   CardDescription,
-} from '../ui/card.tsx';
-import type { Proposal } from '../../types/proposal.ts';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar.tsx';
+} from '../../../../components/ui/card.tsx';
+import type { Proposal } from '../../../../types/proposal.ts';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '../../../../components/ui/avatar.tsx';
 
 export type Props = {
   proposal: Proposal;
