@@ -3,7 +3,8 @@
  * @see https://v0.dev/t/G4ftnlAGIX0
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-import React, { useCallback, useState } from 'react';
+import type React from 'react';
+import { useCallback, useState } from 'react';
 import {
   CardTitle,
   CardDescription,
@@ -24,6 +25,15 @@ import {
 import { Textarea } from './ui/textarea.tsx';
 import { Button } from './ui/button.tsx';
 
+import {
+  ProposalForm401Error,
+  ProposalForm500Error,
+  ProposalFormError,
+  ProposalFormFetchError,
+  ProposalFormUnknownError,
+} from './ProposalFormErrors.tsx';
+import { useErrorToast } from '../features/errors.tsx';
+
 export type Proposal = {
   status: 'draft' | 'open'; // | 'rfc'
   authorId: string;
@@ -39,6 +49,7 @@ export type Proposal = {
 
 export default function ProposalForm() {
   const [isDraft, setIsDraft] = useState(false);
+  const throwError = useErrorToast();
 
   const onDraftButtonClick = useCallback(() => {
     setIsDraft(true);
@@ -67,7 +78,7 @@ export default function ProposalForm() {
         type: formData.get('type') as Proposal['type'],
       };
 
-      fetch(url, {
+      void fetch(url, {
         method: 'POST',
         body: JSON.stringify(proposal),
         headers: {
@@ -75,22 +86,25 @@ export default function ProposalForm() {
         },
       })
         .then((response) => {
-          // eslint-disable-next-line no-console
-          console.log('response:', response);
           if (response.status === 201) return formElement.reset();
-          if (response.status === 401) throw new Error('Unauthorized');
-          if (response.status === 500) throw new Error('Server Error');
-          throw new Error('Unknown Error');
+          if (response.status === 401) throw new ProposalForm401Error();
+          if (response.status === 500) throw new ProposalForm500Error();
+          throw new ProposalFormUnknownError();
         })
-        .catch((error) => {
-          // eslint-disable-next-line no-console
-          console.error(
-            'There was a problem with your fetch operation:',
-            error,
+        .catch((err) => {
+          if (err instanceof ProposalFormError) return err;
+          if (err instanceof TypeError) return new ProposalFormFetchError();
+          return new ProposalFormUnknownError(
+            err instanceof Error ? err.message : undefined,
           );
-        });
+        })
+        .then(
+          (err) =>
+            err &&
+            throwError({ title: err.message, description: err.displayText }),
+        );
     },
-    [isDraft],
+    [isDraft, throwError],
   );
 
   return (
