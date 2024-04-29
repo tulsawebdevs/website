@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Label } from '@radix-ui/react-label';
-import { ThumbsUpIcon, ThumbsDownIcon, MinusIcon } from 'lucide-react';
+
 import {
   CardHeader,
   CardContent,
@@ -8,32 +7,27 @@ import {
   CardTitle,
   CardDescription,
 } from '../../../../components/ui/card.tsx';
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from '../../../../components/ui/radio-group.tsx';
-import { cn } from '../../../../utils.ts';
+
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from '../../../../components/ui/avatar.tsx';
-import { Button } from '../../../../components/ui/button.tsx';
 import ProposalStatus from './ProposalStatus.tsx';
 import type { Proposal, Vote, VotePayload } from '../types.ts';
 import { voteForProposal } from '../services/proposal.ts';
 import { useErrorToast } from '../../../errors.tsx';
 import useDebounce from '../../../hooks/useDebounce.ts';
+import ProposalInterestVote from './ProposalInterestVote.tsx';
+import ProposalLikeButtons from './ProposalLikeButtons.tsx';
 
 export type ProposalListItemProps = {
   proposal: Proposal;
 };
 
 export default function ProposalListItem({ proposal }: ProposalListItemProps) {
-  const [loading, setLoading] = useState(false);
   const [voteValue, setVoteValue] = useState<Vote>('0');
   const isOpen = proposal.status === 'open';
-  const isDisabled = loading || !isOpen;
   const proposedDate = new Date(proposal.created).toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
@@ -77,7 +71,7 @@ export default function ProposalListItem({ proposal }: ProposalListItemProps) {
   }, [voteValue, isOpen]);
   const errorToast = useErrorToast();
 
-  const handleInterestVote = useDebounce((value: Vote) => {
+  const handleVote = useDebounce((value: Vote) => {
     const votePayload: VotePayload = {
       initiativeId: proposal.id.toString(10),
       vote: value,
@@ -97,28 +91,17 @@ export default function ProposalListItem({ proposal }: ProposalListItemProps) {
     });
   });
 
-  const handleLikeVote = (type: 'up' | 'down') => {
-    let currentVoteValue = parseInt(voteValue, 10);
-
-    if (type === 'up') {
-      currentVoteValue = Math.min(2, currentVoteValue + 1);
-    } else {
-      currentVoteValue = Math.max(-2, currentVoteValue - 1);
-    }
-
-    handleInterestVote(currentVoteValue.toString() as Vote);
-  };
-
   return (
     <Card>
       <CardHeader className="pb-0 pt-6 flex flex-row justify-between">
         <CardTitle className="content-center">{proposal.title}</CardTitle>
 
         <ProposalLikeButtons
-          handleLikeVote={handleLikeVote}
+          onVote={handleVote}
           numberUpvotes={numberUpvotes}
           numberDownvotes={numberDownvotes}
-          disabled={isDisabled}
+          disabled={!isOpen}
+          voteValue={voteValue}
         />
       </CardHeader>
 
@@ -157,135 +140,12 @@ export default function ProposalListItem({ proposal }: ProposalListItemProps) {
         <div>
           <ProposalInterestVote
             proposal={proposal}
-            onVoteSelect={handleInterestVote}
-            disabled={isDisabled}
+            onVote={handleVote}
+            disabled={!isOpen}
             value={voteValue}
           />
         </div>
       </CardContent>
     </Card>
-  );
-}
-
-const voteOptions = [
-  {
-    label: 'Strongly Disinterested',
-    value: '-2',
-    id: 'vote-strongly-disinterested',
-  },
-  {
-    label: 'Slightly Disinterested',
-    value: '-1',
-    id: 'vote-slightly-disinterested',
-  },
-  { label: 'Neutral', value: '0', id: 'vote-neutral' },
-  { label: 'Slightly Interested', value: '1', id: 'vote-slightly-interested' },
-  { label: 'Strongly Interested', value: '2', id: 'vote-strongly-interested' },
-];
-
-type ProposalInterestVoteProps = {
-  proposal: Proposal;
-  disabled?: boolean;
-  onVoteSelect: (vote: Vote) => void;
-  value: Vote;
-};
-
-function ProposalInterestVote({
-  proposal,
-  disabled = false,
-  onVoteSelect,
-  value,
-}: ProposalInterestVoteProps) {
-  return (
-    <RadioGroup
-      aria-label="Vote"
-      className="flex flex-col md:flex-row md:items-center gap-2"
-      value={value}
-      onValueChange={onVoteSelect}
-      disabled={disabled}
-    >
-      {voteOptions.map((option) => {
-        const optionValue = parseInt(option.value, 10);
-
-        return (
-          <Label
-            key={`${proposal.id}-${option.id}`}
-            className="flex items-center gap-2 cursor-pointer"
-            htmlFor={`${proposal.id}-${option.id}`}
-          >
-            <RadioGroupItem
-              className="peer sr-only"
-              id={`${proposal.id}-${option.id}`}
-              value={option.value}
-              disabled={disabled}
-            />
-            <div
-              className={cn(
-                'p-0.5 w-5 h-5 flex items-center justify-center rounded-full border-2 border-gray-400',
-                {
-                  'peer-aria-checked:bg-red-500 peer-aria-checked:border-red-500 dark:border-gray-600 dark:peer-aria-checked:bg-red-500 dark:peer-aria-checked:border-red-500':
-                    optionValue < 0,
-                  'peer-aria-checked:bg-gray-500 peer-aria-checked:border-gray-500 dark:border-gray-600 dark:peer-aria-checked:bg-gray-500 dark:peer-aria-checked:border-gray-500':
-                    optionValue === 0,
-                  'peer-aria-checked:bg-green-500 peer-aria-checked:border-green-500 dark:border-gray-600 dark:peer-aria-checked:bg-green-500 dark:peer-aria-checked:border-green-500':
-                    optionValue > 0,
-                },
-              )}
-            >
-              {optionValue < 0 && (
-                <ThumbsDownIcon className="w-4 h-4 text-white" />
-              )}
-              {optionValue === 0 && (
-                <MinusIcon className="w-4 h-4 text-white" />
-              )}
-              {optionValue > 0 && (
-                <ThumbsUpIcon className="w-4 h-4 text-white" />
-              )}
-            </div>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              {option.label}
-            </span>
-          </Label>
-        );
-      })}
-    </RadioGroup>
-  );
-}
-
-type ProposalLikeButtonsProps = {
-  handleLikeVote: (type: 'up' | 'down') => void;
-  numberUpvotes: number | string;
-  numberDownvotes: number | string;
-  disabled?: boolean;
-};
-
-function ProposalLikeButtons({
-  handleLikeVote,
-  numberUpvotes,
-  numberDownvotes,
-  disabled = false,
-}: ProposalLikeButtonsProps) {
-  return (
-    <div className="flex items-center gap-2">
-      <Button
-        size="sm"
-        variant="outline"
-        onClick={() => handleLikeVote('up')}
-        disabled={disabled}
-      >
-        <ThumbsUpIcon className="w-5 h-5 text-green-500 mr-1" />
-        <span className="text-green-500 font-medium">{numberUpvotes}</span>
-      </Button>
-
-      <Button
-        size="sm"
-        variant="outline"
-        onClick={() => handleLikeVote('down')}
-        disabled={disabled}
-      >
-        <ThumbsDownIcon className="w-5 h-5 text-red-500 mr-1" />
-        <span className="text-red-500 font-medium">{numberDownvotes}</span>
-      </Button>
-    </div>
   );
 }
