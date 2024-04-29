@@ -11,18 +11,18 @@ import {
   CardContent,
   Card,
   CardFooter,
-} from '../../../components/ui/card.tsx';
-import { Label } from '../../../components/ui/label.tsx';
-import { Input } from '../../../components/ui/input.tsx';
+} from './ui/card.tsx';
+import { Label } from './ui/label.tsx';
+import { Input } from './ui/input.tsx';
 import {
   SelectValue,
   SelectTrigger,
   SelectItem,
   SelectContent,
   Select,
-} from '../../../components/ui/select.tsx';
-import { Textarea } from '../../../components/ui/textarea.tsx';
-import { Button } from '../../../components/ui/button.tsx';
+} from './ui/select.tsx';
+import { Textarea } from './ui/textarea.tsx';
+import { Button } from './ui/button.tsx';
 
 export type Proposal = {
   status: 'draft' | 'open'; // | 'rfc'
