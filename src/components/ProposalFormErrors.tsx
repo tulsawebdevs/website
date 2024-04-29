@@ -1,33 +1,31 @@
 /* eslint-disable max-classes-per-file */
 export class ProposalFormError extends Error {
-  displayText: string;
+  constructor(cause: unknown) {
+    let message: string;
 
-  constructor(message: string) {
+    if (cause instanceof Response) {
+      message = `${cause.status} Error: ${cause.statusText}`;
+    } else {
+      message = `Unknown Error`;
+    }
+
+    if (typeof cause === 'string') message += `: ${cause}`;
+    if (cause instanceof Error) message += `: ${cause.message}`;
+    if (cause instanceof ErrorEvent) message += `: ${cause.message}`;
+
     super(message);
     this.name = 'ProposalFormError';
-    this.displayText =
-      'Please try again. If the problem continues, please contact support.';
   }
-}
 
-export class ProposalForm401Error extends ProposalFormError {
-  constructor() {
-    super('Not Authorized');
-    this.name = 'ProposalFormNotAuhorizedError';
-  }
-}
-
-export class ProposalForm500Error extends ProposalFormError {
-  constructor() {
-    super('Server Error');
-    this.name = 'ProposalFormServerError';
-  }
-}
-
-export class ProposalFormUnknownError extends ProposalFormError {
-  constructor(message?: string) {
-    super(`Unknown Error${message ? `: ${message}` : ''}`);
-    this.name = 'ProposalFormUnknownError';
+  render() {
+    return (
+      <div className="first-line:font-bold space-y-2">
+        <p>{this.message}</p>
+        <p>
+          Please try again. If the problem continues, please contact support.
+        </p>
+      </div>
+    );
   }
 }
 

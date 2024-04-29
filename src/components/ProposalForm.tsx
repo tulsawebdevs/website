@@ -5,6 +5,7 @@
  */
 import type React from 'react';
 import { useCallback, useState } from 'react';
+import { toast } from 'sonner';
 import {
   CardTitle,
   CardDescription,
@@ -24,15 +25,10 @@ import {
 } from './ui/select.tsx';
 import { Textarea } from './ui/textarea.tsx';
 import { Button } from './ui/button.tsx';
-
 import {
-  ProposalForm401Error,
-  ProposalForm500Error,
   ProposalFormError,
   ProposalFormFetchError,
-  ProposalFormUnknownError,
 } from './ProposalFormErrors.tsx';
-import { useErrorToast } from '../features/errors.tsx';
 
 export type Proposal = {
   status: 'draft' | 'open'; // | 'rfc'
@@ -50,7 +46,6 @@ export type Proposal = {
 export default function ProposalForm() {
   const [isDraft, setIsDraft] = useState(false);
   const [loading, setLoading] = useState(false);
-  const toss = useErrorToast();
 
   const onDraftButtonClick = useCallback(() => {
     setIsDraft(true);
@@ -80,32 +75,32 @@ export default function ProposalForm() {
         type: formData.get('type') as Proposal['type'],
       };
 
-      void fetch(url, {
-        method: 'POST',
-        body: JSON.stringify(proposal),
-        headers: {
-          'Content-Type': 'application/json',
+      setLoading(true);
+
+      toast.promise(
+        fetch(url, {
+          method: 'POST',
+          body: JSON.stringify(proposal),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }).then((response) => {
+          if (response.status !== 201) throw new ProposalFormError(response);
+          return formElement.reset();
+        }),
+        {
+          finally: () => setLoading(false),
+          loading: isDraft ? 'Saving draft...' : 'Submitting proposal...',
+          success: isDraft ? 'Draft Saved' : 'Proposal Submitted!',
+          error(error) {
+            return error instanceof TypeError ?
+                new ProposalFormFetchError().render()
+              : new ProposalFormError(error).render();
+          },
         },
-      })
-        .then((response) => {
-          if (response.status === 201) return formElement.reset();
-          if (response.status === 401) throw new ProposalForm401Error();
-          if (response.status === 500) throw new ProposalForm500Error();
-          throw new ProposalFormUnknownError();
-        })
-        .catch((err) => {
-          if (err instanceof ProposalFormError) return err;
-          if (err instanceof TypeError) return new ProposalFormFetchError();
-          return new ProposalFormUnknownError(
-            err instanceof Error ? err.message : undefined,
-          );
-        })
-        .then((err) => {
-          if (err) toss({ title: err.message, description: err.displayText });
-          setLoading(false);
-        });
+      );
     },
-    [isDraft, toss],
+    [isDraft],
   );
 
   return (
