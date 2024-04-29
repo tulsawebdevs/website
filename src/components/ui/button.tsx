@@ -36,21 +36,42 @@ const buttonVariants = cva(
   },
 );
 
+const { ThreeDots } = await import('react-loader-spinner');
+
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  busy?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  (
+    { className, variant, size, asChild = false, busy, children, ...props },
+    ref,
+  ) => {
     const Comp = asChild ? Slot : 'button';
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         {...props}
-      />
+      >
+        {busy ?
+          <div className="flex justify-center">
+            <ThreeDots
+              ariaLabel="Loading..."
+              radius={10}
+              wrapperClass="fixed"
+              height={20}
+              width={20}
+              color={'#888888'}
+              visible={busy}
+            />
+            <div className="opacity-0">{children}</div>
+          </div>
+        : children}
+      </Comp>
     );
   },
 );
