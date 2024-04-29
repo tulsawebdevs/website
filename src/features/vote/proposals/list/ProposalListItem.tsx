@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Label } from '@radix-ui/react-label';
 import { ThumbsUpIcon, ThumbsDownIcon, MinusIcon } from 'lucide-react';
 import {
@@ -21,29 +21,19 @@ import {
 } from '../../../../components/ui/avatar.tsx';
 import { Button } from '../../../../components/ui/button.tsx';
 import ProposalStatus from './ProposalStatus.tsx';
+import type { Vote, VotePayload } from '../types.ts';
+import { voteForProposal } from '../services/proposal.ts';
+import { useErrorToast } from '../../../errors.tsx';
 
 export type ProposalListItemProps = {
   proposal: Proposal;
 };
 
-export type Vote =
-  | '-2' // Strongly Disinterested
-  | '-1' // Slightly Disinterested
-  | '0' // Neutral
-  | '1' // Slightly Interested
-  | '2'; // Strongly Interested
-
-export type VotePayload = {
-  initiativeId: string;
-  vote: Vote;
-  comment: string;
-  authorId: string;
-  authorName: string;
-  authorEmail: string;
-};
-
 export default function ProposalListItem({ proposal }: ProposalListItemProps) {
+  const [loading, setLoading] = useState(false);
+  const [voteValue, setVoteValue] = useState<Vote>('0');
   const isOpen = proposal.status === 'open';
+  const isDisabled = loading || !isOpen;
   const proposedDate = new Date(proposal.created).toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
@@ -63,43 +53,65 @@ export default function ProposalListItem({ proposal }: ProposalListItemProps) {
     return 'A';
   }, [authorName]);
 
-  const numberUpvotes = 72; // TODO: Replace with actual data
-  const numberDownvotes = 18; // TODO: Replace with actual data
+  const numberUpvotes = useMemo(() => {
+    // if status is not open, return total number of votes
+    if (!isOpen) {
+      return 72; // TODO: Replace with actual vote total
+    }
+    // if status is open, only show the user's votes
+    // and if vote is below zero return 0 for postive votes
+    const userVote = parseInt(voteValue, 10);
+
+    return userVote > 0 ? voteValue : 0;
+  }, [voteValue, isOpen]);
+  const numberDownvotes = useMemo(() => {
+    // if status is not open, return total number of votes
+    if (!isOpen) {
+      return 18; // TODO: Replace with actual vote total
+    }
+    // if status is open, only show the user's votes
+    // and if vote is above zero return 0 for negative votes
+    const userVote = parseInt(voteValue, 10);
+
+    return userVote < 0 ? voteValue : 0;
+  }, [voteValue, isOpen]);
+  const errorToast = useErrorToast();
 
   const handleInterestVote = (value: Vote) => {
     const votePayload: VotePayload = {
       initiativeId: proposal.id.toString(10),
       vote: value,
       comment: '',
-      authorId: '1234', // TODO: Replace with auth data
+      authorId: proposal.authorId,
       authorName: proposal.authorName,
-      authorEmail: '', // TODO: Replace with auth data
+      authorEmail: proposal.authorEmail,
     };
 
-    console.log('cast vote', votePayload);
-
-    // fetch(`https://api.tulsawebdevs.org/proposals/${proposal.id}/vote`, {
-    //   credentials: 'include',
-    //   headers: {
-    //     Authorization: '3fa85f64-5717-4562-b3fc-2c963f66afa6', // TODO: Add auth token
-    //     'Content-Type': 'application/json',
-    //   },
-    //   method: 'POST',
-    //   body: JSON.stringify(votePayload),
-    // })
-    //   .then((res) => res.json())
-    //   .then((data) => {
-    //     console.log('do something with data', data);
-    //   })
-    //   .catch((error) => {
-    //     // TODO: Handle inability to cast vote
-    //     console.error(error);
-    //   });
+    setLoading(true);
+    setVoteValue(value);
+    voteForProposal(votePayload)
+      .catch((error) => {
+        console.error(error);
+        errorToast({
+          title: 'Unable to Vote',
+          description: 'Could not cast vote. Please try again.',
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
-  // TODO: Implement like vote functionality. What API to call?
   const handleLikeVote = (type: 'up' | 'down') => {
-    console.log('handle like vote', type);
+    let currentVoteValue = parseInt(voteValue, 10);
+
+    if (type === 'up') {
+      currentVoteValue = Math.min(2, currentVoteValue + 1);
+    } else {
+      currentVoteValue = Math.max(-2, currentVoteValue - 1);
+    }
+
+    handleInterestVote(currentVoteValue.toString() as Vote);
   };
 
   return (
@@ -111,7 +123,7 @@ export default function ProposalListItem({ proposal }: ProposalListItemProps) {
           handleLikeVote={handleLikeVote}
           numberUpvotes={numberUpvotes}
           numberDownvotes={numberDownvotes}
-          disabled={!isOpen}
+          disabled={isDisabled}
         />
       </CardHeader>
 
@@ -151,7 +163,8 @@ export default function ProposalListItem({ proposal }: ProposalListItemProps) {
           <ProposalInterestVote
             proposal={proposal}
             onVoteSelect={handleInterestVote}
-            disabled={!isOpen}
+            disabled={isDisabled}
+            value={voteValue}
           />
         </div>
       </CardContent>
@@ -175,25 +188,29 @@ const voteOptions = [
   { label: 'Strongly Interested', value: '2', id: 'vote-strongly-interested' },
 ];
 
+type ProposalInterestVoteProps = {
+  proposal: Proposal;
+  disabled?: boolean;
+  onVoteSelect: (vote: Vote) => void;
+  value: Vote;
+};
+
 function ProposalInterestVote({
   proposal,
   disabled = false,
   onVoteSelect,
-}: {
-  proposal: Proposal;
-  disabled?: boolean;
-  onVoteSelect: (vote: Vote) => void;
-}) {
+  value,
+}: ProposalInterestVoteProps) {
   return (
     <RadioGroup
       aria-label="Vote"
       className="flex flex-col md:flex-row md:items-center gap-2"
-      defaultValue="0" // TODO: Replace with user's selected vote
+      value={value}
       onValueChange={onVoteSelect}
       disabled={disabled}
     >
       {voteOptions.map((option) => {
-        const value = parseInt(option.value, 10);
+        const optionValue = parseInt(option.value, 10);
 
         return (
           <Label
@@ -212,17 +229,23 @@ function ProposalInterestVote({
                 'p-0.5 w-5 h-5 flex items-center justify-center rounded-full border-2 border-gray-400',
                 {
                   'peer-aria-checked:bg-red-500 peer-aria-checked:border-red-500 dark:border-gray-600 dark:peer-aria-checked:bg-red-500 dark:peer-aria-checked:border-red-500':
-                    value < 0,
+                    optionValue < 0,
                   'peer-aria-checked:bg-gray-500 peer-aria-checked:border-gray-500 dark:border-gray-600 dark:peer-aria-checked:bg-gray-500 dark:peer-aria-checked:border-gray-500':
-                    value === 0,
+                    optionValue === 0,
                   'peer-aria-checked:bg-green-500 peer-aria-checked:border-green-500 dark:border-gray-600 dark:peer-aria-checked:bg-green-500 dark:peer-aria-checked:border-green-500':
-                    value > 0,
+                    optionValue > 0,
                 },
               )}
             >
-              {value < 0 && <ThumbsDownIcon className="w-4 h-4 text-white" />}
-              {value === 0 && <MinusIcon className="w-4 h-4 text-white" />}
-              {value > 0 && <ThumbsUpIcon className="w-4 h-4 text-white" />}
+              {optionValue < 0 && (
+                <ThumbsDownIcon className="w-4 h-4 text-white" />
+              )}
+              {optionValue === 0 && (
+                <MinusIcon className="w-4 h-4 text-white" />
+              )}
+              {optionValue > 0 && (
+                <ThumbsUpIcon className="w-4 h-4 text-white" />
+              )}
             </div>
             <span className="text-sm text-gray-500 dark:text-gray-400">
               {option.label}
@@ -236,8 +259,8 @@ function ProposalInterestVote({
 
 type ProposalLikeButtonsProps = {
   handleLikeVote: (type: 'up' | 'down') => void;
-  numberUpvotes: number;
-  numberDownvotes: number;
+  numberUpvotes: number | string;
+  numberDownvotes: number | string;
   disabled?: boolean;
 };
 
