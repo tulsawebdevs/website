@@ -68,7 +68,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               color={'#888888'}
               visible={busy}
             />
-            <div className="text-[#00000000]">{children}</div>
+            <div className="opacity-0">{children}</div>
           </div>
         : children}
       </Comp>
