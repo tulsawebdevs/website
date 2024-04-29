@@ -1,4 +1,5 @@
 import type { Proposal } from '../../../../types/proposal';
+import type { VotePayload } from '../types';
 
 /**
  * @todo switch to the real API once it's ready.
@@ -464,4 +465,38 @@ async function simulateFetchProposals(cursor?: string): Promise<{
   };
 
   return Promise.resolve(responseData);
+}
+
+/**
+ * @todo Replace with actual API call once it's ready.
+ */
+export async function voteForProposal(payload: VotePayload): Promise<void> {
+  console.log('votePayload', payload);
+
+  // fetch(`https://api.tulsawebdevs.org/proposals/${proposal.id}/vote`, {
+  //   credentials: 'include',
+  //   headers: {
+  //     Authorization: '3fa85f64-5717-4562-b3fc-2c963f66afa6', // TODO: Add auth token
+  //     'Content-Type': 'application/json',
+  //   },
+  //   method: 'POST',
+  //   body: JSON.stringify(votePayload),
+  // })
+  //   .then((res) => res.json())
+  //   .then((data) => {
+  //     console.log('do something with data', data);
+  //   })
+  //   .catch((error) => {
+  //     // TODO: Handle inability to cast vote
+  //     console.error(error);
+  //   });
+
+  return simulateVoteForProposal();
+}
+
+async function simulateVoteForProposal(): Promise<void> {
+  // eslint-disable-next-line
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  return Promise.resolve();
 }

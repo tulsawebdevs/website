@@ -11,3 +11,19 @@ export type Proposal = {
   created: string;
   updated: string | null;
 };
+
+export type Vote =
+  | '-2' // Strongly Disinterested
+  | '-1' // Slightly Disinterested
+  | '0' // Neutral
+  | '1' // Slightly Interested
+  | '2'; // Strongly Interested
+
+export type VotePayload = {
+  initiativeId: string;
+  vote: Vote;
+  comment: string;
+  authorId: string;
+  authorName: string;
+  authorEmail: string;
+};
