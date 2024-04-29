@@ -20,6 +20,7 @@ import {
   AvatarImage,
 } from '../../../../components/ui/avatar.tsx';
 import { Button } from '../../../../components/ui/button.tsx';
+import ProposalStatus from './ProposalStatus.tsx';
 
 export type ProposalListItemProps = {
   proposal: Proposal;
@@ -42,6 +43,7 @@ export type VotePayload = {
 };
 
 export default function ProposalListItem({ proposal }: ProposalListItemProps) {
+  const isOpen = proposal.status === 'open';
   const proposedDate = new Date(proposal.created).toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
@@ -76,23 +78,23 @@ export default function ProposalListItem({ proposal }: ProposalListItemProps) {
 
     console.log('cast vote', votePayload);
 
-    fetch(`https://api.tulsawebdevs.org/proposals/${proposal.id}/vote`, {
-      credentials: 'include',
-      headers: {
-        Authorization: '3fa85f64-5717-4562-b3fc-2c963f66afa6', // TODO: Add auth token
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-      body: JSON.stringify(votePayload),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log('do something with data', data);
-      })
-      .catch((error) => {
-        // TODO: Handle inability to cast vote
-        console.error(error);
-      });
+    // fetch(`https://api.tulsawebdevs.org/proposals/${proposal.id}/vote`, {
+    //   credentials: 'include',
+    //   headers: {
+    //     Authorization: '3fa85f64-5717-4562-b3fc-2c963f66afa6', // TODO: Add auth token
+    //     'Content-Type': 'application/json',
+    //   },
+    //   method: 'POST',
+    //   body: JSON.stringify(votePayload),
+    // })
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     console.log('do something with data', data);
+    //   })
+    //   .catch((error) => {
+    //     // TODO: Handle inability to cast vote
+    //     console.error(error);
+    //   });
   };
 
   // TODO: Implement like vote functionality. What API to call?
@@ -109,6 +111,7 @@ export default function ProposalListItem({ proposal }: ProposalListItemProps) {
           handleLikeVote={handleLikeVote}
           numberUpvotes={numberUpvotes}
           numberDownvotes={numberDownvotes}
+          disabled={!isOpen}
         />
       </CardHeader>
 
@@ -133,6 +136,9 @@ export default function ProposalListItem({ proposal }: ProposalListItemProps) {
               <div className="text-sm text-gray-500 dark:text-gray-400 content-center">
                 Proposed {proposedDate} at {proposedTime}
               </div>
+              <div>
+                <ProposalStatus status={proposal.status} />
+              </div>
             </div>
           </div>
 
@@ -142,7 +148,11 @@ export default function ProposalListItem({ proposal }: ProposalListItemProps) {
         </div>
 
         <div>
-          <ProposalInterestVote onVoteSelect={handleInterestVote} />
+          <ProposalInterestVote
+            proposal={proposal}
+            onVoteSelect={handleInterestVote}
+            disabled={!isOpen}
+          />
         </div>
       </CardContent>
     </Card>
@@ -166,8 +176,12 @@ const voteOptions = [
 ];
 
 function ProposalInterestVote({
+  proposal,
+  disabled = false,
   onVoteSelect,
 }: {
+  proposal: Proposal;
+  disabled?: boolean;
   onVoteSelect: (vote: Vote) => void;
 }) {
   return (
@@ -176,20 +190,22 @@ function ProposalInterestVote({
       className="flex flex-col md:flex-row md:items-center gap-2"
       defaultValue="0" // TODO: Replace with user's selected vote
       onValueChange={onVoteSelect}
+      disabled={disabled}
     >
       {voteOptions.map((option) => {
         const value = parseInt(option.value, 10);
 
         return (
           <Label
-            key={option.id}
+            key={`${proposal.id}-${option.id}`}
             className="flex items-center gap-2 cursor-pointer"
-            htmlFor={option.id}
+            htmlFor={`${proposal.id}-${option.id}`}
           >
             <RadioGroupItem
               className="peer sr-only"
-              id={option.id}
+              id={`${proposal.id}-${option.id}`}
               value={option.value}
+              disabled={disabled}
             />
             <div
               className={cn(
@@ -222,16 +238,23 @@ type ProposalLikeButtonsProps = {
   handleLikeVote: (type: 'up' | 'down') => void;
   numberUpvotes: number;
   numberDownvotes: number;
+  disabled?: boolean;
 };
 
 function ProposalLikeButtons({
   handleLikeVote,
   numberUpvotes,
   numberDownvotes,
+  disabled = false,
 }: ProposalLikeButtonsProps) {
   return (
     <div className="flex items-center gap-2">
-      <Button size="sm" variant="outline" onClick={() => handleLikeVote('up')}>
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => handleLikeVote('up')}
+        disabled={disabled}
+      >
         <ThumbsUpIcon className="w-5 h-5 text-green-500 mr-1" />
         <span className="text-green-500 font-medium">{numberUpvotes}</span>
       </Button>
@@ -240,6 +263,7 @@ function ProposalLikeButtons({
         size="sm"
         variant="outline"
         onClick={() => handleLikeVote('down')}
+        disabled={disabled}
       >
         <ThumbsDownIcon className="w-5 h-5 text-red-500 mr-1" />
         <span className="text-red-500 font-medium">{numberDownvotes}</span>
