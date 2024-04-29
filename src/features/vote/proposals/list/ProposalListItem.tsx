@@ -15,11 +15,11 @@ import {
 } from '../../../../components/ui/avatar.tsx';
 import ProposalStatus from './ProposalStatus.tsx';
 import type { Proposal, Vote, VotePayload } from '../types.ts';
-import { voteForProposal } from '../services/proposal.ts';
 import { useErrorToast } from '../../../errors.tsx';
 import useDebounce from '../../../hooks/useDebounce.ts';
 import ProposalInterestVote from './ProposalInterestVote.tsx';
 import ProposalLikeButtons from './ProposalLikeButtons.tsx';
+import { useFetchPost, useProtectedFunction } from '../../../auth/hooks.ts';
 
 export type ProposalListItemProps = {
   proposal: Proposal;
@@ -71,25 +71,33 @@ export default function ProposalListItem({ proposal }: ProposalListItemProps) {
   }, [voteValue, isOpen]);
   const errorToast = useErrorToast();
 
-  const handleVote = useDebounce((value: Vote) => {
-    const votePayload: VotePayload = {
-      initiativeId: proposal.id.toString(10),
-      vote: value,
-      comment: '',
-      authorId: proposal.authorId,
-      authorName: proposal.authorName,
-      authorEmail: proposal.authorEmail,
-    };
+  const voteRequest = useFetchPost(
+    `https://api.tulsawebdevs.org/proposals/${proposal.id}/vote`,
+  );
 
-    setVoteValue(value);
-    voteForProposal(votePayload).catch((error) => {
-      console.error(error);
-      errorToast({
-        title: 'Unable to Vote',
-        description: 'Could not cast vote. Please try again.',
+  const handleVote = useProtectedFunction(
+    useDebounce((value: Vote) => {
+      const votePayload: VotePayload = {
+        initiativeId: proposal.id.toString(10),
+        vote: value,
+        comment: '',
+        authorId: proposal.authorId,
+        authorName: proposal.authorName,
+        authorEmail: proposal.authorEmail,
+      };
+
+      setVoteValue(value);
+      voteRequest(votePayload).catch(() => {
+        errorToast({
+          title: 'Unable to Vote',
+          description: 'Could not cast vote. Please try again.',
+        });
       });
-    });
-  });
+    }),
+    {
+      unauthorizedMessage: 'You do not have permission to vote.',
+    },
+  );
 
   return (
     <Card>
