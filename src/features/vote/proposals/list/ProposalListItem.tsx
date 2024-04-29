@@ -12,7 +12,6 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from '../../../../components/ui/radio-group.tsx';
-import type { Proposal } from '../../../../types/proposal.ts';
 import { cn } from '../../../../utils.ts';
 import {
   Avatar,
@@ -21,9 +20,10 @@ import {
 } from '../../../../components/ui/avatar.tsx';
 import { Button } from '../../../../components/ui/button.tsx';
 import ProposalStatus from './ProposalStatus.tsx';
-import type { Vote, VotePayload } from '../types.ts';
+import type { Proposal, Vote, VotePayload } from '../types.ts';
 import { voteForProposal } from '../services/proposal.ts';
 import { useErrorToast } from '../../../errors.tsx';
+import useDebounce from '../../../hooks/useDebounce.ts';
 
 export type ProposalListItemProps = {
   proposal: Proposal;
@@ -77,7 +77,7 @@ export default function ProposalListItem({ proposal }: ProposalListItemProps) {
   }, [voteValue, isOpen]);
   const errorToast = useErrorToast();
 
-  const handleInterestVote = (value: Vote) => {
+  const handleInterestVote = useDebounce((value: Vote) => {
     const votePayload: VotePayload = {
       initiativeId: proposal.id.toString(10),
       vote: value,
@@ -87,20 +87,15 @@ export default function ProposalListItem({ proposal }: ProposalListItemProps) {
       authorEmail: proposal.authorEmail,
     };
 
-    setLoading(true);
     setVoteValue(value);
-    voteForProposal(votePayload)
-      .catch((error) => {
-        console.error(error);
-        errorToast({
-          title: 'Unable to Vote',
-          description: 'Could not cast vote. Please try again.',
-        });
-      })
-      .finally(() => {
-        setLoading(false);
+    voteForProposal(votePayload).catch((error) => {
+      console.error(error);
+      errorToast({
+        title: 'Unable to Vote',
+        description: 'Could not cast vote. Please try again.',
       });
-  };
+    });
+  });
 
   const handleLikeVote = (type: 'up' | 'down') => {
     let currentVoteValue = parseInt(voteValue, 10);
