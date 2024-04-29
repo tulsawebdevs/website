@@ -1,4 +1,4 @@
-import { Tabs } from '../../components/ui/deprecated_tabs.tsx';
+import { Tabs } from '../../components/ui/deprecatedTabs.tsx';
 import UpdatesTab from './UpdatesTab.tsx';
 import ProjectsTab from './ProjectsTab.tsx';
 import ResourcesTab from './ResourcesTab.tsx';
