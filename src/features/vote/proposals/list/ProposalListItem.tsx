@@ -72,7 +72,7 @@ export default function ProposalListItem({ proposal }: ProposalListItemProps) {
   const errorToast = useErrorToast();
 
   const voteRequest = useFetchPost(
-    `https://api.tulsawebdevs.org/proposals/${proposal.id}/vote`,
+    `https://vote.tulsawebdevs.org/proposals/${proposal.id}/vote`,
   );
 
   const handleVote = useProtectedFunction(
