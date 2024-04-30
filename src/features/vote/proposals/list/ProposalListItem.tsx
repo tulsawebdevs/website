@@ -73,23 +73,29 @@ export default function ProposalListItem({ proposal }: ProposalListItemProps) {
   const voteRequest = useFetchPost(
     `https://vote.tulsawebdevs.org/proposals/${proposal.id}/vote`,
   );
+  const castVote = useDebounce((value: Vote) => {
+    const votePayload: VotePayload = {
+      initiativeId: proposal.id.toString(10),
+      vote: value,
+      comment: '',
+      authorId: proposal.authorId,
+      authorName: proposal.authorName,
+      authorEmail: proposal.authorEmail,
+    };
+
+    voteRequest(votePayload).catch(() => {
+      toast.error('Could not cast vote. Please try again.', {
+        duration: 3000,
+        closeButton: true,
+      });
+    });
+  });
 
   const handleVote = useProtectedFunction(
-    useDebounce((value: Vote) => {
-      const votePayload: VotePayload = {
-        initiativeId: proposal.id.toString(10),
-        vote: value,
-        comment: '',
-        authorId: proposal.authorId,
-        authorName: proposal.authorName,
-        authorEmail: proposal.authorEmail,
-      };
-
+    (value: Vote) => {
       setVoteValue(value);
-      voteRequest(votePayload).catch(() => {
-        toast.error('Could not cast vote. Please try again.');
-      });
-    }),
+      castVote(value);
+    },
     {
       unauthorizedMessage: 'You do not have permission to vote.',
     },
