@@ -9,18 +9,18 @@ import type { Proposal, Vote } from '../types.ts';
 
 const voteOptions = [
   {
-    label: 'Strongly Disinterested',
+    label: 'Strong Disinterest',
     value: '-2',
-    id: 'vote-strongly-disinterested',
+    id: 'vote-strong-disinterest',
   },
   {
-    label: 'Slightly Disinterested',
+    label: 'Slight Disinterest',
     value: '-1',
-    id: 'vote-slightly-disinterested',
+    id: 'vote-slight-disinterest',
   },
   { label: 'Neutral', value: '0', id: 'vote-neutral' },
-  { label: 'Slightly Interested', value: '1', id: 'vote-slightly-interested' },
-  { label: 'Strongly Interested', value: '2', id: 'vote-strongly-interested' },
+  { label: 'Slight Interest', value: '1', id: 'vote-slight-interest' },
+  { label: 'Strong Interest', value: '2', id: 'vote-strong-interest' },
 ];
 
 type ProposalInterestVoteProps = {
@@ -50,9 +50,12 @@ export default function ProposalInterestVote({
         return (
           <Label
             key={`${proposal.id}-${option.id}`}
-            className={cn('flex items-center gap-2', {
-              'cursor-pointer': !disabled,
-            })}
+            className={cn(
+              'flex flex-col gap-2 text-center items-center w-[20%]',
+              {
+                'cursor-pointer': !disabled,
+              },
+            )}
             htmlFor={`${proposal.id}-${option.id}`}
           >
             <RadioGroupItem
