@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 import {
   CardHeader,
@@ -15,7 +16,6 @@ import {
 } from '../../../../components/ui/avatar.tsx';
 import ProposalStatus from './ProposalStatus.tsx';
 import type { Proposal, Vote, VotePayload } from '../types.ts';
-import { useErrorToast } from '../../../errors.tsx';
 import useDebounce from '../../../hooks/useDebounce.ts';
 import ProposalInterestVote from './ProposalInterestVote.tsx';
 import ProposalLikeButtons from './ProposalLikeButtons.tsx';
@@ -69,7 +69,6 @@ export default function ProposalListItem({ proposal }: ProposalListItemProps) {
 
     return userVote < 0 ? voteValue : 0;
   }, [voteValue, isOpen]);
-  const errorToast = useErrorToast();
 
   const voteRequest = useFetchPost(
     `https://vote.tulsawebdevs.org/proposals/${proposal.id}/vote`,
@@ -88,10 +87,7 @@ export default function ProposalListItem({ proposal }: ProposalListItemProps) {
 
       setVoteValue(value);
       voteRequest(votePayload).catch(() => {
-        errorToast({
-          title: 'Unable to Vote',
-          description: 'Could not cast vote. Please try again.',
-        });
+        toast.error('Could not cast vote. Please try again.');
       });
     }),
     {
