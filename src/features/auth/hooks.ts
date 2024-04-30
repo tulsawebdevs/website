@@ -1,6 +1,6 @@
+import { toast } from 'sonner';
 import { useCallback, useSyncExternalStore } from 'react';
 import { clerkStore } from './clerk.ts';
-import { useErrorToast } from '../errors.tsx';
 
 type Session = NonNullable<ReturnType<typeof useSession>>;
 type AuthConditions = Parameters<Session['checkAuthorization']>[0];
@@ -36,7 +36,6 @@ export function useProtectedFunction(
     conditions,
     unauthorizedMessage = 'You are not authorized to perform this action.',
   } = options;
-  const errorToast = useErrorToast();
   const session = useSession();
   const user = useUser();
   const clerk = useClerk();
@@ -47,7 +46,7 @@ export function useProtectedFunction(
     if (!isSignedIn) return clerk?.openSignIn();
     if (isAuthorized) return function_(...params);
 
-    errorToast({ title: unauthorizedMessage });
+    toast.error(unauthorizedMessage, { duration: 3000 });
   }
 
   return protectedFunction;
