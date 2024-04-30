@@ -1,4 +1,4 @@
-import type { Proposal, VotePayload } from '../types';
+import type { Proposal } from '../types';
 
 /**
  * @todo switch to the real API once it's ready.
