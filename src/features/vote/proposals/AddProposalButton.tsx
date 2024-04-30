@@ -28,6 +28,8 @@ import {
 } from '../../../components/ProposalFormErrors.tsx';
 import type { Proposal } from './types.ts';
 import { useUser } from '../../auth/hooks.ts';
+import { createApiClient, schemas, sdk } from '../../../sdk.ts';
+import { Form } from '../../../components/ui/form.tsx';
 
 // <DialogContent className="max-w-max min-w-min max-h-[90%] overflow-scroll p-0 mx-0 my-0">
 
@@ -130,101 +132,103 @@ export default function AddProposalButton() {
             meetup.
           </DialogDescription>
         </DialogHeader>
-        <form className="space-y-4" id="proposalForm" onSubmit={onSubmit}>
-          <div className="grid grid-cols-2 gap-4">
+        <Form handleSubmit={((onValid) => {}, (onerror) => {})}>
+          <div className="space-y-4" id="proposalForm" onSubmit={onSubmit}>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  placeholder="Your Name"
+                  type="text"
+                  name="authorName"
+                  required
+                  minLength={6}
+                />
+              </div>
+              <div id="email-field" className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  name="authorEmail"
+                  placeholder="you@example.com"
+                  required
+                  type="email"
+                />
+              </div>
+            </div>
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="title">Title</Label>
               <Input
-                id="name"
-                placeholder="Your Name"
-                type="text"
-                name="authorName"
+                id="title"
+                name="title"
+                placeholder="Proposal Title"
                 required
                 minLength={6}
+                type="text"
               />
             </div>
-            <div id="email-field" className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="authorEmail"
-                placeholder="you@example.com"
+            <div className="space-y-2">
+              <Label htmlFor="type">Type</Label>
+              <Select required name="type" defaultOpen={false}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Type" defaultValue="topic" />
+                </SelectTrigger>
+                <SelectContent id="type">
+                  <SelectItem value="topic">Topic</SelectItem>
+                  <SelectItem value="project">Project</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="summary">Summary</Label>
+              <Textarea
+                id="summary"
+                placeholder="Briefly describe your proposal"
+                name="summary"
                 required
-                type="email"
+                minLength={6}
+                rows={3}
+                maxLength={200}
               />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                placeholder="Provide more details about your proposal"
+                required
+                name="description"
+                minLength={6}
+                rows={5}
+                maxLength={200}
+              />
+            </div>
+            <DialogFooter className="flex justify-end p-2">
+              <Button
+                className="mr-2"
+                type="submit"
+                name="status-draft"
+                variant="outline"
+                onClick={onDraftButtonClick}
+                disabled={loading}
+                busy={isDraft && loading}
+              >
+                Save Draft
+              </Button>
+              <Button
+                name="status-open"
+                type="submit"
+                variant="default"
+                onClick={onSubmitButtonClick}
+                disabled={loading}
+                busy={!isDraft && loading}
+              >
+                Submit Proposal
+              </Button>
+            </DialogFooter>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              name="title"
-              placeholder="Proposal Title"
-              required
-              minLength={6}
-              type="text"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="type">Type</Label>
-            <Select required name="type" defaultOpen={false}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select Type" defaultValue="topic" />
-              </SelectTrigger>
-              <SelectContent id="type">
-                <SelectItem value="topic">Topic</SelectItem>
-                <SelectItem value="project">Project</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="summary">Summary</Label>
-            <Textarea
-              id="summary"
-              placeholder="Briefly describe your proposal"
-              name="summary"
-              required
-              minLength={6}
-              rows={3}
-              maxLength={200}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              placeholder="Provide more details about your proposal"
-              required
-              name="description"
-              minLength={6}
-              rows={5}
-              maxLength={200}
-            />
-          </div>
-          <DialogFooter className="flex justify-end p-2">
-            <Button
-              className="mr-2"
-              type="submit"
-              name="status-draft"
-              variant="outline"
-              onClick={onDraftButtonClick}
-              disabled={loading}
-              busy={isDraft && loading}
-            >
-              Save Draft
-            </Button>
-            <Button
-              name="status-open"
-              type="submit"
-              variant="default"
-              onClick={onSubmitButtonClick}
-              disabled={loading}
-              busy={!isDraft && loading}
-            >
-              Submit Proposal
-            </Button>
-          </DialogFooter>
-        </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
