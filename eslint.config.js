@@ -298,7 +298,7 @@ export default tseslint.config(
       ],
       'no-use-before-define': [
         'error',
-        { functions: false, allowNamedExports: true },
+        { functions: false, allowNamedExports: true, interfaces: false },
       ],
       'no-restricted-syntax': [
         'error',
