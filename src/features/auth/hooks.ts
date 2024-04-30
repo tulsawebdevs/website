@@ -28,8 +28,9 @@ type ProtectedOptions = {
   unauthorizedMessage?: string;
 };
 
-export function useProtectedFunction(
-  function_: (...params: unknown[]) => void,
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function useProtectedFunction<A extends any[]>(
+  function_: (...params: A) => void,
   options: ProtectedOptions = {},
 ) {
   const {
@@ -42,8 +43,9 @@ export function useProtectedFunction(
   const isSignedIn = session && user;
   const isAuthorized = !conditions || session?.checkAuthorization(conditions);
 
-  function protectedFunction(...params: unknown[]) {
+  function protectedFunction(...params: A) {
     if (!isSignedIn) return clerk?.openSignIn();
+
     if (isAuthorized) return function_(...params);
 
     toast.error(unauthorizedMessage, { duration: 3000 });
