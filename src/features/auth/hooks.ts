@@ -2,20 +2,37 @@ import { toast } from 'sonner';
 import { useCallback, useSyncExternalStore } from 'react';
 import { clerkStore } from './clerk.ts';
 
-type Session = NonNullable<ReturnType<typeof useSession>>;
+type ClerkValue = NonNullable<(typeof clerkStore)['value']>;
+type UserResource = NonNullable<ClerkValue['user']>;
+
+export type User = UserResource & {
+  firstName: string;
+  lastName: string;
+  primaryEmailAddress: NonNullable<UserResource['primaryEmailAddress']>;
+};
+
+export type Session = NonNullable<ClerkValue['session']> & {
+  user: User;
+};
+
+type Clerk = ClerkValue & {
+  user: User | null | undefined;
+  session: Session | null | undefined;
+};
+
 type AuthConditions = Parameters<Session['checkAuthorization']>[0];
 
 export function useClerk() {
   return useSyncExternalStore(
     clerkStore.subscribe.bind(clerkStore),
-    clerkStore.get.bind(clerkStore),
+    clerkStore.get.bind(clerkStore) as () => Clerk | null,
     () => null,
   );
 }
 
 export function useUser() {
   const { user } = useClerk() ?? {};
-  return user;
+  return user as null | undefined | User;
 }
 
 export function useSession() {
