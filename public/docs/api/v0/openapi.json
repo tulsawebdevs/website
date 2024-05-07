@@ -116,22 +116,10 @@
                                 }
                               },
                               {
-                                "type": "object",
-                                "required": ["id", "created"],
-                                "properties": {
-                                  "id": {
-                                    "type": "integer",
-                                    "format": "int32"
-                                  },
-                                  "created": {
-                                    "type": "string",
-                                    "format": "date-time"
-                                  },
-                                  "updated": {
-                                    "type": "string",
-                                    "format": "date-time"
-                                  }
-                                }
+                                "$ref": "#/components/schemas/TimeStamped"
+                              },
+                              {
+                                "$ref": "#/components/schemas/Author"
                               }
                             ]
                           }
@@ -259,39 +247,24 @@
                     {
                       "type": "object",
                       "properties": {
-                        "title": {
-                          "type": "string",
-                          "maxLength": 48
-                        },
-                        "summary": {
-                          "type": "string",
-                          "maxLength": 255
-                        },
-                        "description": {
-                          "type": "string",
-                          "maxLength": 2048
-                        },
-                        "type": {
-                          "type": "string",
-                          "enum": ["topic", "project"]
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "required": ["id", "created"],
-                      "properties": {
-                        "id": {
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "created": {
-                          "type": "string",
-                          "format": "date-time"
-                        },
-                        "updated": {
-                          "type": "string",
-                          "format": "date-time"
+                        "list": {
+                          "type": "array",
+                          "items": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/Project"
+                              },
+                              {
+                                "$ref": "#/components/schemas/DatabaseObject"
+                              },
+                              {
+                                "$ref": "#/components/schemas/TimeStamped"
+                              },
+                              {
+                                "$ref": "#/components/schemas/Author"
+                              }
+                            ]
+                          }
                         }
                       }
                     }
@@ -401,68 +374,24 @@
                     {
                       "type": "object",
                       "properties": {
-                        "title": {
-                          "type": "string",
-                          "maxLength": 48
-                        },
-                        "summary": {
-                          "type": "string",
-                          "maxLength": 255
-                        },
-                        "description": {
-                          "type": "string",
-                          "maxLength": 2048
-                        },
-                        "type": {
-                          "type": "string",
-                          "enum": ["topic", "project"]
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "required": ["id", "created"],
-                      "properties": {
-                        "id": {
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "created": {
-                          "type": "string",
-                          "format": "date-time"
-                        },
-                        "updated": {
-                          "type": "string",
-                          "format": "date-time"
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "type": "object",
-                      "required": ["message"],
-                      "properties": {
-                        "message": {
-                          "type": "string"
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "message": {
-                          "type": "string",
-                          "default": "Unauthorized"
+                        "list": {
+                          "type": "array",
+                          "items": {
+                            "allOf": [
+                              {
+                                "$ref": "#/components/schemas/Proposal"
+                              },
+                              {
+                                "$ref": "#/components/schemas/DatabaseObject"
+                              },
+                              {
+                                "$ref": "#/components/schemas/TimeStamped"
+                              },
+                              {
+                                "$ref": "#/components/schemas/Author"
+                              }
+                            ]
+                          }
                         }
                       }
                     }
@@ -529,11 +458,27 @@
             "description": "Id of the draft to delete",
             "in": "path",
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string"
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Proposal"
+                  },
+                  {
+                    "$ref": "#/components/schemas/AuthorData"
+                  }
+                ]
+              }
+            }
+          }
+        },
         "responses": {
           "204": {
             "description": "No Content"
@@ -543,7 +488,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/401Error"
+                  "success": true,
+                  "proposal": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/Proposal"
+                      },
+                      {
+                        "$ref": "#/components/schemas/DatabaseObject"
+                      },
+                      {
+                        "$ref": "#/components/schemas/TimeStamped"
+                      }
+                    ]
+                  }
                 }
               }
             }
@@ -634,38 +592,16 @@
                 "schema": {
                   "allOf": [
                     {
-                      "$ref": "#/components/schemas/Paginated"
+                      "$ref": "#/components/schemas/Proposal"
                     },
                     {
-                      "type": "object",
-                      "required": ["proposals"],
-                      "properties": {
-                        "proposals": {
-                          "type": "array",
-                          "items": {
-                            "allOf": [
-                              {
-                                "type": "object",
-                                "required": ["authorName"],
-                                "properties": {
-                                  "authorName": {
-                                    "type": "string"
-                                  }
-                                }
-                              },
-                              {
-                                "$ref": "#/components/schemas/Proposal"
-                              },
-                              {
-                                "$ref": "#/components/schemas/ProposalVoteState"
-                              },
-                              {
-                                "$ref": "#/components/schemas/DatabaseObject"
-                              }
-                            ]
-                          }
-                        }
-                      }
+                      "$ref": "#/components/schemas/DatabaseObject"
+                    },
+                    {
+                      "$ref": "#/components/schemas/TimeStamped"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Author"
                     }
                   ]
                 }
@@ -703,6 +639,7 @@
             "required": true,
             "schema": {
               "type": "string"
+              "type": "string"
             }
           }
         ],
@@ -711,7 +648,14 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Proposal"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/DatabaseObject"
+                  },
+                  {
+                    "$ref": "#/components/schemas/Proposal"
+                  }
+                ]
               }
             }
           }
@@ -758,21 +702,51 @@
             }
           }
         }
+      },
+      "delete": {
+        "summary": "Delete a specific proposal by ID",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
       }
     },
-    "/proposals/{proposalId}": {
-      "summary": "Manage a user's vote on a proposal",
+    "/proposals/{id}/votes": {
+      "summary": "Get, update, or delete votes for a specific proposal by ID",
       "parameters": [
         {
-          "name": "Authorization",
-          "in": "header",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        },
-        {
-          "name": "proposalId",
+          "name": "id",
           "in": "path",
           "required": true,
           "schema": {
@@ -838,6 +812,7 @@
             "required": true,
             "schema": {
               "type": "string"
+              "type": "string"
             }
           },
           {
@@ -885,30 +860,19 @@
             }
           }
         }
-      }
-    },
-    "/proposals/{proposalId}/close": {
-      "summary": "close an open proposal (soft delete)",
-      "parameters": [
-        {
-          "name": "Authorization",
-          "in": "header",
-          "required": true,
-          "schema": {
-            "type": "string"
+      },
+      "delete": {
+        "summary": "Delete a specific vote by ID",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
-        },
-        {
-          "name": "proposalId",
-          "in": "path",
-          "required": true,
-          "schema": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      ],
-      "post": {
+        ],
         "responses": {
           "204": {
             "description": "Closed",
@@ -964,35 +928,29 @@
           }
         }
       },
-      "Draft": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "maxLength": 48
+      "Topic": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Proposal"
           },
-          "summary": {
-            "type": "string",
-            "maxLength": 255
-          },
-          "description": {
-            "type": "string",
-            "maxLength": 2048
-          },
-          "type": {
-            "type": "string",
-            "enum": ["topic", "project"]
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["topic"]
+              }
+            }
           }
-        }
+        ]
       },
       "Proposal": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/Draft"
+            "$ref": "#/components/schemas/Proposal"
           },
           {
             "type": "object",
-            "required": ["type", "title", "summary"],
             "properties": {
               "title": {
                 "type": "string",
@@ -1012,9 +970,40 @@
       },
       "Vote": {
         "type": "object",
-        "required": ["value"],
+        "required": ["status", "type", "title", "summary"],
         "properties": {
-          "value": {
+          "title": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 48
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 40,
+            "maxLength": 255
+          },
+          "description": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["draft", "open", "closed"]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["topic", "project"]
+          }
+        }
+      },
+      "Vote": {
+        "type": "object",
+        "required": ["proposalId", "vote"],
+        "properties": {
+          "proposalId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "vote": {
             "description": "Ranking values: -2 (strong disinterest), -1 (slight disinterest), 0 (neutral), 1 (slight interest), 2 (strong interest)",
             "type": "string",
             "enum": ["-2", "-1", "0", "1", "2"]
@@ -1025,37 +1014,30 @@
           }
         }
       },
-      "ProposalVoteState": {
-        "oneOf": [
+      "Author": {
+        "type": "object",
+        "required": ["authorName", "authorEmail"],
+        "properties": {
+          "authorName": {
+            "type": "string",
+            "maxLength": 48
+          },
+          "authorEmail": {
+            "type": "string"
+          }
+        }
+      },
+      "AuthorData": {
+        "allOf": [
           {
-            "type": "object",
-            "required": ["status", "results"],
-            "properties": {
-              "userVote": {
-                "$ref": "#/components/schemas/Vote"
-              },
-              "results": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Vote"
-                }
-              },
-              "status": {
-                "type": "string",
-                "enum": ["closed"]
-              }
-            }
+            "$ref": "#/components/schemas/Author"
           },
           {
             "type": "object",
-            "required": ["status"],
+            "required": ["authorId"],
             "properties": {
-              "userVote": {
-                "$ref": "#/components/schemas/Vote"
-              },
-              "status": {
-                "type": "string",
-                "enum": ["open"]
+              "authorId": {
+                "type": "string"
               }
             }
           }
