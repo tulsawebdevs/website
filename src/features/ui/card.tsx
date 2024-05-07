@@ -1,7 +1,7 @@
 /* eslint-disable -- Generated Component */
 import * as React from 'react';
 
-import { cn } from '../../utils.ts';
+import { cn } from './utils.ts';
 
 const Card = React.forwardRef<
   HTMLDivElement,
