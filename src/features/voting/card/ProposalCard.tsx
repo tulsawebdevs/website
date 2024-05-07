@@ -7,19 +7,15 @@ import {
   Card,
   CardTitle,
   CardDescription,
-} from '../../../../components/ui/card.tsx';
+} from '../../ui/card.tsx';
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '../../../../components/ui/avatar.tsx';
-import ProposalStatus from './ProposalStatus.tsx';
+import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar.tsx';
+import ProposalStatusBadge from '../ProposalStatusBadge.tsx';
 import type { Proposal, Vote, VotePayload } from '../types.ts';
-import useDebounce from '../../../hooks/useDebounce.ts';
+import useDebounce from '../../hooks/useDebounce.ts';
 import ProposalInterestVote from './ProposalInterestVote.tsx';
 import ProposalLikeButtons from './ProposalLikeButtons.tsx';
-import { useFetchPost, useProtectedFunction } from '../../../auth/hooks.ts';
+import { useFetchPost, useProtectedFunction } from '../../auth/hooks.ts';
 
 export type ProposalListItemProps = {
   proposal: Proposal;
@@ -137,7 +133,7 @@ export default function ProposalListItem({ proposal }: ProposalListItemProps) {
                 Proposed {proposedDate} at {proposedTime}
               </div>
               <div>
-                <ProposalStatus status={proposal.status} />
+                <ProposalStatusBadge status={proposal.status} />
               </div>
             </div>
           </div>

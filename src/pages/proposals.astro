@@ -1,8 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import AddProposalButton from '../features/vote/proposals/AddProposalButton.tsx';
-import ProposalList from '../features/vote/proposals/list/ProposalList.astro';
-import { getProposals } from '../features/vote/proposals/services/proposal.ts';
+import NewProposalButton from '../features/voting/NewProposalFormButton.tsx';
+import ProposalList from '../features/voting/list/ProposalList.astro';
+import { getProposals } from '../features/voting/services/proposal.ts';
 
 const { cursor, proposals } = await getProposals();
 ---
@@ -13,7 +13,7 @@ const { cursor, proposals } = await getProposals();
       <div class="flex justify-between items-center mb-3">
         <h1 class="font-bold text-xl">Proposals</h1>
 
-        <AddProposalButton client:load />
+        <NewProposalButton client:load />
       </div>
 
       <ProposalList proposals={proposals} cursor={cursor} />

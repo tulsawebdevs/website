@@ -1,5 +1,5 @@
-import { Badge } from '../../../../components/ui/badge.tsx';
-import type { Proposal } from '../types';
+import { Badge } from '../ui/badge.tsx';
+import type { Proposal } from './types.ts';
 
 type Props = {
   status: Proposal['status'];

@@ -2,7 +2,7 @@
 import type { Proposal } from '../types.ts';
 import EmptyList from './EmptyList.astro';
 import LoadMoreProposalsButton from './LoadMoreProposalsButton.tsx';
-import ProposalListItem from './ProposalListItem.tsx';
+import ProposalCard from '../card/ProposalCard.tsx';
 
 interface Props {
   proposals: Proposal[];
@@ -17,7 +17,7 @@ const { proposals, cursor } = Astro.props;
     {
       proposals.map((proposal) => (
         <li class="mb-2">
-          <ProposalListItem client:load proposal={proposal} />
+          <ProposalCard client:load proposal={proposal} />
         </li>
       ))
     }

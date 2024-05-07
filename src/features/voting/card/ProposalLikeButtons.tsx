@@ -1,5 +1,5 @@
 import { ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react';
-import { Button } from '../../../../components/ui/button.tsx';
+import { Button } from '../../ui/button.tsx';
 import type { Vote } from '../types.ts';
 
 type ProposalLikeButtonsProps = {

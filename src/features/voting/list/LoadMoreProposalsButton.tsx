@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Button } from '../../../../components/ui/button.tsx';
+import { Button } from '../../ui/button.tsx';
 import { getProposals } from '../services/proposal.ts';
 import type { Proposal } from '../types.ts';
-import ProposalListItem from './ProposalListItem.tsx';
+import ProposalListItem from '../card/ProposalCard.tsx';
 
 type Props = {
   cursor?: string;

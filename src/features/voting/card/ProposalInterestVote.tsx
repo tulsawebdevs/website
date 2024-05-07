@@ -1,10 +1,7 @@
 import { Label } from '@radix-ui/react-label';
 import { MinusIcon, ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react';
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from '../../../../components/ui/radio-group.tsx';
-import { cn } from '../../../../utils.ts';
+import { RadioGroup, RadioGroupItem } from '../../ui/radio-group.tsx';
+import { cn } from '../../../utils.ts';
 import type { Proposal, Vote } from '../types.ts';
 
 const voteOptions = [

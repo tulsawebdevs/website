@@ -2,15 +2,15 @@ import type React from 'react';
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import z from 'astro/zod';
-import { Label } from '../../../components/ui/label.tsx';
-import { Button } from '../../../components/ui/button.tsx';
+import { Label } from '../ui/label.tsx';
+import { Button } from '../ui/button.tsx';
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from '../../../components/ui/select.tsx';
+} from '../ui/select.tsx';
 import {
   Dialog,
   DialogContent,
@@ -19,15 +19,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../../../components/ui/dialog.tsx';
-import { Textarea } from '../../../components/ui/textarea.tsx';
-import { Input } from '../../../components/ui/input.tsx';
+} from '../ui/dialog.tsx';
+import { Textarea } from '../ui/textarea.tsx';
+import { Input } from '../ui/input.tsx';
 import {
   ProposalFormError,
   ProposalFormFetchError,
-} from '../../../components/ProposalFormErrors.tsx';
+} from './NewProposalFormErrors.tsx';
 import type { Proposal } from './types.ts';
-import { useUser } from '../../auth/hooks.ts';
+import { useUser } from '../auth/hooks.ts';
 
 // <DialogContent className="max-w-max min-w-min max-h-[90%] overflow-scroll p-0 mx-0 my-0">
 
