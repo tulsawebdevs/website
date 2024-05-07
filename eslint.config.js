@@ -141,7 +141,7 @@ export default tseslint.config(
    * Acts like a global ignore for the files listed.
    * @see @link https://eslint.org/docs/latest/use/configure/ignore#ignoring-files
    */
-  { ignores: ['.astro/'] },
+  { ignores: ['.astro/', 'src/sdk.ts'] },
   // Base config for all files, just register plugins
   ...compat.plugins('unicorn', 'yml', 'mdx', 'jsonc', '@typescript-eslint'),
   {

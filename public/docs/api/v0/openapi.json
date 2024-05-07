@@ -66,7 +66,7 @@
                                 "$ref": "#/components/schemas/TimeStamped"
                               },
                               {
-                                "$ref": "#/components/schemas/Authored"
+                                "$ref": "#/components/schemas/Author"
                               }
                             ]
                           }
@@ -155,7 +155,7 @@
                                 "$ref": "#/components/schemas/TimeStamped"
                               },
                               {
-                                "$ref": "#/components/schemas/Authored"
+                                "$ref": "#/components/schemas/Author"
                               }
                             ]
                           }
@@ -235,16 +235,6 @@
                           "items": {
                             "allOf": [
                               {
-                                "oneOf": [
-                                  {
-                                    "$ref": "#/components/schemas/Topic"
-                                  },
-                                  {
-                                    "$ref": "#/components/schemas/Project"
-                                  }
-                                ]
-                              },
-                              {
                                 "$ref": "#/components/schemas/Proposal"
                               },
                               {
@@ -254,7 +244,7 @@
                                 "$ref": "#/components/schemas/TimeStamped"
                               },
                               {
-                                "$ref": "#/components/schemas/Authored"
+                                "$ref": "#/components/schemas/Author"
                               }
                             ]
                           }
@@ -296,8 +286,7 @@
             "in": "header",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string"
             }
           }
         ],
@@ -308,24 +297,10 @@
               "schema": {
                 "allOf": [
                   {
-                    "oneOf": [
-                      {
-                        "$ref": "#/components/schemas/Topic"
-                      },
-                      {
-                        "$ref": "#/components/schemas/Project"
-                      }
-                    ]
-                  },
-                  {
                     "$ref": "#/components/schemas/Proposal"
                   },
                   {
-                    "$ref": "#/components/schemas/Authored"
-                  },
-                  {
-                    "type": "object",
-                    "required": ["type"]
+                    "$ref": "#/components/schemas/AuthorData"
                   }
                 ]
               }
@@ -338,27 +313,20 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    {
-                      "oneOf": [
-                        {
-                          "$ref": "#/components/schemas/Topic"
-                        },
-                        {
-                          "$ref": "#/components/schemas/Project"
-                        }
-                      ]
-                    },
-                    {
-                      "$ref": "#/components/schemas/Proposal"
-                    },
-                    {
-                      "$ref": "#/components/schemas/DatabaseObject"
-                    },
-                    {
-                      "$ref": "#/components/schemas/TimeStamped"
-                    }
-                  ]
+                  "success": true,
+                  "proposal": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/Proposal"
+                      },
+                      {
+                        "$ref": "#/components/schemas/DatabaseObject"
+                      },
+                      {
+                        "$ref": "#/components/schemas/TimeStamped"
+                      }
+                    ]
+                  }
                 }
               }
             }
@@ -410,16 +378,6 @@
                 "schema": {
                   "allOf": [
                     {
-                      "oneOf": [
-                        {
-                          "$ref": "#/components/schemas/Topic"
-                        },
-                        {
-                          "$ref": "#/components/schemas/Project"
-                        }
-                      ]
-                    },
-                    {
                       "$ref": "#/components/schemas/Proposal"
                     },
                     {
@@ -429,7 +387,7 @@
                       "$ref": "#/components/schemas/TimeStamped"
                     },
                     {
-                      "$ref": "#/components/schemas/Authored"
+                      "$ref": "#/components/schemas/Author"
                     }
                   ]
                 }
@@ -466,8 +424,7 @@
             "in": "header",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string"
             }
           }
         ],
@@ -481,14 +438,7 @@
                     "$ref": "#/components/schemas/DatabaseObject"
                   },
                   {
-                    "oneOf": [
-                      {
-                        "$ref": "#/components/schemas/Proposal"
-                      },
-                      {
-                        "$ref": "#/components/schemas/InitiativeData"
-                      }
-                    ]
+                    "$ref": "#/components/schemas/Proposal"
                   }
                 ]
               }
@@ -502,16 +452,6 @@
               "application/json": {
                 "schema": {
                   "allOf": [
-                    {
-                      "oneOf": [
-                        {
-                          "$ref": "#/components/schemas/Topic"
-                        },
-                        {
-                          "$ref": "#/components/schemas/Project"
-                        }
-                      ]
-                    },
                     {
                       "$ref": "#/components/schemas/Proposal"
                     },
@@ -556,8 +496,7 @@
             "in": "header",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string"
             }
           }
         ],
@@ -698,8 +637,7 @@
             "in": "header",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string"
             }
           }
         ],
@@ -758,8 +696,7 @@
             "in": "header",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string"
             }
           }
         ],
@@ -817,30 +754,13 @@
           }
         }
       },
-      "InitiativeData": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "maxLength": 48
-          },
-          "summary": {
-            "type": "string",
-            "maxLength": 255
-          },
-          "description": {
-            "type": "string"
-          }
-        }
-      },
       "Topic": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/InitiativeData"
+            "$ref": "#/components/schemas/Proposal"
           },
           {
             "type": "object",
-            "required": ["title", "summary", "description"],
             "properties": {
               "type": {
                 "type": "string",
@@ -853,11 +773,10 @@
       "Project": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/InitiativeData"
+            "$ref": "#/components/schemas/Proposal"
           },
           {
             "type": "object",
-            "required": ["title", "summary", "description"],
             "properties": {
               "type": {
                 "type": "string",
@@ -869,24 +788,41 @@
       },
       "Proposal": {
         "type": "object",
-        "required": ["status"],
+        "required": ["status", "type", "title", "summary"],
         "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 48
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 40,
+            "maxLength": 255
+          },
+          "description": {
+            "type": "string"
+          },
           "status": {
             "type": "string",
-            "enum": ["draft", "rfc", "open", "closed"]
+            "enum": ["draft", "open", "closed"]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["topic", "project"]
           }
         }
       },
       "Vote": {
         "type": "object",
-        "required": ["initiativeId", "vote"],
+        "required": ["proposalId", "vote"],
         "properties": {
-          "initiativeId": {
+          "proposalId": {
             "type": "integer",
             "format": "int32"
           },
           "vote": {
-            "description": "Ranking values: -2 (strongly disinterested), -1 (slightly disinterested), 0 (neutral), 1 (slightly interested), 2 (strongly interested)",
+            "description": "Ranking values: -2 (strong disinterest), -1 (slight disinterest), 0 (neutral), 1 (slight interest), 2 (strong interest)",
             "type": "string",
             "enum": ["-2", "-1", "0", "1", "2"]
           },
@@ -896,7 +832,7 @@
           }
         }
       },
-      "Authored": {
+      "Author": {
         "type": "object",
         "required": ["authorName", "authorEmail"],
         "properties": {
@@ -908,6 +844,22 @@
             "type": "string"
           }
         }
+      },
+      "AuthorData": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Author"
+          },
+          {
+            "type": "object",
+            "required": ["authorId"],
+            "properties": {
+              "authorId": {
+                "type": "string"
+              }
+            }
+          }
+        ]
       },
       "Expirable": {
         "type": "object",

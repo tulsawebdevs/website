@@ -1,8 +1,9 @@
-import type React from 'react';
-import { useState, useCallback } from 'react';
+/* eslint-disable react/jsx-props-no-spreading */
+import { zodResolver } from '@hookform/resolvers/zod';
+import React, { useState, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import z from 'astro/zod';
-import { Label } from '../ui/label.tsx';
+import { useForm } from 'react-hook-form';
 import { Button } from '../ui/button.tsx';
 import {
   Select,
@@ -26,92 +27,92 @@ import {
   ProposalFormError,
   ProposalFormFetchError,
 } from './NewProposalFormErrors.tsx';
-import type { Proposal } from './types.ts';
-import { useUser } from '../auth/hooks.ts';
+import { useSession } from '../auth/hooks.ts';
+import { schemas, sdk } from '../../sdk.ts';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '../ui/form.tsx';
 
-// <DialogContent className="max-w-max min-w-min max-h-[90%] overflow-scroll p-0 mx-0 my-0">
-
-const dataSchema = z
-  .instanceof(FormData)
-  .transform((data) => ({
-    title: data.get('title'),
-    summary: data.get('summary'),
-    description: data.get('description'),
-    type: data.get('type') as 'topic' | 'project',
-  }))
-  .pipe(
-    z.object({
-      title: z.string().min(8),
-      summary: z.string().min(8),
-      description: z.string().min(8),
-      type: z.union([z.literal('topic'), z.literal('project')]),
-    }),
-  );
+export const postProposalSchema = schemas.Proposal.and(schemas.AuthorData);
+export type PostProposalData = z.infer<typeof postProposalSchema>;
 
 export default function AddProposalButton() {
-  const [isDraft, setIsDraft] = useState(false);
+  const session = useSession();
   const [loading, setLoading] = useState(false);
-  const user = useUser();
 
-  const onDraftButtonClick = useCallback(() => {
-    setIsDraft(true);
-  }, [setIsDraft]);
+  const form = useForm<PostProposalData>({
+    resolver: zodResolver(postProposalSchema),
+    mode: 'onChange',
+  });
 
-  const onSubmitButtonClick = useCallback(() => {
-    setIsDraft(false);
-  }, [setIsDraft]);
+  useEffect(() => {
+    if (form.formState.isSubmitting) setLoading(true);
+    return () => setLoading(false);
+  }, [form.formState.isSubmitting]);
+
+  useEffect(() => {
+    if (!session) return;
+    const { user } = session;
+    const name = user.fullName ?? [user.firstName, user.lastName].join(' ');
+    form.setValue('authorId', user.id);
+    form.setValue('authorEmail', user.primaryEmailAddress.emailAddress);
+    form.setValue('authorName', name);
+  }, [form, session]);
+
+  const submit = form.handleSubmit(
+    async (data, event) => {
+      event?.preventDefault();
+      return sdk.postProposals(data, {
+        headers: { Authorization: `Bearer: ${await session?.getToken()}` },
+      });
+    },
+    (errors) => {
+      throw new ProposalFormError(
+        Object.entries(errors).map(
+          ([key, { message }]) => `Invalid ${key}: ${message}`,
+        ),
+      );
+    },
+  );
+
+  const success = useCallback(() => {
+    const isDraft = form.getValues('status') === 'draft';
+    form.reset({
+      authorEmail: form.getValues('authorEmail'),
+      authorName: form.getValues('authorName'),
+      authorId: form.getValues('authorId'),
+      description: '',
+      summary: '',
+      title: '',
+      type: '' as 'topic' | 'project',
+    });
+    return isDraft ? 'Draft Saved' : 'Proposal Submitted!';
+  }, [form]);
+
+  const error = useCallback(
+    (err: unknown) =>
+      err instanceof TypeError ?
+        new ProposalFormFetchError().render()
+      : new ProposalFormError(err).render(),
+    [],
+  );
 
   const onSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
-      setLoading(true);
-      event.preventDefault();
-      try {
-        const url = 'https://vote.tulsawebdevs.org/proposals';
-        const form = event.currentTarget;
-        const data = dataSchema.parse(new FormData(form));
-
-        const proposal = {
-          ...data,
-          status: isDraft ? 'draft' : 'open',
-          authorId: user?.id ?? '0',
-          authorName: user?.fullName ?? 'Anonymous', // TODO: remove fallback
-          authorEmail:
-            user?.primaryEmailAddress?.emailAddress ??
-            'tulsawebdevs@techlahoma.org',
-        } satisfies Omit<Proposal, 'id' | 'created' | 'updated'>;
-
-        const result = fetch(url, {
-          method: 'POST',
-          body: JSON.stringify(proposal),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }).then((response) => {
-          if (response.status === 201) return form.reset();
-          throw new ProposalFormError(response);
-        });
-
-        toast.promise(result, {
-          loading: isDraft ? 'Saving draft...' : 'Submitting proposal...',
-          success: isDraft ? 'Draft Saved' : 'Proposal Submitted!',
-          error(error) {
-            return error instanceof TypeError ?
-                new ProposalFormFetchError().render()
-              : new ProposalFormError(error).render();
-          },
-        });
-      } catch (error) {
-        toast.error(new ProposalFormError(error).render());
-      } finally {
-        setLoading(false);
-      }
+      toast.promise(submit(event), {
+        success,
+        error,
+        loading:
+          form.getValues('status') === 'draft' ?
+            'Saving draft...'
+          : 'Submitting proposal...',
+      });
     },
-    [
-      isDraft,
-      user?.fullName,
-      user?.id,
-      user?.primaryEmailAddress?.emailAddress,
-    ],
+    [error, form, submit, success],
   );
 
   return (
@@ -130,101 +131,109 @@ export default function AddProposalButton() {
             meetup.
           </DialogDescription>
         </DialogHeader>
-        <form className="space-y-4" id="proposalForm" onSubmit={onSubmit}>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                placeholder="Your Name"
-                type="text"
-                name="authorName"
-                required
-                minLength={6}
-              />
-            </div>
-            <div id="email-field" className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="authorEmail"
-                placeholder="you@example.com"
-                required
-                type="email"
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
+        <Form {...form}>
+          <form className="space-y-4" id="proposalForm" onSubmit={onSubmit}>
+            <FormField
+              control={form.control}
               name="title"
-              placeholder="Proposal Title"
-              required
-              minLength={6}
-              type="text"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Proposal Title"
+                      defaultValue=""
+                      {...field}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="type">Type</Label>
-            <Select required name="type" defaultOpen={false}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select Type" defaultValue="topic" />
-              </SelectTrigger>
-              <SelectContent id="type">
-                <SelectItem value="topic">Topic</SelectItem>
-                <SelectItem value="project">Project</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="summary">Summary</Label>
-            <Textarea
-              id="summary"
-              placeholder="Briefly describe your proposal"
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel>Type</FormLabel>
+                  <FormControl>
+                    <Select
+                      defaultOpen={false}
+                      onValueChange={field.onChange}
+                      defaultValue=""
+                      {...field}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Type" {...field} />
+                      </SelectTrigger>
+                      <SelectContent id="type">
+                        <SelectItem value="topic">Topic</SelectItem>
+                        <SelectItem value="project">Project</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="summary"
-              required
-              minLength={6}
-              rows={3}
-              maxLength={200}
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel>Summary</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Briefly describe your proposal"
+                      defaultValue=""
+                      rows={3}
+                      {...field}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              placeholder="Provide more details about your proposal"
-              required
+            <FormField
+              control={form.control}
               name="description"
-              minLength={6}
-              rows={5}
-              maxLength={200}
+              render={({ field }) => (
+                <FormItem className="space-y-2">
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Provide more details about your proposal"
+                      defaultValue=""
+                      rows={5}
+                      {...field}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
             />
-          </div>
-          <DialogFooter className="flex justify-end p-2">
-            <Button
-              className="mr-2"
-              type="submit"
-              name="status-draft"
-              variant="outline"
-              onClick={onDraftButtonClick}
-              disabled={loading}
-              busy={isDraft && loading}
-            >
-              Save Draft
-            </Button>
-            <Button
-              name="status-open"
-              type="submit"
-              variant="default"
-              onClick={onSubmitButtonClick}
-              disabled={loading}
-              busy={!isDraft && loading}
-            >
-              Submit Proposal
-            </Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter className="flex justify-end p-2">
+              <Button
+                className="mr-2"
+                type="submit"
+                name="status-draft"
+                variant="outline"
+                onClick={() => form.setValue('status', 'draft')}
+                disabled={loading}
+                busy={form.getValues('status') === 'draft' && loading}
+              >
+                Save Draft
+              </Button>
+              <Button
+                name="status-open"
+                type="submit"
+                variant="default"
+                onClick={() => form.setValue('status', 'open')}
+                disabled={loading}
+                busy={form.getValues('status') === 'open' && loading}
+              >
+                Submit Proposal
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
