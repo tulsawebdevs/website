@@ -63,9 +63,6 @@
                                 "$ref": "#/components/schemas/DatabaseObject"
                               },
                               {
-                                "$ref": "#/components/schemas/TimeStamped"
-                              },
-                              {
                                 "$ref": "#/components/schemas/Author"
                               }
                             ]
@@ -150,9 +147,6 @@
                               },
                               {
                                 "$ref": "#/components/schemas/DatabaseObject"
-                              },
-                              {
-                                "$ref": "#/components/schemas/TimeStamped"
                               },
                               {
                                 "$ref": "#/components/schemas/Author"
@@ -241,9 +235,6 @@
                                 "$ref": "#/components/schemas/DatabaseObject"
                               },
                               {
-                                "$ref": "#/components/schemas/TimeStamped"
-                              },
-                              {
                                 "$ref": "#/components/schemas/Author"
                               }
                             ]
@@ -321,9 +312,6 @@
                       },
                       {
                         "$ref": "#/components/schemas/DatabaseObject"
-                      },
-                      {
-                        "$ref": "#/components/schemas/TimeStamped"
                       }
                     ]
                   }
@@ -382,9 +370,6 @@
                     },
                     {
                       "$ref": "#/components/schemas/DatabaseObject"
-                    },
-                    {
-                      "$ref": "#/components/schemas/TimeStamped"
                     },
                     {
                       "$ref": "#/components/schemas/Author"
@@ -457,9 +442,6 @@
                     },
                     {
                       "$ref": "#/components/schemas/DatabaseObject"
-                    },
-                    {
-                      "$ref": "#/components/schemas/TimeStamped"
                     }
                   ]
                 }
@@ -527,11 +509,11 @@
         }
       }
     },
-    "/proposals/{id}/votes": {
+    "/proposals/{proposalId}/votes": {
       "summary": "Get, update, or delete votes for a specific proposal by ID",
       "parameters": [
         {
-          "name": "id",
+          "name": "proposalId",
           "in": "path",
           "required": true,
           "schema": {
@@ -646,11 +628,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Vote"
-                  }
-                ]
+                "$ref": "#/components/schemas/Vote"
               }
             }
           }
@@ -732,18 +710,12 @@
     "schemas": {
       "DatabaseObject": {
         "type": "object",
-        "required": ["id"],
+        "required": ["id", "created"],
         "properties": {
           "id": {
             "type": "integer",
             "format": "int32"
-          }
-        }
-      },
-      "TimeStamped": {
-        "type": "object",
-        "required": ["created", "updated"],
-        "properties": {
+          },
           "created": {
             "type": "string",
             "format": "date-time"
@@ -815,13 +787,9 @@
       },
       "Vote": {
         "type": "object",
-        "required": ["proposalId", "vote"],
+        "required": ["value"],
         "properties": {
-          "proposalId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "vote": {
+          "value": {
             "description": "Ranking values: -2 (strong disinterest), -1 (slight disinterest), 0 (neutral), 1 (slight interest), 2 (strong interest)",
             "type": "string",
             "enum": ["-2", "-1", "0", "1", "2"]
@@ -834,14 +802,11 @@
       },
       "Author": {
         "type": "object",
-        "required": ["authorName", "authorEmail"],
+        "required": ["authorName"],
         "properties": {
           "authorName": {
             "type": "string",
             "maxLength": 48
-          },
-          "authorEmail": {
-            "type": "string"
           }
         }
       },
@@ -852,8 +817,11 @@
           },
           {
             "type": "object",
-            "required": ["authorId"],
+            "required": ["authorId", "authorEmail"],
             "properties": {
+              "authorEmail": {
+                "type": "string"
+              },
               "authorId": {
                 "type": "string"
               }
