@@ -8,8 +8,7 @@
   "extends": "astro/tsconfigs/strictest",
   "compilerOptions": {
     "paths": {
-      "@": ["./src/features/"],
-      "@/*": ["./src/features/*"]
+      "@/*": ["./src/*"]
     },
     "plugins": [{ "name": "@astrojs/ts-plugin" }],
     "jsx": "react-jsx",
