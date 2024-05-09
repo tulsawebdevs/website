@@ -60,7 +60,7 @@
     "@types/node": "20.12.7",
     "@types/swagger-ui-react": "4.18.3",
     "@typescript-eslint/eslint-plugin": "7.0.2",
-    "@vanilla-extract/vite-plugin": "4.0.7",
+    "@vanilla-extract/vite-plugin": "4.0.9",
     "@vitest/coverage-v8": "1.5.2",
     "astro-eslint-parser": "0.17.0",
     "autoprefixer": "10.4.19",
