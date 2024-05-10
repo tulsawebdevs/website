@@ -87,5 +87,5 @@
     "typescript-eslint": "7.1.0",
     "yaml-eslint-parser": "1.2.2"
   },
-  "packageManager": "npm@10.6.0"
+  "packageManager": "npm@10.7.0"
 }
