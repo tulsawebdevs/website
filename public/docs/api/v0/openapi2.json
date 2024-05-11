@@ -1,5 +1,5 @@
 {
-  "openapi": "3.0.0",
+  "openapi": "3.1.0",
   "info": {
     "title": "Tulsa WebDevs Voting Service",
     "description": "API for casting votes on various topics/projects and submitting and managing proposals with a ranking and voting system.",
@@ -29,7 +29,7 @@
         }
       ],
       "get": {
-        "summary": "Get a paginated list (optionally, filtered) of the current user's drafts",
+        "summary": "Get a list of the current user's drafts with pagination, filtering, and sorting",
         "parameters": [
           {
             "name": "cursor",
@@ -71,7 +71,20 @@
                 "schema": {
                   "allOf": [
                     {
-                      "$ref": "#/components/schemas/Paginated"
+                      "type": "object",
+                      "required": ["cursor"],
+                      "properties": {
+                        "cursor": {
+                          "description": "Cursor for paginating through a list of items",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "total": {
+                          "description": "Total number of items of this type in the database, if known",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      }
                     },
                     {
                       "type": "object",
@@ -82,10 +95,43 @@
                           "items": {
                             "allOf": [
                               {
-                                "$ref": "#/components/schemas/Draft"
+                                "type": "object",
+                                "properties": {
+                                  "title": {
+                                    "type": "string",
+                                    "maxLength": 48
+                                  },
+                                  "summary": {
+                                    "type": "string",
+                                    "maxLength": 255
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "maxLength": 2048
+                                  },
+                                  "type": {
+                                    "type": "string",
+                                    "enum": ["topic", "project"]
+                                  }
+                                }
                               },
                               {
-                                "$ref": "#/components/schemas/DatabaseObject"
+                                "type": "object",
+                                "required": ["id", "created"],
+                                "properties": {
+                                  "id": {
+                                    "type": "integer",
+                                    "format": "int32"
+                                  },
+                                  "created": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                  },
+                                  "updated": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                  }
+                                }
                               }
                             ]
                           }
@@ -102,7 +148,26 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/401Error"
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": ["message"],
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "default": "Unauthorized"
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -112,7 +177,26 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/404Error"
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": ["message"],
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "default": "Not Found"
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -122,7 +206,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "required": ["message"],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
@@ -136,7 +226,25 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Draft"
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 48
+                  },
+                  "summary": {
+                    "type": "string",
+                    "maxLength": 255
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 2048
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": ["topic", "project"]
+                  }
+                }
               }
             }
           }
@@ -149,10 +257,43 @@
                 "schema": {
                   "allOf": [
                     {
-                      "$ref": "#/components/schemas/Draft"
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "maxLength": 48
+                        },
+                        "summary": {
+                          "type": "string",
+                          "maxLength": 255
+                        },
+                        "description": {
+                          "type": "string",
+                          "maxLength": 2048
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": ["topic", "project"]
+                        }
+                      }
                     },
                     {
-                      "$ref": "#/components/schemas/DatabaseObject"
+                      "type": "object",
+                      "required": ["id", "created"],
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "created": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updated": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
                     }
                   ]
                 }
@@ -164,7 +305,26 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/401Error"
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": ["message"],
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "default": "Unauthorized"
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -174,7 +334,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "required": ["message"],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
@@ -189,7 +355,27 @@
             "application/json": {
               "schema": {
                 "allOf": [
-                  { "$ref": "#/components/schemas/Draft" },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "maxLength": 48
+                      },
+                      "summary": {
+                        "type": "string",
+                        "maxLength": 255
+                      },
+                      "description": {
+                        "type": "string",
+                        "maxLength": 2048
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": ["topic", "project"]
+                      }
+                    }
+                  },
                   {
                     "type": "object",
                     "required": ["draftId"],
@@ -213,10 +399,43 @@
                 "schema": {
                   "allOf": [
                     {
-                      "$ref": "#/components/schemas/Draft"
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "maxLength": 48
+                        },
+                        "summary": {
+                          "type": "string",
+                          "maxLength": 255
+                        },
+                        "description": {
+                          "type": "string",
+                          "maxLength": 2048
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": ["topic", "project"]
+                        }
+                      }
                     },
                     {
-                      "$ref": "#/components/schemas/DatabaseObject"
+                      "type": "object",
+                      "required": ["id", "created"],
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "created": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updated": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
                     }
                   ]
                 }
@@ -228,7 +447,26 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/401Error"
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": ["message"],
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "default": "Unauthorized"
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -238,7 +476,26 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/404Error"
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": ["message"],
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "default": "Not Found"
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -248,7 +505,13 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "required": ["message"],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
@@ -257,23 +520,18 @@
       },
       "delete": {
         "summary": "Delete a draft by ID",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["draftId"],
-                "properties": {
-                  "draftId": {
-                    "type": "integer",
-                    "format": "int32"
-                  }
-                }
-              }
+        "parameters": [
+          {
+            "required": true,
+            "name": "draftId",
+            "description": "Id of the draft to delete",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
             }
           }
-        },
+        ],
         "responses": {
           "204": {
             "description": "No Content"
@@ -312,8 +570,9 @@
       }
     },
     "/proposals": {
+      "summary": "",
       "get": {
-        "summary": "Get a paginated list of (optionally, filtered) proposals.",
+        "summary": "Get a list of the proposals with pagination, filtering, and sorting",
         "parameters": [
           {
             "name": "Authorization",
@@ -384,6 +643,15 @@
                           "items": {
                             "allOf": [
                               {
+                                "type": "object",
+                                "required": ["authorName"],
+                                "properties": {
+                                  "authorName": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              {
                                 "$ref": "#/components/schemas/Proposal"
                               },
                               {
@@ -391,9 +659,6 @@
                               },
                               {
                                 "$ref": "#/components/schemas/DatabaseObject"
-                              },
-                              {
-                                "$ref": "#/components/schemas/Author"
                               }
                             ]
                           }
@@ -493,104 +758,29 @@
         }
       }
     },
-    "/votes": {
-      "summary": "Manage the current user's votes",
-      "post": {
-        "summary": "Get a paginated list (optionally, filtered) of the user's votes.\n\nTo retrieve votes for a specific proposoal ID, pass the proposal ID in the `cursor` parameter and set the `limit` to 1.",
-        "parameters": [
-          {
-            "name": "cursor",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "description": "Cursor for paginating through a list of votes"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "description": "Maximum number of votes to return"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": ["tally"],
-                  "properties": {
-                    "tally": {
-                      "description": "Total tally of all votes, including those not returned in the response",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "votes": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/Paginated"
-                        },
-                        {
-                          "type": "object",
-                          "required": ["list"],
-                          "properties": {
-                            "list": {
-                              "type": "array",
-                              "items": {
-                                "$ref": "#/components/schemas/Vote"
-                              }
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
+    "/{proposalId}": {
+      "summary": "Manage a user's vote on a proposal",
+      "parameters": [
+        {
+          "name": "Authorization",
+          "in": "header",
+          "required": true,
+          "schema": {
+            "type": "string"
           }
         },
-        "404": {
-          "description": "Not Found",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/404Error"
-              }
-            }
-          }
-        },
-        "default": {
-          "description": "Unexpected error",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Error"
-              }
-            }
+        {
+          "name": "proposalId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
           }
         }
-      },
-      "put": {
-        "summary": "Submit a proposal vote",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+      ],
+      "post": {
+        "summary": "Submit (or update) a vote on a proposal",
         "requestBody": {
           "required": true,
           "content": {
@@ -607,7 +797,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Vote"
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Vote" },
+                    { "$ref": "#/components/schemas/DatabaseObject" }
+                  ]
                 }
               }
             }
@@ -635,7 +828,7 @@
         }
       },
       "delete": {
-        "summary": "Delete a specific vote by ID",
+        "summary": "Delete a user's proposal vote",
         "parameters": [
           {
             "name": "Authorization",
@@ -644,25 +837,17 @@
             "schema": {
               "type": "string"
             }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["voteId"],
-                "properties": {
-                  "voteId": {
-                    "type": "integer",
-                    "format": "int32"
-                  }
-                }
-              }
+          },
+          {
+            "name": "voteId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
             }
           }
-        },
+        ],
         "responses": {
           "204": {
             "description": "No Content"
@@ -782,8 +967,11 @@
         "oneOf": [
           {
             "type": "object",
+            "required": ["status", "results"],
             "properties": {
-              "required": ["status", "results"],
+              "userVote": {
+                "$ref": "#/components/schemas/Vote"
+              },
               "results": {
                 "type": "array",
                 "items": {
@@ -800,6 +988,9 @@
             "type": "object",
             "required": ["status"],
             "properties": {
+              "userVote": {
+                "$ref": "#/components/schemas/Vote"
+              },
               "status": {
                 "type": "string",
                 "enum": ["open"]
@@ -846,7 +1037,13 @@
       "404Error": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/Error"
+            "type": "object",
+            "required": ["message"],
+            "properties": {
+              "message": {
+                "type": "string"
+              }
+            }
           },
           {
             "type": "object",
@@ -862,7 +1059,13 @@
       "401Error": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/Error"
+            "type": "object",
+            "required": ["message"],
+            "properties": {
+              "message": {
+                "type": "string"
+              }
+            }
           },
           {
             "type": "object",
