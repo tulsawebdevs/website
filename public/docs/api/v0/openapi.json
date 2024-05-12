@@ -3,7 +3,7 @@
   "info": {
     "title": "Tulsa WebDevs Voting Service",
     "description": "API for casting votes on various topics/projects and submitting and managing proposals with a ranking and voting system.",
-    "version": "0.0.3"
+    "version": "0.0.4"
   },
   "servers": [
     {
@@ -870,6 +870,62 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/404Error"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/proposals/{proposalId}/close": {
+      "summary": "close an open proposal (soft delete)",
+      "parameters": [
+        {
+          "name": "Authorization",
+          "in": "header",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "proposalId",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      ],
+      "post": {
+        "responses": {
+          "204": {
+            "description": "Closed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [{ "$ref": "#/components/schemas/DatabaseObject" }]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
                 }
               }
             }
