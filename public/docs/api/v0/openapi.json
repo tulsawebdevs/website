@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://vote.tulsawebdevs.org",
+      "url": "http://vote.tulsawebdevs. org",
       "description": "Voting Service API"
     },
     {
@@ -19,192 +19,27 @@
     "/drafts": {
       "summary": "Manage the current user's proposal drafts",
       "parameters": [
-        {
-          "name": "Authorization",
-          "in": "header",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        }
+        { "$ref": "#/components/parameters/AuthorizationRequired" }
       ],
       "get": {
+        "operationId": "listDrafts",
         "summary": "Get a list of the current user's drafts with pagination, filtering, and sorting",
         "parameters": [
-          {
-            "name": "cursor",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "description": "Cursor for paginating through a list of drafts"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "default": 10,
-              "type": "integer",
-              "format": "int32"
-            },
-            "description": "Maximum number of drafts to return"
-          },
-          {
-            "name": "type",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "enum": ["topic", "project"]
-            },
-            "description": "Filter drafts by type"
-          }
+          { "$ref": "#/components/parameters/PaginationParams" },
+          { "$ref": "#/components/parameters/ProposalTypeFilter" }
         ],
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "type": "object",
-                      "required": ["cursor"],
-                      "properties": {
-                        "cursor": {
-                          "description": "Cursor for paginating through a list of items",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "total": {
-                          "description": "Total number of items of this type in the database, if known",
-                          "type": "integer",
-                          "format": "int32"
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "required": ["drafts"],
-                      "properties": {
-                        "drafts": {
-                          "type": "array",
-                          "items": {
-                            "allOf": [
-                              {
-                                "type": "object",
-                                "properties": {
-                                  "title": {
-                                    "type": "string",
-                                    "maxLength": 48
-                                  },
-                                  "summary": {
-                                    "type": "string",
-                                    "maxLength": 255
-                                  },
-                                  "description": {
-                                    "type": "string",
-                                    "maxLength": 2048
-                                  },
-                                  "type": {
-                                    "type": "string",
-                                    "enum": ["topic", "project"]
-                                  }
-                                }
-                              },
-                              {
-                                "$ref": "#/components/schemas/TimeStamped"
-                              },
-                              {
-                                "$ref": "#/components/schemas/Author"
-                              }
-                            ]
-                          }
-                        }
-                      }
-                    }
-                  ]
-                }
+                "schema": { "$ref": "#/components/schemas/DraftIndex" }
               }
             }
           },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "type": "object",
-                      "required": ["message"],
-                      "properties": {
-                        "message": {
-                          "type": "string"
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "message": {
-                          "type": "string",
-                          "default": "Unauthorized"
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "type": "object",
-                      "required": ["message"],
-                      "properties": {
-                        "message": {
-                          "type": "string"
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "message": {
-                          "type": "string",
-                          "default": "Not Found"
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": ["message"],
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" },
+          "default": { "$ref": "#/components/responses/500" }
         }
       },
       "post": {
@@ -213,27 +48,7 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "title": {
-                    "type": "string",
-                    "maxLength": 48
-                  },
-                  "summary": {
-                    "type": "string",
-                    "maxLength": 255
-                  },
-                  "description": {
-                    "type": "string",
-                    "maxLength": 2048
-                  },
-                  "type": {
-                    "type": "string",
-                    "enum": ["topic", "project"]
-                  }
-                }
-              }
+              "schema": { "$ref": "#/components/schemas/Draft" }
             }
           }
         },
@@ -244,120 +59,68 @@
               "application/json": {
                 "schema": {
                   "allOf": [
-                    {
-                      "type": "object",
-                      "properties": {
-                        "list": {
-                          "type": "array",
-                          "items": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/Project"
-                              },
-                              {
-                                "$ref": "#/components/schemas/DatabaseObject"
-                              },
-                              {
-                                "$ref": "#/components/schemas/Author"
-                              }
-                            ]
-                          }
-                        }
-                      }
-                    }
+                    { "$ref": "#/components/schemas/Draft" },
+                    { "$ref": "#/components/schemas/DatabaseObject" }
                   ]
                 }
               }
             }
           },
-          "401": {
-            "description": "Unauthorized",
+          "401": { "$ref": "#/components/responses/401" },
+          "default": { "$ref": "#/components/responses/500" }
+        }
+      },
+      "put": {
+        "summary": "Replace an existing draft",
+        "parameters": [{ "$ref": "#/components/parameters/RecordId" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Draft" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
                   "allOf": [
-                    {
-                      "type": "object",
-                      "required": ["message"],
-                      "properties": {
-                        "message": {
-                          "type": "string"
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "message": {
-                          "type": "string",
-                          "default": "Unauthorized"
-                        }
-                      }
-                    }
+                    { "$ref": "#/components/schemas/Draft" },
+                    { "$ref": "#/components/schemas/DatabaseObject" }
                   ]
                 }
               }
             }
           },
-          "default": {
-            "description": "Unexpected error",
+          "201": {
+            "description": "Created",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": ["message"],
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Draft" },
+                    { "$ref": "#/components/schemas/DatabaseObject" }
+                  ]
                 }
               }
             }
-          }
+          },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" },
+          "default": { "$ref": "#/components/responses/500" }
         }
       },
       "patch": {
         "summary": "Update an existing draft",
+        "parameters": [{ "$ref": "#/components/parameters/RecordId" }],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "allOf": [
-                  {
-                    "type": "object",
-                    "properties": {
-                      "title": {
-                        "type": "string",
-                        "maxLength": 48
-                      },
-                      "summary": {
-                        "type": "string",
-                        "maxLength": 255
-                      },
-                      "description": {
-                        "type": "string",
-                        "maxLength": 2048
-                      },
-                      "type": {
-                        "type": "string",
-                        "enum": ["topic", "project"]
-                      }
-                    }
-                  },
-                  {
-                    "type": "object",
-                    "required": ["draftId"],
-                    "properties": {
-                      "draftId": {
-                        "type": "integer",
-                        "format": "int32"
-                      }
-                    }
-                  }
-                ]
-              }
+              "schema": { "$ref": "#/components/schemas/Draft" }
             }
           }
         },
@@ -368,302 +131,62 @@
               "application/json": {
                 "schema": {
                   "allOf": [
-                    {
-                      "type": "object",
-                      "properties": {
-                        "list": {
-                          "type": "array",
-                          "items": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/Proposal"
-                              },
-                              {
-                                "$ref": "#/components/schemas/DatabaseObject"
-                              },
-                              {
-                                "$ref": "#/components/schemas/Author"
-                              }
-                            ]
-                          }
-                        }
-                      }
-                    }
+                    { "$ref": "#/components/schemas/Draft" },
+                    { "$ref": "#/components/schemas/DatabaseObject" }
                   ]
                 }
               }
             }
           },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "type": "object",
-                      "required": ["message"],
-                      "properties": {
-                        "message": {
-                          "type": "string"
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "message": {
-                          "type": "string",
-                          "default": "Not Found"
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": ["message"],
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" },
+          "default": { "$ref": "#/components/responses/500" }
         }
-      }
-    },
-    "/drafts/{draftId}": {
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/drafts/{draftId}": {
+      },
       "delete": {
         "summary": "Delete a draft by ID",
-        "parameters": [
-          {
-            "required": true,
-            "name": "draftId",
-            "description": "Id of the draft to delete",
-            "in": "path",
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["draftId"],
-                "properties": {
-                  "draftId": {
-                    "type": "integer",
-                    "format": "int32"
-                  }
-                }
-              }
-            }
-          }
-        },
+        "parameters": [{ "$ref": "#/components/parameters/RecordId" }],
         "responses": {
-          "204": {
-            "description": "No Content"
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/401Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/404Error"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
+          "204": { "$ref": "#/components/responses/204" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" },
+          "default": { "$ref": "#/components/responses/500" }
         }
       }
     },
     "/proposals": {
-      "summary": "",
+      "summary": "Create or list proposals",
       "get": {
         "summary": "Get a list of the proposals with pagination, filtering, and sorting",
         "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "cursor",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "description": "Cursor for paginating through the list of proposals"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "default": 10,
-              "type": "integer",
-              "format": "int32"
-            },
-            "description": "Maximum number of proposals to return"
-          },
-          {
-            "name": "type",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "enum": ["topic", "project"]
-            },
-            "description": "Filter proposals by type"
-          },
-          {
-            "name": "status",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "enum": ["open", "closed"]
-            },
-            "description": "Filter proposals by status"
-          }
+          { "$ref": "#/components/parameters/AuthorizationOptional" },
+          { "$ref": "#/components/parameters/PaginationParams" },
+          { "$ref": "#/components/parameters/ProposalTypeFilter" },
+          { "$ref": "#/components/parameters/ProposalStatusFilter" }
         ],
         "responses": {
           "200": {
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Paginated"
-                    },
-                    {
-                      "type": "object",
-                      "required": ["proposals"],
-                      "properties": {
-                        "proposals": {
-                          "type": "array",
-                          "items": {
-                            "allOf": [
-                              {
-                                "type": "object",
-                                "required": ["authorName"],
-                                "properties": {
-                                  "authorName": {
-                                    "type": "string"
-                                  }
-                                }
-                              },
-                              {
-                                "$ref": "#/components/schemas/Proposal"
-                              },
-                              {
-                                "$ref": "#/components/schemas/ProposalVoteState"
-                              },
-                              {
-                                "$ref": "#/components/schemas/DatabaseObject"
-                              }
-                            ]
-                          }
-                        }
-                      }
-                    }
-                  ]
-                }
+                "schema": { "$ref": "#/components/schemas/ProposalIndex" }
               }
             }
           },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/404Error"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
+          "404": { "$ref": "#/components/responses/404" },
+          "default": { "$ref": "#/components/responses/500" }
         }
       },
       "post": {
         "summary": "Create a new proposal",
         "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-              "type": "string"
-            }
-          }
+          { "$ref": "#/components/parameters/AuthorizationRequired" }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Proposal"
-              }
+              "schema": { "$ref": "#/components/schemas/Proposal" }
             }
           }
         },
@@ -674,63 +197,24 @@
               "application/json": {
                 "schema": {
                   "allOf": [
-                    {
-                      "$ref": "#/components/schemas/Proposal"
-                    },
-                    {
-                      "$ref": "#/components/schemas/ProposalVoteState"
-                    },
-                    {
-                      "$ref": "#/components/schemas/DatabaseObject"
-                    }
+                    { "$ref": "#/components/schemas/Proposal" },
+                    { "$ref": "#/components/schemas/ProposalState" },
+                    { "$ref": "#/components/schemas/DatabaseObject" }
                   ]
                 }
               }
             }
           },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/401Error"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
+          "401": { "$ref": "#/components/responses/401" },
+          "default": { "$ref": "#/components/responses/500" }
         }
       }
     },
-    "/proposals/{proposalId}": {
+    "/{recordId}": {
       "summary": "Manage a user's vote on a proposal",
       "parameters": [
-        {
-          "name": "Authorization",
-          "in": "header",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        },
-        {
-          "name": "proposalId",
-          "in": "path",
-          "required": true,
-          "schema": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
+        { "$ref": "#/components/parameters/AuthorizationRequired" },
+        { "$ref": "#/components/parameters/RecordId" }
       ],
       "post": {
         "summary": "Submit (or update) a vote on a proposal",
@@ -738,9 +222,7 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Vote"
-              }
+              "schema": { "$ref": "#/components/schemas/Vote" }
             }
           }
         },
@@ -758,110 +240,30 @@
               }
             }
           },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/401Error"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
+          "401": { "$ref": "#/components/responses/401" },
+          "default": { "$ref": "#/components/responses/500" }
         }
       },
       "delete": {
         "summary": "Delete a user's proposal vote",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-              "type": "string"
-            }
-          },
-          {
-            "name": "voteId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
         "responses": {
-          "204": {
-            "description": "No Content"
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/401Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/404Error"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
+          "204": { "$ref": "#/components/responses/204" },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" },
+          "default": { "$ref": "#/components/responses/500" }
         }
-      },
-      "delete": {
-        "summary": "Delete a user's proposal vote",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "voteId",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
+      }
+    },
+    "/{recordId}/close": {
+      "summary": "close an open proposal (soft delete)",
+      "parameters": [
+        { "$ref": "#/components/parameters/AuthorizationRequired" },
+        { "$ref": "#/components/parameters/RecordId" }
+      ],
+      "post": {
         "responses": {
-          "204": {
-            "description": "Closed",
+          "200": {
+            "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
@@ -870,41 +272,95 @@
               }
             }
           },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/401Error"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/404Error"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
+          "401": { "$ref": "#/components/responses/401" },
+          "default": { "$ref": "#/components/responses/500" }
         }
       }
     }
   },
   "components": {
+    "parameters": {
+      "PaginationParams": {
+        "name": "pagination",
+        "in": "query",
+        "required": false,
+        "schema": { "$ref": "#/components/schemas/Paginated" }
+      },
+      "ProposalTypeFilter": {
+        "name": "type",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": ["topic", "project"]
+        },
+        "description": "Filter items by type"
+      },
+      "ProposalStatusFilter": {
+        "name": "status",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": ["open", "closed"]
+        },
+        "description": "Filter items by status"
+      },
+      "AuthorizationRequired": {
+        "name": "Authorization",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "AuthorizationOptional": {
+        "name": "Authorization",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "RecordId": {
+        "name": "recordId",
+        "in": "query",
+        "required": true,
+        "description": "ID of the record to get, update, or delete",
+        "schema": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "responses": {
+      "204": { "description": "No Content" },
+      "205": { "description": "Reset Content" },
+      "401": {
+        "description": "Unauthorized",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      },
+      "404": {
+        "description": "Not Found",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      }
+    },
     "schemas": {
       "DatabaseObject": {
         "type": "object",
@@ -945,11 +401,29 @@
           }
         }
       },
+      "DraftIndex": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Paginated" },
+          {
+            "type": "object",
+            "required": ["drafts"],
+            "properties": {
+              "drafts": {
+                "type": "array",
+                "items": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Draft" },
+                    { "$ref": "#/components/schemas/DatabaseObject" }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
       "Proposal": {
         "allOf": [
-          {
-            "$ref": "#/components/schemas/Draft"
-          },
+          { "$ref": "#/components/schemas/Draft" },
           {
             "type": "object",
             "properties": {
@@ -960,41 +434,57 @@
               "summary": {
                 "type": "string",
                 "minLength": 30
-              },
-              "authorName": {
-                "type": "string",
-                "minLength": 8
               }
             }
           }
         ]
       },
-      "Vote": {
-        "type": "object",
-        "required": ["status", "type", "title", "summary"],
-        "properties": {
-          "title": {
-            "type": "string",
-            "minLength": 8,
-            "maxLength": 48
+      "ProposalState": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": ["status", "results", "authorName"],
+            "properties": {
+              "authorName": { "type": "string" },
+              "status": { "type": "string", "enum": ["closed"] },
+              "userVote": { "$ref": "#/components/schemas/Vote" },
+              "results": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/Vote" }
+              }
+            }
           },
-          "summary": {
-            "type": "string",
-            "minLength": 40,
-            "maxLength": 255
-          },
-          "description": {
-            "type": "string"
-          },
-          "status": {
-            "type": "string",
-            "enum": ["draft", "open", "closed"]
-          },
-          "type": {
-            "type": "string",
-            "enum": ["topic", "project"]
+          {
+            "type": "object",
+            "required": ["status", "authorName"],
+            "properties": {
+              "authorName": { "type": "string", "minLength": 4 },
+              "status": { "type": "string", "enum": ["open"] },
+              "userVote": { "$ref": "#/components/schemas/Vote" }
+            }
           }
-        }
+        ]
+      },
+      "ProposalIndex": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Paginated" },
+          {
+            "type": "object",
+            "required": ["proposals"],
+            "properties": {
+              "proposals": {
+                "type": "array",
+                "items": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Proposal" },
+                    { "$ref": "#/components/schemas/ProposalState" },
+                    { "$ref": "#/components/schemas/DatabaseObject" }
+                  ]
+                }
+              }
+            }
+          }
+        ]
       },
       "Vote": {
         "type": "object",
@@ -1011,42 +501,6 @@
           }
         }
       },
-      "ProposalVoteState": {
-        "oneOf": [
-          {
-            "type": "object",
-            "required": ["status", "results"],
-            "properties": {
-              "userVote": {
-                "$ref": "#/components/schemas/Vote"
-              },
-              "results": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Vote"
-                }
-              },
-              "status": {
-                "type": "string",
-                "enum": ["closed"]
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": ["status"],
-            "properties": {
-              "userVote": {
-                "$ref": "#/components/schemas/Vote"
-              },
-              "status": {
-                "type": "string",
-                "enum": ["open"]
-              }
-            }
-          }
-        ]
-      },
       "Expirable": {
         "type": "object",
         "required": ["expires"],
@@ -1059,15 +513,15 @@
       },
       "Paginated": {
         "type": "object",
-        "required": ["cursor"],
+        "description": "Controls pagination of results",
         "properties": {
           "cursor": {
             "description": "Cursor for paginating through a list of items",
             "type": "integer",
             "format": "int32"
           },
-          "total": {
-            "description": "Total number of items of this type in the database, if known",
+          "limit": {
+            "description": "In a request, the maximum number of items to return. In a response, the total number of items available, if known.",
             "type": "integer",
             "format": "int32"
           }
@@ -1081,50 +535,6 @@
             "type": "string"
           }
         }
-      },
-      "404Error": {
-        "allOf": [
-          {
-            "type": "object",
-            "required": ["message"],
-            "properties": {
-              "message": {
-                "type": "string"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "properties": {
-              "message": {
-                "type": "string",
-                "default": "Not Found"
-              }
-            }
-          }
-        ]
-      },
-      "401Error": {
-        "allOf": [
-          {
-            "type": "object",
-            "required": ["message"],
-            "properties": {
-              "message": {
-                "type": "string"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "properties": {
-              "message": {
-                "type": "string",
-                "default": "Unauthorized"
-              }
-            }
-          }
-        ]
       }
     }
   }
