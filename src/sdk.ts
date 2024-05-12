@@ -1,16 +1,19 @@
 import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
 import { z } from "zod";
 
-type Proposal = Draft & {
-  /**
-   * @minLength 8
-   */
-  title: string;
-  /**
-   * @minLength 30
-   */
-  summary: string;
+type DraftIndex = Paginated & {
+  drafts: Array<Draft & DatabaseObject>;
 };
+type Paginated = Partial<{
+  /**
+   * Cursor for paginating through a list of items
+   */
+  cursor: number;
+  /**
+   * In a request, the maximum number of items to return. In a response, the total number of items available, if known.
+   */
+  limit: number;
+}>;
 type Draft = Partial<{
   /**
    * @maxLength 48
@@ -29,21 +32,41 @@ type Draft = Partial<{
    */
   type: "topic" | "project";
 }>;
-type ProposalVoteState =
+type DatabaseObject = {
+  id: number;
+  created: string;
+  updated?: string | undefined;
+};
+type Proposal = Draft & {
+  /**
+   * @minLength 8
+   */
+  title: string;
+  /**
+   * @minLength 30
+   */
+  summary: string;
+};
+type ProposalState =
   | {
-      userVote?: Vote | undefined;
-      results: Array<Vote>;
+      authorName: string;
       /**
        * @enum closed
        */
       status: "closed";
+      userVote?: Vote | undefined;
+      results: Array<Vote>;
     }
   | {
-      userVote?: Vote | undefined;
+      /**
+       * @minLength 4
+       */
+      authorName: string;
       /**
        * @enum open
        */
       status: "open";
+      userVote?: Vote | undefined;
     };
 type Vote = {
   /**
@@ -57,34 +80,24 @@ type Vote = {
    */
   string | undefined;
 };
+type ProposalIndex = Paginated & {
+  proposals: Array<Proposal & ProposalState & DatabaseObject>;
+};
 
-const patchDrafts_Body = z
+const Paginated: z.ZodType<Paginated> = z
   .object({
-    title: z.string().max(48),
-    summary: z.string().max(255),
-    description: z.string().max(2048),
-    type: z.enum(["topic", "project"]),
+    cursor: z
+      .number()
+      .int()
+      .describe("Cursor for paginating through a list of items"),
+    limit: z
+      .number()
+      .int()
+      .describe(
+        "In a request, the maximum number of items to return. In a response, the total number of items available, if known."
+      ),
   })
-  .partial()
-  .and(z.object({ draftId: z.number().int() }));
-const _401Error = z
-  .object({ message: z.string() })
-  .and(z.object({ message: z.string().default("Unauthorized") }).partial());
-const _404Error = z
-  .object({ message: z.string() })
-  .and(z.object({ message: z.string().default("Not Found") }).partial());
-const Error = z.object({ message: z.string() });
-const Paginated = z.object({
-  cursor: z
-    .number()
-    .int()
-    .describe("Cursor for paginating through a list of items"),
-  total: z
-    .number()
-    .int()
-    .describe("Total number of items of this type in the database, if known")
-    .optional(),
-});
+  .partial();
 const Draft: z.ZodType<Draft> = z
   .object({
     title: z.string().max(48),
@@ -93,6 +106,15 @@ const Draft: z.ZodType<Draft> = z
     type: z.enum(["topic", "project"]),
   })
   .partial();
+const DatabaseObject: z.ZodType<DatabaseObject> = z.object({
+  id: z.number().int(),
+  created: z.string().datetime({ offset: true }),
+  updated: z.string().datetime({ offset: true }).optional(),
+});
+const DraftIndex: z.ZodType<DraftIndex> = Paginated.and(
+  z.object({ drafts: z.array(Draft.and(DatabaseObject)) })
+);
+const Error = z.object({ message: z.string() });
 const Proposal: z.ZodType<Proposal> = Draft.and(
   z.object({ title: z.string().min(8), summary: z.string().min(30) })
 );
@@ -104,40 +126,44 @@ const Vote: z.ZodType<Vote> = z.object({
     ),
   comment: z.string().max(255).optional(),
 });
-const ProposalVoteState: z.ZodType<ProposalVoteState> = z.union([
+const ProposalState: z.ZodType<ProposalState> = z.union([
   z.object({
+    authorName: z.string(),
+    status: z.literal("closed"),
     userVote: Vote.optional(),
     results: z.array(Vote),
-    status: z.literal("closed"),
   }),
-  z.object({ userVote: Vote.optional(), status: z.literal("open") }),
+  z.object({
+    authorName: z.string().min(4),
+    status: z.literal("open"),
+    userVote: Vote.optional(),
+  }),
 ]);
-const DatabaseObject = z.object({
-  id: z.number().int(),
-  created: z.string().datetime({ offset: true }),
-  updated: z.string().datetime({ offset: true }).optional(),
-});
+const ProposalIndex: z.ZodType<ProposalIndex> = Paginated.and(
+  z.object({
+    proposals: z.array(Proposal.and(ProposalState).and(DatabaseObject)),
+  })
+);
 const Expirable = z.object({ expires: z.string().datetime({ offset: true }) });
 
 export const schemas = {
-  patchDrafts_Body,
-  _401Error,
-  _404Error,
-  Error,
   Paginated,
   Draft,
+  DatabaseObject,
+  DraftIndex,
+  Error,
   Proposal,
   Vote,
-  ProposalVoteState,
-  DatabaseObject,
+  ProposalState,
+  ProposalIndex,
   Expirable,
 };
 
 const endpoints = makeApi([
   {
     method: "post",
-    path: "/:proposalId",
-    alias: "postProposalId",
+    path: "/:recordId",
+    alias: "postRecordId",
     requestFormat: "json",
     parameters: [
       {
@@ -158,9 +184,12 @@ const endpoints = makeApi([
         schema: z.string(),
       },
       {
-        name: "proposalId",
-        type: "Path",
-        schema: z.number().int(),
+        name: "recordId",
+        type: "Query",
+        schema: z
+          .number()
+          .int()
+          .describe("ID of the record to get, update, or delete"),
       },
     ],
     response: Vote.and(DatabaseObject),
@@ -168,18 +197,14 @@ const endpoints = makeApi([
       {
         status: 401,
         description: `Unauthorized`,
-        schema: z
-          .object({ message: z.string() })
-          .and(
-            z.object({ message: z.string().default("Unauthorized") }).partial()
-          ),
+        schema: z.object({ message: z.string() }),
       },
     ],
   },
   {
     method: "delete",
-    path: "/:proposalId",
-    alias: "deleteProposalId",
+    path: "/:recordId",
+    alias: "deleteRecordId",
     requestFormat: "json",
     parameters: [
       {
@@ -188,14 +213,12 @@ const endpoints = makeApi([
         schema: z.string(),
       },
       {
-        name: "proposalId",
-        type: "Path",
-        schema: z.number().int(),
-      },
-      {
-        name: "voteId",
+        name: "recordId",
         type: "Query",
-        schema: z.number().int(),
+        schema: z
+          .number()
+          .int()
+          .describe("ID of the record to get, update, or delete"),
       },
     ],
     response: z.void(),
@@ -203,27 +226,19 @@ const endpoints = makeApi([
       {
         status: 401,
         description: `Unauthorized`,
-        schema: z
-          .object({ message: z.string() })
-          .and(
-            z.object({ message: z.string().default("Unauthorized") }).partial()
-          ),
+        schema: z.object({ message: z.string() }),
       },
       {
         status: 404,
         description: `Not Found`,
-        schema: z
-          .object({ message: z.string() })
-          .and(
-            z.object({ message: z.string().default("Not Found") }).partial()
-          ),
+        schema: z.object({ message: z.string() }),
       },
     ],
   },
   {
-    method: "get",
-    path: "/drafts",
-    alias: "getDrafts",
+    method: "post",
+    path: "/:recordId/close",
+    alias: "postRecordIdclose",
     requestFormat: "json",
     parameters: [
       {
@@ -232,86 +247,73 @@ const endpoints = makeApi([
         schema: z.string(),
       },
       {
-        name: "cursor",
+        name: "recordId",
         type: "Query",
         schema: z
           .number()
           .int()
-          .describe("Cursor for paginating through a list of drafts")
-          .optional(),
+          .describe("ID of the record to get, update, or delete"),
+      },
+    ],
+    response: DatabaseObject,
+    errors: [
+      {
+        status: 401,
+        description: `Unauthorized`,
+        schema: z.object({ message: z.string() }),
+      },
+    ],
+  },
+  {
+    method: "get",
+    path: "/drafts",
+    alias: "listDrafts",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "Authorization",
+        type: "Header",
+        schema: z.string(),
       },
       {
-        name: "limit",
+        name: "pagination",
         type: "Query",
         schema: z
-          .number()
-          .int()
-          .describe("Maximum number of drafts to return")
-          .optional()
-          .default(10),
+          .object({
+            cursor: z
+              .number()
+              .int()
+              .describe("Cursor for paginating through a list of items"),
+            limit: z
+              .number()
+              .int()
+              .describe(
+                "In a request, the maximum number of items to return. In a response, the total number of items available, if known."
+              ),
+          })
+          .partial()
+          .optional(),
       },
       {
         name: "type",
         type: "Query",
         schema: z
           .enum(["topic", "project"])
-          .describe("Filter drafts by type")
+          .describe("Filter items by type")
           .optional(),
       },
     ],
-    response: z
-      .object({
-        cursor: z
-          .number()
-          .int()
-          .describe("Cursor for paginating through a list of items"),
-        total: z
-          .number()
-          .int()
-          .describe(
-            "Total number of items of this type in the database, if known"
-          )
-          .optional(),
-      })
-      .and(
-        z.object({
-          drafts: z.array(
-            z
-              .object({
-                title: z.string().max(48),
-                summary: z.string().max(255),
-                description: z.string().max(2048),
-                type: z.enum(["topic", "project"]),
-              })
-              .partial()
-              .and(
-                z.object({
-                  id: z.number().int(),
-                  created: z.string().datetime({ offset: true }),
-                  updated: z.string().datetime({ offset: true }).optional(),
-                })
-              )
-          ),
-        })
-      ),
+    response: DraftIndex,
     errors: [
       {
         status: 401,
         description: `Unauthorized`,
-        schema: z
-          .object({ message: z.string() })
-          .and(
-            z.object({ message: z.string().default("Unauthorized") }).partial()
-          ),
+        schema: z.object({ message: z.string() }),
       },
       {
         status: 404,
         description: `Not Found`,
-        schema: z
-          .object({ message: z.string() })
-          .and(
-            z.object({ message: z.string().default("Not Found") }).partial()
-          ),
+        schema: z.object({ message: z.string() }),
       },
     ],
   },
@@ -339,30 +341,58 @@ const endpoints = makeApi([
         schema: z.string(),
       },
     ],
-    response: z
-      .object({
-        title: z.string().max(48),
-        summary: z.string().max(255),
-        description: z.string().max(2048),
-        type: z.enum(["topic", "project"]),
-      })
-      .partial()
-      .and(
-        z.object({
-          id: z.number().int(),
-          created: z.string().datetime({ offset: true }),
-          updated: z.string().datetime({ offset: true }).optional(),
-        })
-      ),
+    response: Draft.and(DatabaseObject),
     errors: [
       {
         status: 401,
         description: `Unauthorized`,
+        schema: z.object({ message: z.string() }),
+      },
+    ],
+  },
+  {
+    method: "put",
+    path: "/drafts",
+    alias: "putDrafts",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
         schema: z
-          .object({ message: z.string() })
-          .and(
-            z.object({ message: z.string().default("Unauthorized") }).partial()
-          ),
+          .object({
+            title: z.string().max(48),
+            summary: z.string().max(255),
+            description: z.string().max(2048),
+            type: z.enum(["topic", "project"]),
+          })
+          .partial(),
+      },
+      {
+        name: "Authorization",
+        type: "Header",
+        schema: z.string(),
+      },
+      {
+        name: "recordId",
+        type: "Query",
+        schema: z
+          .number()
+          .int()
+          .describe("ID of the record to get, update, or delete"),
+      },
+    ],
+    response: Draft.and(DatabaseObject),
+    errors: [
+      {
+        status: 401,
+        description: `Unauthorized`,
+        schema: z.object({ message: z.string() }),
+      },
+      {
+        status: 404,
+        description: `Not Found`,
+        schema: z.object({ message: z.string() }),
       },
     ],
   },
@@ -375,47 +405,40 @@ const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: patchDrafts_Body,
+        schema: z
+          .object({
+            title: z.string().max(48),
+            summary: z.string().max(255),
+            description: z.string().max(2048),
+            type: z.enum(["topic", "project"]),
+          })
+          .partial(),
       },
       {
         name: "Authorization",
         type: "Header",
         schema: z.string(),
       },
+      {
+        name: "recordId",
+        type: "Query",
+        schema: z
+          .number()
+          .int()
+          .describe("ID of the record to get, update, or delete"),
+      },
     ],
-    response: z
-      .object({
-        title: z.string().max(48),
-        summary: z.string().max(255),
-        description: z.string().max(2048),
-        type: z.enum(["topic", "project"]),
-      })
-      .partial()
-      .and(
-        z.object({
-          id: z.number().int(),
-          created: z.string().datetime({ offset: true }),
-          updated: z.string().datetime({ offset: true }).optional(),
-        })
-      ),
+    response: Draft.and(DatabaseObject),
     errors: [
       {
         status: 401,
         description: `Unauthorized`,
-        schema: z
-          .object({ message: z.string() })
-          .and(
-            z.object({ message: z.string().default("Unauthorized") }).partial()
-          ),
+        schema: z.object({ message: z.string() }),
       },
       {
         status: 404,
         description: `Not Found`,
-        schema: z
-          .object({ message: z.string() })
-          .and(
-            z.object({ message: z.string().default("Not Found") }).partial()
-          ),
+        schema: z.object({ message: z.string() }),
       },
     ],
   },
@@ -431,9 +454,12 @@ const endpoints = makeApi([
         schema: z.string(),
       },
       {
-        name: "draftId",
+        name: "recordId",
         type: "Query",
-        schema: z.number().int().describe("Id of the draft to delete"),
+        schema: z
+          .number()
+          .int()
+          .describe("ID of the record to get, update, or delete"),
       },
     ],
     response: z.void(),
@@ -441,20 +467,12 @@ const endpoints = makeApi([
       {
         status: 401,
         description: `Unauthorized`,
-        schema: z
-          .object({ message: z.string() })
-          .and(
-            z.object({ message: z.string().default("Unauthorized") }).partial()
-          ),
+        schema: z.object({ message: z.string() }),
       },
       {
         status: 404,
         description: `Not Found`,
-        schema: z
-          .object({ message: z.string() })
-          .and(
-            z.object({ message: z.string().default("Not Found") }).partial()
-          ),
+        schema: z.object({ message: z.string() }),
       },
     ],
   },
@@ -470,30 +488,30 @@ const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
-        name: "cursor",
+        name: "pagination",
         type: "Query",
         schema: z
-          .number()
-          .int()
-          .describe("Cursor for paginating through the list of proposals")
+          .object({
+            cursor: z
+              .number()
+              .int()
+              .describe("Cursor for paginating through a list of items"),
+            limit: z
+              .number()
+              .int()
+              .describe(
+                "In a request, the maximum number of items to return. In a response, the total number of items available, if known."
+              ),
+          })
+          .partial()
           .optional(),
-      },
-      {
-        name: "limit",
-        type: "Query",
-        schema: z
-          .number()
-          .int()
-          .describe("Maximum number of proposals to return")
-          .optional()
-          .default(10),
       },
       {
         name: "type",
         type: "Query",
         schema: z
           .enum(["topic", "project"])
-          .describe("Filter proposals by type")
+          .describe("Filter items by type")
           .optional(),
       },
       {
@@ -501,37 +519,23 @@ const endpoints = makeApi([
         type: "Query",
         schema: z
           .enum(["open", "closed"])
-          .describe("Filter proposals by status")
+          .describe("Filter items by status")
           .optional(),
       },
     ],
-    response: Paginated.and(
-      z.object({
-        proposals: z.array(
-          z
-            .object({ authorName: z.string() })
-            .and(Proposal)
-            .and(ProposalVoteState)
-            .and(DatabaseObject)
-        ),
-      })
-    ),
+    response: ProposalIndex,
     errors: [
       {
         status: 404,
         description: `Not Found`,
-        schema: z
-          .object({ message: z.string() })
-          .and(
-            z.object({ message: z.string().default("Not Found") }).partial()
-          ),
+        schema: z.object({ message: z.string() }),
       },
     ],
   },
   {
-    method: "put",
+    method: "post",
     path: "/proposals",
-    alias: "putProposals",
+    alias: "postProposals",
     requestFormat: "json",
     parameters: [
       {
@@ -547,16 +551,12 @@ const endpoints = makeApi([
         schema: z.string(),
       },
     ],
-    response: Proposal.and(ProposalVoteState).and(DatabaseObject),
+    response: Proposal.and(ProposalState).and(DatabaseObject),
     errors: [
       {
         status: 401,
         description: `Unauthorized`,
-        schema: z
-          .object({ message: z.string() })
-          .and(
-            z.object({ message: z.string().default("Unauthorized") }).partial()
-          ),
+        schema: z.object({ message: z.string() }),
       },
     ],
   },
