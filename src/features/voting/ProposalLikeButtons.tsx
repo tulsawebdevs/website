@@ -1,17 +1,17 @@
 import { ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react';
-import { Button } from '../../ui/button.tsx';
-import type { Vote } from '../types.ts';
+import { Button } from '../ui/button.tsx';
+import type { Vote } from './ProposalInterestVote.tsx';
 
 type ProposalLikeButtonsProps = {
-  onVote: (vote: Vote) => void;
+  onVoteValueChange: (vote: Vote['value']) => void;
+  voteValue: string;
   numberUpvotes: number | string;
   numberDownvotes: number | string;
   disabled?: boolean;
-  voteValue: string;
 };
 
 export default function ProposalLikeButtons({
-  onVote,
+  onVoteValueChange,
   numberUpvotes,
   numberDownvotes,
   disabled = false,
@@ -26,7 +26,7 @@ export default function ProposalLikeButtons({
       currentVoteValue = Math.max(-2, currentVoteValue - 1);
     }
 
-    onVote(currentVoteValue.toString() as Vote);
+    onVoteValueChange(currentVoteValue.toString() as Vote['value']);
   };
 
   return (

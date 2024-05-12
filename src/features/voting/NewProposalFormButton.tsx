@@ -36,11 +36,21 @@ import {
   FormItem,
   FormLabel,
 } from '../ui/form.tsx';
+import { IfAuthorized, SignInButton } from '../auth/components.tsx';
 
 export const postProposalSchema = schemas.Proposal.and(schemas.AuthorData);
 export type PostProposalData = z.infer<typeof postProposalSchema>;
 
-export default function AddProposalButton() {
+export default function NewProposalFormButton() {
+  return (
+    <IfAuthorized>
+      {() => <AddProposalButton />}
+      {() => <SignInButton variant="outline">Add Proposal</SignInButton>}
+    </IfAuthorized>
+  );
+}
+
+function AddProposalButton() {
   const session = useSession();
   const [loading, setLoading] = useState(false);
 
@@ -66,7 +76,7 @@ export default function AddProposalButton() {
   const submit = form.handleSubmit(
     async (data, event) => {
       event?.preventDefault();
-      return sdk.postProposals(data, {
+      return sdk.put('/proposals', data, {
         headers: { Authorization: `Bearer: ${await session?.getToken()}` },
       });
     },

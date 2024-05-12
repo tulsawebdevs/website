@@ -2,13 +2,10 @@ import type React from 'react';
 import { useRef, useEffect, forwardRef } from 'react';
 import { useClerk, useSession, useUser } from './hooks.ts';
 
-import { signInButton } from './components.css.ts';
+import { Button } from '../ui/button.tsx';
+import type { AuthConditions, Clerk, Session, User } from './clerk.ts';
 
 type Maybe<T> = T | null | undefined;
-
-type User = NonNullable<ReturnType<typeof useUser>>;
-type Session = NonNullable<ReturnType<typeof useSession>>;
-type AuthConditions = Parameters<Session['checkAuthorization']>[0];
 
 type AuthorizedRenderFunction = (props: {
   user: User;
@@ -53,23 +50,22 @@ export function IfAuthorized({ conditions, children }: IfAuthorizedProps) {
 
 export const SignInButton = forwardRef<
   HTMLButtonElement,
-  {
-    children?: React.ReactNode;
-    className?: string;
-  } & Parameters<NonNullable<ReturnType<typeof useClerk>>['openSignIn']>[0]
+  React.ComponentProps<typeof Button> & {
+    signinProps?: Parameters<Clerk['openSignIn']>[0];
+  }
 >((props, ref) => {
   const clerk = useClerk();
-  const { className, children, ...signInProps } = props;
+  const { children = 'Sign In', signinProps, ...buttonProps } = props;
 
   return (
-    <button
-      type="button"
-      className={className ?? signInButton}
-      onClick={() => clerk?.openSignIn(signInProps)}
+    <Button
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...buttonProps}
+      onClick={() => clerk?.openSignIn(signinProps)}
       ref={ref}
     >
-      {children ?? 'Sign In'}
-    </button>
+      {children}
+    </Button>
   );
 });
 

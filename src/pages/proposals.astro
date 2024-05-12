@@ -1,10 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import NewProposalButton from '../features/voting/NewProposalFormButton.tsx';
-import ProposalList from '../features/voting/list/ProposalList.astro';
-import { getProposals } from '../features/voting/services/proposal.ts';
-
-const { cursor, proposals } = await getProposals();
+import { ProposalList } from '../features/voting/ProposalList.tsx';
 ---
 
 <Layout title="Tulsa Web Devs">
@@ -16,7 +13,7 @@ const { cursor, proposals } = await getProposals();
         <NewProposalButton client:load />
       </div>
 
-      <ProposalList proposals={proposals} cursor={cursor} />
+      <ProposalList client:load />
     </div>
   </main>
 </Layout>
