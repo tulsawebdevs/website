@@ -3,7 +3,7 @@
   "info": {
     "title": "Tulsa WebDevs Voting Service",
     "description": "API for casting votes on various topics/projects and submitting and managing proposals with a ranking and voting system.",
-    "version": "0.0.2"
+    "version": "0.0.3"
   },
   "servers": [
     {
@@ -517,7 +517,9 @@
             }
           }
         }
-      },
+      }
+    },
+    "/drafts/{draftId}": {
       "delete": {
         "summary": "Delete a draft by ID",
         "parameters": [
@@ -525,7 +527,7 @@
             "required": true,
             "name": "draftId",
             "description": "Id of the draft to delete",
-            "in": "query",
+            "in": "path",
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -758,7 +760,7 @@
         }
       }
     },
-    "/{proposalId}": {
+    "/proposals/{proposalId}": {
       "summary": "Manage a user's vote on a proposal",
       "parameters": [
         {
