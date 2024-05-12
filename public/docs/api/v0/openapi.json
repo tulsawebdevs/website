@@ -1,20 +1,35 @@
 {
-  "openapi": "3.0.0",
+  "openapi": "3.1.0",
   "info": {
     "title": "Tulsa WebDevs Voting Service",
     "description": "API for casting votes on various topics/projects and submitting and managing proposals with a ranking and voting system.",
-    "version": "0.0.1"
+    "version": "0.0.2"
   },
   "servers": [
     {
       "url": "http://vote.tulsawebdevs.org",
       "description": "Voting Service API"
+    },
+    {
+      "url": "http://localhost:8080",
+      "description": "Local development server"
     }
   ],
   "paths": {
-    "/topics": {
+    "/drafts": {
+      "summary": "Manage the current user's proposal drafts",
+      "parameters": [
+        {
+          "name": "Authorization",
+          "in": "header",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
       "get": {
-        "summary": "Get a paginated list of all topics",
+        "summary": "Get a list of the current user's drafts with pagination, filtering, and sorting",
         "parameters": [
           {
             "name": "cursor",
@@ -24,7 +39,7 @@
               "type": "integer",
               "format": "int32"
             },
-            "description": "Cursor for paginating through a list of votes"
+            "description": "Cursor for paginating through a list of drafts"
           },
           {
             "name": "limit",
@@ -35,7 +50,17 @@
               "type": "integer",
               "format": "int32"
             },
-            "description": "Maximum number of votes to return"
+            "description": "Maximum number of drafts to return"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["topic", "project"]
+            },
+            "description": "Filter drafts by type"
           }
         ],
         "responses": {
@@ -46,30 +71,99 @@
                 "schema": {
                   "allOf": [
                     {
-                      "$ref": "#/components/schemas/Paginated"
+                      "type": "object",
+                      "required": ["cursor"],
+                      "properties": {
+                        "cursor": {
+                          "description": "Cursor for paginating through a list of items",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "total": {
+                          "description": "Total number of items of this type in the database, if known",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      }
                     },
                     {
                       "type": "object",
-                      "required": ["list"],
+                      "required": ["drafts"],
                       "properties": {
-                        "list": {
+                        "drafts": {
                           "type": "array",
                           "items": {
                             "allOf": [
                               {
-                                "$ref": "#/components/schemas/Topic"
+                                "type": "object",
+                                "properties": {
+                                  "title": {
+                                    "type": "string",
+                                    "maxLength": 48
+                                  },
+                                  "summary": {
+                                    "type": "string",
+                                    "maxLength": 255
+                                  },
+                                  "description": {
+                                    "type": "string",
+                                    "maxLength": 2048
+                                  },
+                                  "type": {
+                                    "type": "string",
+                                    "enum": ["topic", "project"]
+                                  }
+                                }
                               },
                               {
-                                "$ref": "#/components/schemas/DatabaseObject"
-                              },
-                              {
-                                "$ref": "#/components/schemas/TimeStamped"
-                              },
-                              {
-                                "$ref": "#/components/schemas/Authored"
+                                "type": "object",
+                                "required": ["id", "created"],
+                                "properties": {
+                                  "id": {
+                                    "type": "integer",
+                                    "format": "int32"
+                                  },
+                                  "created": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                  },
+                                  "updated": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                  }
+                                }
                               }
                             ]
                           }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": ["message"],
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "default": "Unauthorized"
                         }
                       }
                     }
@@ -83,7 +177,26 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/404Error"
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": ["message"],
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "default": "Not Found"
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
@@ -93,40 +206,191 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "required": ["message"],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
                 }
               }
             }
           }
         }
-      }
-    },
-    "/projects": {
-      "get": {
-        "summary": "Get a paginated list of all projects",
-        "parameters": [
-          {
-            "name": "cursor",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "description": "Cursor for paginating through a list of votes"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "default": 10,
-              "type": "integer",
-              "format": "int32"
-            },
-            "description": "Maximum number of votes to return"
+      },
+      "post": {
+        "summary": "Create a new draft",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 48
+                  },
+                  "summary": {
+                    "type": "string",
+                    "maxLength": 255
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 2048
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": ["topic", "project"]
+                  }
+                }
+              }
+            }
           }
-        ],
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "maxLength": 48
+                        },
+                        "summary": {
+                          "type": "string",
+                          "maxLength": 255
+                        },
+                        "description": {
+                          "type": "string",
+                          "maxLength": 2048
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": ["topic", "project"]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "required": ["id", "created"],
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "created": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updated": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": ["message"],
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "default": "Unauthorized"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["message"],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update an existing draft",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "maxLength": 48
+                      },
+                      "summary": {
+                        "type": "string",
+                        "maxLength": 255
+                      },
+                      "description": {
+                        "type": "string",
+                        "maxLength": 2048
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": ["topic", "project"]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "required": ["draftId"],
+                    "properties": {
+                      "draftId": {
+                        "type": "integer",
+                        "format": "int32"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -135,34 +399,149 @@
                 "schema": {
                   "allOf": [
                     {
-                      "$ref": "#/components/schemas/Paginated"
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "maxLength": 48
+                        },
+                        "summary": {
+                          "type": "string",
+                          "maxLength": 255
+                        },
+                        "description": {
+                          "type": "string",
+                          "maxLength": 2048
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": ["topic", "project"]
+                        }
+                      }
                     },
                     {
                       "type": "object",
-                      "required": ["list"],
+                      "required": ["id", "created"],
                       "properties": {
-                        "list": {
-                          "type": "array",
-                          "items": {
-                            "allOf": [
-                              {
-                                "$ref": "#/components/schemas/Project"
-                              },
-                              {
-                                "$ref": "#/components/schemas/DatabaseObject"
-                              },
-                              {
-                                "$ref": "#/components/schemas/TimeStamped"
-                              },
-                              {
-                                "$ref": "#/components/schemas/Authored"
-                              }
-                            ]
-                          }
+                        "id": {
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "created": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updated": {
+                          "type": "string",
+                          "format": "date-time"
                         }
                       }
                     }
                   ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": ["message"],
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "default": "Unauthorized"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "required": ["message"],
+                      "properties": {
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "default": "Not Found"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["message"],
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a draft by ID",
+        "parameters": [
+          {
+            "required": true,
+            "name": "draftId",
+            "description": "Id of the draft to delete",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/401Error"
                 }
               }
             }
@@ -191,9 +570,18 @@
       }
     },
     "/proposals": {
+      "summary": "",
       "get": {
-        "summary": "Get a paginated list of all proposals",
+        "summary": "Get a list of the proposals with pagination, filtering, and sorting",
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "cursor",
             "in": "query",
@@ -202,7 +590,7 @@
               "type": "integer",
               "format": "int32"
             },
-            "description": "Cursor for paginating through a list of votes"
+            "description": "Cursor for paginating through the list of proposals"
           },
           {
             "name": "limit",
@@ -213,7 +601,27 @@
               "type": "integer",
               "format": "int32"
             },
-            "description": "Maximum number of votes to return"
+            "description": "Maximum number of proposals to return"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["topic", "project"]
+            },
+            "description": "Filter proposals by type"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["open", "closed"]
+            },
+            "description": "Filter proposals by status"
           }
         ],
         "responses": {
@@ -228,33 +636,29 @@
                     },
                     {
                       "type": "object",
-                      "required": ["list"],
+                      "required": ["proposals"],
                       "properties": {
-                        "list": {
+                        "proposals": {
                           "type": "array",
                           "items": {
                             "allOf": [
                               {
-                                "oneOf": [
-                                  {
-                                    "$ref": "#/components/schemas/Topic"
-                                  },
-                                  {
-                                    "$ref": "#/components/schemas/Project"
+                                "type": "object",
+                                "required": ["authorName"],
+                                "properties": {
+                                  "authorName": {
+                                    "type": "string"
                                   }
-                                ]
+                                }
                               },
                               {
                                 "$ref": "#/components/schemas/Proposal"
                               },
                               {
+                                "$ref": "#/components/schemas/ProposalVoteState"
+                              },
+                              {
                                 "$ref": "#/components/schemas/DatabaseObject"
-                              },
-                              {
-                                "$ref": "#/components/schemas/TimeStamped"
-                              },
-                              {
-                                "$ref": "#/components/schemas/Authored"
                               }
                             ]
                           }
@@ -296,8 +700,7 @@
             "in": "header",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string"
             }
           }
         ],
@@ -306,28 +709,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "allOf": [
-                  {
-                    "oneOf": [
-                      {
-                        "$ref": "#/components/schemas/Topic"
-                      },
-                      {
-                        "$ref": "#/components/schemas/Project"
-                      }
-                    ]
-                  },
-                  {
-                    "$ref": "#/components/schemas/Proposal"
-                  },
-                  {
-                    "$ref": "#/components/schemas/Authored"
-                  },
-                  {
-                    "type": "object",
-                    "required": ["type"]
-                  }
-                ]
+                "$ref": "#/components/schemas/Proposal"
               }
             }
           }
@@ -340,23 +722,13 @@
                 "schema": {
                   "allOf": [
                     {
-                      "oneOf": [
-                        {
-                          "$ref": "#/components/schemas/Topic"
-                        },
-                        {
-                          "$ref": "#/components/schemas/Project"
-                        }
-                      ]
-                    },
-                    {
                       "$ref": "#/components/schemas/Proposal"
                     },
                     {
-                      "$ref": "#/components/schemas/DatabaseObject"
+                      "$ref": "#/components/schemas/ProposalVoteState"
                     },
                     {
-                      "$ref": "#/components/schemas/TimeStamped"
+                      "$ref": "#/components/schemas/DatabaseObject"
                     }
                   ]
                 }
@@ -386,333 +758,35 @@
         }
       }
     },
-    "/proposals/{id}": {
-      "summary": "Get, update, or delete a specific proposal by ID",
+    "/{proposalId}": {
+      "summary": "Manage a user's vote on a proposal",
       "parameters": [
         {
-          "name": "id",
-          "in": "path",
+          "name": "Authorization",
+          "in": "header",
           "required": true,
           "schema": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "description": "ID of the proposal to get, update, or delete"
-        }
-      ],
-      "get": {
-        "summary": "Get a specific proposal by ID",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "oneOf": [
-                        {
-                          "$ref": "#/components/schemas/Topic"
-                        },
-                        {
-                          "$ref": "#/components/schemas/Project"
-                        }
-                      ]
-                    },
-                    {
-                      "$ref": "#/components/schemas/Proposal"
-                    },
-                    {
-                      "$ref": "#/components/schemas/DatabaseObject"
-                    },
-                    {
-                      "$ref": "#/components/schemas/TimeStamped"
-                    },
-                    {
-                      "$ref": "#/components/schemas/Authored"
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/404Error"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "Update a specific proposal by ID",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/DatabaseObject"
-                  },
-                  {
-                    "oneOf": [
-                      {
-                        "$ref": "#/components/schemas/Proposal"
-                      },
-                      {
-                        "$ref": "#/components/schemas/InitiativeData"
-                      }
-                    ]
-                  }
-                ]
-              }
-            }
+            "type": "string"
           }
         },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "oneOf": [
-                        {
-                          "$ref": "#/components/schemas/Topic"
-                        },
-                        {
-                          "$ref": "#/components/schemas/Project"
-                        }
-                      ]
-                    },
-                    {
-                      "$ref": "#/components/schemas/Proposal"
-                    },
-                    {
-                      "$ref": "#/components/schemas/DatabaseObject"
-                    },
-                    {
-                      "$ref": "#/components/schemas/TimeStamped"
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/401Error"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete a specific proposal by ID",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "No Content"
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/401Error"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/proposals/{id}/votes": {
-      "summary": "Get, update, or delete votes for a specific proposal by ID",
-      "parameters": [
         {
-          "name": "id",
+          "name": "proposalId",
           "in": "path",
           "required": true,
           "schema": {
             "type": "integer",
             "format": "int32"
-          },
-          "description": "ID of the proposal to get, update, or delete votes for"
+          }
         }
       ],
-      "get": {
-        "summary": "Get the vote totals for a specific proposal by ID. If a cursor is provided, a paginated list of vote details will be returned.",
-        "parameters": [
-          {
-            "name": "cursor",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "description": "Cursor for paginating through a list of votes"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "description": "Maximum number of votes to return"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    {
-                      "type": "object",
-                      "required": ["tally"],
-                      "properties": {
-                        "tally": {
-                          "description": "Total tally of all votes, including those not returned in the response",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "votes": {
-                          "allOf": [
-                            {
-                              "$ref": "#/components/schemas/Paginated"
-                            },
-                            {
-                              "type": "object",
-                              "required": ["list"],
-                              "properties": {
-                                "list": {
-                                  "type": "array",
-                                  "items": {
-                                    "$ref": "#/components/schemas/Vote"
-                                  }
-                                }
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/404Error"
-                }
-              }
-            }
-          },
-          "default": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          }
-        }
-      },
       "post": {
-        "summary": "Create or update a vote for a proposal",
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
+        "summary": "Submit (or update) a vote on a proposal",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/Vote"
-                  }
-                ]
+                "$ref": "#/components/schemas/Vote"
               }
             }
           }
@@ -723,7 +797,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Vote"
+                  "allOf": [
+                    { "$ref": "#/components/schemas/Vote" },
+                    { "$ref": "#/components/schemas/DatabaseObject" }
+                  ]
                 }
               }
             }
@@ -751,11 +828,19 @@
         }
       },
       "delete": {
-        "summary": "Delete a specific vote by ID",
+        "summary": "Delete a user's proposal vote",
         "parameters": [
           {
             "name": "Authorization",
             "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "voteId",
+            "in": "query",
             "required": true,
             "schema": {
               "type": "integer",
@@ -773,6 +858,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/401Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/404Error"
                 }
               }
             }
@@ -795,18 +890,12 @@
     "schemas": {
       "DatabaseObject": {
         "type": "object",
-        "required": ["id"],
+        "required": ["id", "created"],
         "properties": {
           "id": {
             "type": "integer",
             "format": "int32"
-          }
-        }
-      },
-      "TimeStamped": {
-        "type": "object",
-        "required": ["created", "updated"],
-        "properties": {
+          },
           "created": {
             "type": "string",
             "format": "date-time"
@@ -817,7 +906,7 @@
           }
         }
       },
-      "InitiativeData": {
+      "Draft": {
         "type": "object",
         "properties": {
           "title": {
@@ -829,64 +918,46 @@
             "maxLength": 255
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "maxLength": 2048
+          },
+          "type": {
+            "type": "string",
+            "enum": ["topic", "project"]
           }
         }
-      },
-      "Topic": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/InitiativeData"
-          },
-          {
-            "type": "object",
-            "required": ["title", "summary", "description"],
-            "properties": {
-              "type": {
-                "type": "string",
-                "enum": ["topic"]
-              }
-            }
-          }
-        ]
-      },
-      "Project": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/InitiativeData"
-          },
-          {
-            "type": "object",
-            "required": ["title", "summary", "description"],
-            "properties": {
-              "type": {
-                "type": "string",
-                "enum": ["project"]
-              }
-            }
-          }
-        ]
       },
       "Proposal": {
-        "type": "object",
-        "required": ["status"],
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": ["draft", "rfc", "open", "closed"]
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Draft"
+          },
+          {
+            "type": "object",
+            "required": ["type", "title", "summary"],
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 8
+              },
+              "summary": {
+                "type": "string",
+                "minLength": 30
+              },
+              "authorName": {
+                "type": "string",
+                "minLength": 8
+              }
+            }
           }
-        }
+        ]
       },
       "Vote": {
         "type": "object",
-        "required": ["initiativeId", "vote"],
+        "required": ["value"],
         "properties": {
-          "initiativeId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "vote": {
-            "description": "Ranking values: -2 (strongly disinterested), -1 (slightly disinterested), 0 (neutral), 1 (slightly interested), 2 (strongly interested)",
+          "value": {
+            "description": "Ranking values: -2 (strong disinterest), -1 (slight disinterest), 0 (neutral), 1 (slight interest), 2 (strong interest)",
             "type": "string",
             "enum": ["-2", "-1", "0", "1", "2"]
           },
@@ -896,18 +967,41 @@
           }
         }
       },
-      "Authored": {
-        "type": "object",
-        "required": ["authorName", "authorEmail"],
-        "properties": {
-          "authorName": {
-            "type": "string",
-            "maxLength": 48
+      "ProposalVoteState": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": ["status", "results"],
+            "properties": {
+              "userVote": {
+                "$ref": "#/components/schemas/Vote"
+              },
+              "results": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Vote"
+                }
+              },
+              "status": {
+                "type": "string",
+                "enum": ["closed"]
+              }
+            }
           },
-          "authorEmail": {
-            "type": "string"
+          {
+            "type": "object",
+            "required": ["status"],
+            "properties": {
+              "userVote": {
+                "$ref": "#/components/schemas/Vote"
+              },
+              "status": {
+                "type": "string",
+                "enum": ["open"]
+              }
+            }
           }
-        }
+        ]
       },
       "Expirable": {
         "type": "object",
@@ -924,6 +1018,7 @@
         "required": ["cursor"],
         "properties": {
           "cursor": {
+            "description": "Cursor for paginating through a list of items",
             "type": "integer",
             "format": "int32"
           },
@@ -946,7 +1041,13 @@
       "404Error": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/Error"
+            "type": "object",
+            "required": ["message"],
+            "properties": {
+              "message": {
+                "type": "string"
+              }
+            }
           },
           {
             "type": "object",
@@ -962,7 +1063,13 @@
       "401Error": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/Error"
+            "type": "object",
+            "required": ["message"],
+            "properties": {
+              "message": {
+                "type": "string"
+              }
+            }
           },
           {
             "type": "object",
