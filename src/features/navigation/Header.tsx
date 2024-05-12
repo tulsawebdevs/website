@@ -1,11 +1,12 @@
-import { headerNav } from './Header.css.ts';
+import { nav, signIn } from './Header.css.ts';
 import { IfAuthorized, SignInButton, UserButton } from '../auth/components.tsx';
 
 export default function Header(props: { location: string | URL }) {
   const { href } = new URL(props.location);
+  const authParams = { fallbackRedirectUrl: href };
 
   return (
-    <nav className={headerNav}>
+    <nav className={nav}>
       <a href="/">
         <img
           src="/twd-icon-white.png"
@@ -18,7 +19,7 @@ export default function Header(props: { location: string | URL }) {
       </a>
       <IfAuthorized>
         {() => <UserButton afterSignOutUrl={href} />}
-        {() => <SignInButton fallbackRedirectUrl={href} />}
+        {() => <SignInButton signinProps={authParams} className={signIn} />}
       </IfAuthorized>
     </nav>
   );

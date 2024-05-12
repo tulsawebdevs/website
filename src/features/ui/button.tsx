@@ -36,7 +36,11 @@ const buttonVariants = cva(
   },
 );
 
-const { ThreeDots } = await import('react-loader-spinner');
+const ThreeDots = React.lazy(() =>
+  import('react-loader-spinner').then(({ ThreeDots }) => ({
+    default: ThreeDots,
+  })),
+);
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -65,7 +69,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               wrapperClass="fixed"
               height={20}
               width={20}
-              color={'#888888'}
+              color="currentColor"
               visible={busy}
             />
             <div className="opacity-0">{children}</div>

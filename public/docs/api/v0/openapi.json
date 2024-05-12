@@ -584,6 +584,15 @@
                           "items": {
                             "allOf": [
                               {
+                                "type": "object",
+                                "required": ["authorName"],
+                                "properties": {
+                                  "authorName": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              {
                                 "$ref": "#/components/schemas/Proposal"
                               },
                               {
@@ -591,9 +600,6 @@
                               },
                               {
                                 "$ref": "#/components/schemas/DatabaseObject"
-                              },
-                              {
-                                "$ref": "#/components/schemas/Author"
                               }
                             ]
                           }
@@ -852,7 +858,7 @@
         }
       },
       "delete": {
-        "summary": "Delete a specific vote by ID",
+        "summary": "Delete a user's proposal vote",
         "parameters": [
           {
             "name": "Authorization",
@@ -861,25 +867,17 @@
             "schema": {
               "type": "string"
             }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["voteId"],
-                "properties": {
-                  "voteId": {
-                    "type": "integer",
-                    "format": "int32"
-                  }
-                }
-              }
+          },
+          {
+            "name": "voteId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
             }
           }
-        },
+        ],
         "responses": {
           "204": {
             "description": "Closed",
@@ -1036,8 +1034,11 @@
         "oneOf": [
           {
             "type": "object",
+            "required": ["status", "results"],
             "properties": {
-              "required": ["status", "results"],
+              "userVote": {
+                "$ref": "#/components/schemas/Vote"
+              },
               "results": {
                 "type": "array",
                 "items": {
@@ -1054,6 +1055,9 @@
             "type": "object",
             "required": ["status"],
             "properties": {
+              "userVote": {
+                "$ref": "#/components/schemas/Vote"
+              },
               "status": {
                 "type": "string",
                 "enum": ["open"]
