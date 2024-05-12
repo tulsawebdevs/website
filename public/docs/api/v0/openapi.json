@@ -692,7 +692,7 @@
           }
         }
       },
-      "put": {
+      "post": {
         "summary": "Create a new proposal",
         "parameters": [
           {
@@ -943,6 +943,10 @@
               "summary": {
                 "type": "string",
                 "minLength": 30
+              },
+              "authorName": {
+                "type": "string",
+                "minLength": 8
               }
             }
           }
