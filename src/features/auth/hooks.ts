@@ -1,26 +1,7 @@
 import { toast } from 'sonner';
 import { useCallback, useSyncExternalStore } from 'react';
 import { clerkStore } from './clerk.ts';
-
-type ClerkValue = NonNullable<(typeof clerkStore)['value']>;
-type UserResource = NonNullable<ClerkValue['user']>;
-
-export type User = UserResource & {
-  firstName: string;
-  lastName: string;
-  primaryEmailAddress: NonNullable<UserResource['primaryEmailAddress']>;
-};
-
-export type Session = NonNullable<ClerkValue['session']> & {
-  user: User;
-};
-
-type Clerk = ClerkValue & {
-  user: User | null | undefined;
-  session: Session | null | undefined;
-};
-
-type AuthConditions = Parameters<Session['checkAuthorization']>[0];
+import type { AuthConditions, Clerk, User } from './clerk.ts';
 
 export function useClerk() {
   return useSyncExternalStore(
@@ -43,32 +24,24 @@ export function useSession() {
 type ProtectedOptions = {
   conditions?: AuthConditions;
   unauthorizedMessage?: string;
+  fallbackRedirectUrl?: string;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function useProtectedFunction<A extends any[]>(
-  function_: (...params: A) => void,
+export function useIfAuthorized<A extends (...args: any[]) => any>(
+  fn: A,
   options: ProtectedOptions = {},
 ) {
   const {
     conditions,
     unauthorizedMessage = 'You are not authorized to perform this action.',
+    fallbackRedirectUrl = global.location.href,
   } = options;
-  const session = useSession();
-  const user = useUser();
-  const clerk = useClerk();
-  const isSignedIn = session && user;
-  const isAuthorized = !conditions || session?.checkAuthorization(conditions);
+  const { session, openSignIn } = useClerk() ?? {};
 
-  function protectedFunction(...params: A) {
-    if (!isSignedIn) return clerk?.openSignIn();
-
-    if (isAuthorized) return function_(...params);
-
-    toast.error(unauthorizedMessage, { duration: 3000 });
-  }
-
-  return protectedFunction;
+  if (!session) return () => void openSignIn?.({ fallbackRedirectUrl });
+  if (!conditions || session.checkAuthorization(conditions)) return fn;
+  return () => void toast.error(unauthorizedMessage);
 }
 
 export function useFetchPost(url: string) {

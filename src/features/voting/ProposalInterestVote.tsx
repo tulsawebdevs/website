@@ -1,8 +1,11 @@
 import { Label } from '@radix-ui/react-label';
 import { MinusIcon, ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react';
-import { RadioGroup, RadioGroupItem } from '../../ui/radio-group.tsx';
-import { cn } from '../../ui/utils.ts';
-import type { Proposal, Vote } from '../types.ts';
+import type { z } from 'zod';
+import { RadioGroup, RadioGroupItem } from '../ui/radio-group.tsx';
+import { cn } from '../ui/utils.ts';
+
+import type { ProposalRecord } from './ProposalList.tsx';
+import { schemas } from '../../sdk.ts';
 
 const voteOptions = [
   {
@@ -18,48 +21,45 @@ const voteOptions = [
   { label: 'Neutral', value: '0', id: 'vote-neutral' },
   { label: 'Slight Interest', value: '1', id: 'vote-slight-interest' },
   { label: 'Strong Interest', value: '2', id: 'vote-strong-interest' },
-];
+] as const;
+
+export type Vote = z.infer<typeof schemas.Vote>;
 
 type ProposalInterestVoteProps = {
-  proposal: Proposal;
+  proposal: ProposalRecord;
   disabled?: boolean;
-  onVote: (vote: Vote) => void;
-  value: Vote;
+  onVoteChange: (vote: Vote) => void;
+  vote: Vote;
 };
 
-export default function ProposalInterestVote({
-  proposal,
-  disabled = false,
-  onVote,
-  value,
-}: ProposalInterestVoteProps) {
+export default function ProposalInterestVote(props: ProposalInterestVoteProps) {
   return (
     <RadioGroup
       aria-label="Vote"
       className="flex flex-col md:flex-row md:items-center gap-2"
-      value={value}
-      onValueChange={onVote}
-      disabled={disabled}
+      value={props.vote.value}
+      disabled={props.disabled}
+      onValueChange={(value: Vote['value']) =>
+        props.onVoteChange({ ...props.vote, value })
+      }
     >
       {voteOptions.map((option) => {
         const optionValue = parseInt(option.value, 10);
 
         return (
           <Label
-            key={`${proposal.id}-${option.id}`}
+            key={`${props.proposal.id}-${option.id}`}
             className={cn(
               'flex flex-col gap-2 text-center items-center w-[20%]',
-              {
-                'cursor-pointer': !disabled,
-              },
+              { 'cursor-pointer': !props.disabled },
             )}
-            htmlFor={`${proposal.id}-${option.id}`}
+            htmlFor={`${props.proposal.id}-${option.id}`}
           >
             <RadioGroupItem
               className="peer sr-only"
-              id={`${proposal.id}-${option.id}`}
+              id={`${props.proposal.id}-${option.id}`}
               value={option.value}
-              disabled={disabled}
+              disabled={props.disabled}
             />
             <div
               className={cn(

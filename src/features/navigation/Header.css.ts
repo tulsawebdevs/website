@@ -1,9 +1,26 @@
 import { style } from '@vanilla-extract/css';
 import { colors, font } from '../../design/tokens.css.ts';
 
-export const headerNav = style({
+export const signIn = style({
+  textShadow: `
+  1px 1px 0 #000, 
+  -1px 1px 0 #000,
+  -1px -1px 0 #000,
+  1px -1px 0 #000
+  `,
+  background: 'transparent',
+  fontSize: 'inherit',
+  padding: '.3rem',
+  alignSelf: 'center',
+  ':hover': {
+    background: 'rgba(255, 255, 255, 0.1)',
+    color: 'currentColor',
+  },
+});
+
+export const nav = style({
   fontFamily: font.ReneBieder2,
-  fontSize: '1.25rem',
+  fontSize: '1.5rem',
   maxWidth: '800px',
   margin: 'auto',
   alignSelf: 'center',

@@ -1,15 +1,13 @@
 import { Badge } from '../ui/badge.tsx';
-import type { Proposal } from './types.ts';
+import type { ProposalRecord } from './ProposalList.tsx';
 
 type Props = {
-  status: Proposal['status'];
+  status: ProposalRecord['status'];
 };
 
 export default function ProposalStatus({ status }: Props) {
-  // 'draft' | 'open' | 'rfc' | 'closed'
-  if (status === 'draft') return <Badge variant="secondary">Draft</Badge>;
+  if (status === 'draft') return <Badge variant="outline">Draft</Badge>;
   if (status === 'open') return <Badge variant="success">Open</Badge>;
-  if (status === 'rfc') return <Badge variant="outline">RFC</Badge>;
   if (status === 'closed') return <Badge variant="destructive">Closed</Badge>;
 
   return null;

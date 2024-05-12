@@ -26,6 +26,7 @@ export function Tabs<const TValue extends string>(props: TabsProps<TValue>) {
       tabComponents.push(
         <li
           {...getTabProps(tab)}
+          key={tab.value}
           className={
             tab.value === selectedValue ?
               `border-4 border-blue-600 border-solid flex h-fit w-full cursor-pointer items-center justify-center`
@@ -37,7 +38,9 @@ export function Tabs<const TValue extends string>(props: TabsProps<TValue>) {
       );
 
       tabPanelComponents.push(
-        <div {...getTabPanelProps(tab)}>{renderContent()}</div>,
+        <div {...getTabPanelProps(tab)} key={tab.value}>
+          {renderContent()}
+        </div>,
       );
     });
 
