@@ -210,7 +210,7 @@
         }
       }
     },
-    "/{recordId}": {
+    "/vote": {
       "summary": "Manage a user's vote on a proposal",
       "parameters": [
         { "$ref": "#/components/parameters/AuthorizationRequired" },
@@ -250,29 +250,6 @@
           "204": { "$ref": "#/components/responses/204" },
           "401": { "$ref": "#/components/responses/401" },
           "404": { "$ref": "#/components/responses/404" },
-          "default": { "$ref": "#/components/responses/500" }
-        }
-      }
-    },
-    "/{recordId}/close": {
-      "summary": "close an open proposal (soft delete)",
-      "parameters": [
-        { "$ref": "#/components/parameters/AuthorizationRequired" },
-        { "$ref": "#/components/parameters/RecordId" }
-      ],
-      "post": {
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [{ "$ref": "#/components/schemas/DatabaseObject" }]
-                }
-              }
-            }
-          },
-          "401": { "$ref": "#/components/responses/401" },
           "default": { "$ref": "#/components/responses/500" }
         }
       }
@@ -335,7 +312,6 @@
     },
     "responses": {
       "204": { "description": "No Content" },
-      "205": { "description": "Reset Content" },
       "401": {
         "description": "Unauthorized",
         "content": {
@@ -522,7 +498,7 @@
             "format": "int32"
           },
           "limit": {
-            "description": "In a request, the maximum number of items to return. In a response, the total number of items available, if known.",
+            "description": "In a request, the maximum number of items to return. In a response, the total number of items available (if known).",
             "type": "integer",
             "format": "int32"
           }
