@@ -10,7 +10,7 @@ type Paginated = Partial<{
    */
   cursor: number;
   /**
-   * In a request, the maximum number of items to return. In a response, the total number of items available, if known.
+   * In a request, the maximum number of items to return. In a response, the total number of items available (if known).
    */
   limit: number;
 }>;
@@ -94,7 +94,7 @@ const Paginated: z.ZodType<Paginated> = z
       .number()
       .int()
       .describe(
-        "In a request, the maximum number of items to return. In a response, the total number of items available, if known."
+        "In a request, the maximum number of items to return. In a response, the total number of items available (if known)."
       ),
   })
   .partial();
@@ -161,110 +161,6 @@ export const schemas = {
 
 const endpoints = makeApi([
   {
-    method: "post",
-    path: "/:recordId",
-    alias: "postRecordId",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: z.object({
-          value: z
-            .enum(["-2", "-1", "0", "1", "2"])
-            .describe(
-              "Ranking values: -2 (strong disinterest), -1 (slight disinterest), 0 (neutral), 1 (slight interest), 2 (strong interest)"
-            ),
-          comment: z.string().max(255).optional(),
-        }),
-      },
-      {
-        name: "Authorization",
-        type: "Header",
-        schema: z.string(),
-      },
-      {
-        name: "recordId",
-        type: "Query",
-        schema: z
-          .number()
-          .int()
-          .describe("ID of the record to get, update, or delete"),
-      },
-    ],
-    response: Vote.and(DatabaseObject),
-    errors: [
-      {
-        status: 401,
-        description: `Unauthorized`,
-        schema: z.object({ message: z.string() }),
-      },
-    ],
-  },
-  {
-    method: "delete",
-    path: "/:recordId",
-    alias: "deleteRecordId",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "Authorization",
-        type: "Header",
-        schema: z.string(),
-      },
-      {
-        name: "recordId",
-        type: "Query",
-        schema: z
-          .number()
-          .int()
-          .describe("ID of the record to get, update, or delete"),
-      },
-    ],
-    response: z.void(),
-    errors: [
-      {
-        status: 401,
-        description: `Unauthorized`,
-        schema: z.object({ message: z.string() }),
-      },
-      {
-        status: 404,
-        description: `Not Found`,
-        schema: z.object({ message: z.string() }),
-      },
-    ],
-  },
-  {
-    method: "post",
-    path: "/:recordId/close",
-    alias: "postRecordIdclose",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "Authorization",
-        type: "Header",
-        schema: z.string(),
-      },
-      {
-        name: "recordId",
-        type: "Query",
-        schema: z
-          .number()
-          .int()
-          .describe("ID of the record to get, update, or delete"),
-      },
-    ],
-    response: DatabaseObject,
-    errors: [
-      {
-        status: 401,
-        description: `Unauthorized`,
-        schema: z.object({ message: z.string() }),
-      },
-    ],
-  },
-  {
     method: "get",
     path: "/drafts",
     alias: "listDrafts",
@@ -288,7 +184,7 @@ const endpoints = makeApi([
               .number()
               .int()
               .describe(
-                "In a request, the maximum number of items to return. In a response, the total number of items available, if known."
+                "In a request, the maximum number of items to return. In a response, the total number of items available (if known)."
               ),
           })
           .partial()
@@ -500,7 +396,7 @@ const endpoints = makeApi([
               .number()
               .int()
               .describe(
-                "In a request, the maximum number of items to return. In a response, the total number of items available, if known."
+                "In a request, the maximum number of items to return. In a response, the total number of items available (if known)."
               ),
           })
           .partial()
@@ -556,6 +452,81 @@ const endpoints = makeApi([
       {
         status: 401,
         description: `Unauthorized`,
+        schema: z.object({ message: z.string() }),
+      },
+    ],
+  },
+  {
+    method: "post",
+    path: "/vote",
+    alias: "postVote",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z.object({
+          value: z
+            .enum(["-2", "-1", "0", "1", "2"])
+            .describe(
+              "Ranking values: -2 (strong disinterest), -1 (slight disinterest), 0 (neutral), 1 (slight interest), 2 (strong interest)"
+            ),
+          comment: z.string().max(255).optional(),
+        }),
+      },
+      {
+        name: "Authorization",
+        type: "Header",
+        schema: z.string(),
+      },
+      {
+        name: "recordId",
+        type: "Query",
+        schema: z
+          .number()
+          .int()
+          .describe("ID of the record to get, update, or delete"),
+      },
+    ],
+    response: Vote.and(DatabaseObject),
+    errors: [
+      {
+        status: 401,
+        description: `Unauthorized`,
+        schema: z.object({ message: z.string() }),
+      },
+    ],
+  },
+  {
+    method: "delete",
+    path: "/vote",
+    alias: "deleteVote",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "Authorization",
+        type: "Header",
+        schema: z.string(),
+      },
+      {
+        name: "recordId",
+        type: "Query",
+        schema: z
+          .number()
+          .int()
+          .describe("ID of the record to get, update, or delete"),
+      },
+    ],
+    response: z.void(),
+    errors: [
+      {
+        status: 401,
+        description: `Unauthorized`,
+        schema: z.object({ message: z.string() }),
+      },
+      {
+        status: 404,
+        description: `Not Found`,
         schema: z.object({ message: z.string() }),
       },
     ],
