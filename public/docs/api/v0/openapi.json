@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://vote.tulsawebdevs. org",
+      "url": "http://vote.tulsawebdevs.org",
       "description": "Voting Service API"
     },
     {
