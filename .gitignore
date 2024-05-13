@@ -4,6 +4,9 @@ dist/
 # generated types
 .astro/
 
+# generated server stub for tests
+stub-server/
+
 #vitest coverage
 coverage
 
