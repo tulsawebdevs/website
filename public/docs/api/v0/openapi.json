@@ -43,6 +43,7 @@
         }
       },
       "post": {
+        "operationId": "createDraft",
         "summary": "Create a new draft",
         "requestBody": {
           "required": true,
@@ -71,6 +72,7 @@
         }
       },
       "put": {
+        "operationId": "putDraft",
         "summary": "Replace an existing draft",
         "parameters": [{ "$ref": "#/components/parameters/RecordId" }],
         "requestBody": {
@@ -114,6 +116,7 @@
         }
       },
       "patch": {
+        "operationId": "patchDraft",
         "summary": "Update an existing draft",
         "parameters": [{ "$ref": "#/components/parameters/RecordId" }],
         "requestBody": {
@@ -144,6 +147,7 @@
         }
       },
       "delete": {
+        "operationId": "deleteDraft",
         "summary": "Delete a draft by ID",
         "parameters": [{ "$ref": "#/components/parameters/RecordId" }],
         "responses": {
@@ -157,6 +161,7 @@
     "/proposals": {
       "summary": "Create or list proposals",
       "get": {
+        "operationId": "listProposals",
         "summary": "Get a list of the proposals with pagination, filtering, and sorting",
         "parameters": [
           { "$ref": "#/components/parameters/AuthorizationOptional" },
@@ -178,6 +183,7 @@
         }
       },
       "post": {
+        "operationId": "createProposal",
         "summary": "Create a new proposal",
         "parameters": [
           { "$ref": "#/components/parameters/AuthorizationRequired" }
@@ -217,6 +223,7 @@
         { "$ref": "#/components/parameters/RecordId" }
       ],
       "post": {
+        "operationId": "submitVote",
         "summary": "Submit (or update) a vote on a proposal",
         "requestBody": {
           "required": true,
@@ -245,6 +252,7 @@
         }
       },
       "delete": {
+        "operationId": "deleteVote",
         "summary": "Delete a user's proposal vote",
         "responses": {
           "204": { "$ref": "#/components/responses/204" },
