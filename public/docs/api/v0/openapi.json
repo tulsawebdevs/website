@@ -210,7 +210,7 @@
         }
       }
     },
-    "/vote": {
+    "/proposals/vote": {
       "summary": "Manage a user's vote on a proposal",
       "parameters": [
         { "$ref": "#/components/parameters/AuthorizationRequired" },
@@ -402,6 +402,7 @@
           { "$ref": "#/components/schemas/Draft" },
           {
             "type": "object",
+            "required": ["title", "summary", "type"],
             "properties": {
               "title": {
                 "type": "string",
@@ -410,6 +411,10 @@
               "summary": {
                 "type": "string",
                 "minLength": 30
+              },
+              "type": {
+                "type": "string",
+                "enum": ["topic", "project"]
               }
             }
           }
