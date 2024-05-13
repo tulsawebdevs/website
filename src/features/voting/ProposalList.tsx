@@ -1,30 +1,26 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
-import type { z } from 'zod';
 import NewProposalFormButton from './NewProposalFormButton.tsx';
 
-import ProposalListItem from './ProposalCard.tsx';
+import ProposalCard, { type ProposalCardProps } from './ProposalCard.tsx';
 import { Button } from '../ui/button.tsx';
-import { schemas, sdk } from '../../sdk.ts';
+import { sdk, type Paginated } from '../../sdk.ts';
 
+// This component auto-loads proposals on scroll, so we hard-code a static limit
 const limit = 10;
 
-const getProposalResultSchema = schemas.DatabaseObject.and(schemas.Proposal);
-
-export type ProposalRecord = z.infer<typeof getProposalResultSchema>;
-
 export function ProposalList() {
-  const [cursor, setCursor] = useState<number | undefined>();
   const [loading, setLoading] = useState(false);
-  const [proposals, setProposals] = useState<ProposalRecord[]>([]);
+  const [cursor, setCursor] = useState<Paginated['cursor']>();
+  const [proposals, setProposals] = useState<ProposalCardProps[]>([]);
 
   useEffect(() => {
     setLoading(true);
     sdk
-      .getProposals({ queries: { limit } })
-      .then((args) => {
-        setCursor(args.cursor);
-        setProposals(args.proposals);
+      .getProposals({ queries: { pagination: { limit } } })
+      .then((result) => {
+        setCursor(result.cursor);
+        setProposals(result.proposals);
       })
       .catch(toast.error)
       .finally(() => setLoading(false));
@@ -34,7 +30,7 @@ export function ProposalList() {
     if (loading) return;
     setLoading(true);
     sdk
-      .getProposals({ queries: { cursor, limit } })
+      .getProposals({ queries: { pagination: { cursor, limit } } })
       .then((args) => {
         setCursor(args.cursor);
         setProposals([...proposals, ...args.proposals]);
@@ -48,7 +44,8 @@ export function ProposalList() {
       <ul className="flex flex-col" id="proposal-list">
         {proposals.map((proposal) => (
           <li key={`${proposal.summary}`} className="mb-2">
-            <ProposalListItem proposal={proposal} />
+            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+            <ProposalCard {...proposal} />
           </li>
         ))}
         {loading || proposals.length ?
