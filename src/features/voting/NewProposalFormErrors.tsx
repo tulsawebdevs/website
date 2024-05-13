@@ -22,9 +22,9 @@ export class ProposalFormError extends Error {
     // Unwrap ZodErrors wrapped in ZodiosErrors
     if (isZodiosZodError(og)) og = og.cause;
 
-    // ! For debugging unhandled Zodios errors
     if (og instanceof ZodiosError && !isZodiosZodError(og)) {
-      console.error(og);
+      // eslint-disable-next-line no-console -- For debugging unknown Zodios errors
+      console.error('Unhandled ZodiosError:', og);
     }
 
     const errors = [og].flat(1).flatMap((error) => {

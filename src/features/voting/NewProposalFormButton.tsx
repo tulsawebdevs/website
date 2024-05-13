@@ -38,8 +38,15 @@ import {
 } from '../ui/form.tsx';
 import { IfAuthorized, SignInButton } from '../auth/components.tsx';
 
-export const postProposalSchema = schemas.Proposal.and(schemas.AuthorData);
-export type PostProposalData = z.infer<typeof postProposalSchema>;
+export type Proposal = z.infer<typeof schemas.Proposal>;
+export type Draft = z.infer<typeof schemas.Draft>;
+
+const formSchema = z.union([
+  z.object({ isDraft: z.literal(true) }).and(schemas.Draft),
+  z.object({ isDraft: z.literal(false) }).and(schemas.Proposal),
+]);
+
+type FormValues = z.infer<typeof formSchema>;
 
 export default function NewProposalFormButton() {
   return (
@@ -54,9 +61,9 @@ function AddProposalButton() {
   const session = useSession();
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<PostProposalData>({
-    resolver: zodResolver(postProposalSchema),
-    mode: 'onChange',
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    mode: 'onSubmit',
   });
 
   useEffect(() => {
@@ -64,21 +71,12 @@ function AddProposalButton() {
     return () => setLoading(false);
   }, [form.formState.isSubmitting]);
 
-  useEffect(() => {
-    if (!session) return;
-    const { user } = session;
-    const name = user.fullName ?? [user.firstName, user.lastName].join(' ');
-    form.setValue('authorId', user.id);
-    form.setValue('authorEmail', user.primaryEmailAddress.emailAddress);
-    form.setValue('authorName', name);
-  }, [form, session]);
-
   const submit = form.handleSubmit(
-    async (data, event) => {
+    async ({ isDraft, ...data }, event) => {
       event?.preventDefault();
-      return sdk.put('/proposals', data, {
-        headers: { Authorization: `Bearer: ${await session?.getToken()}` },
-      });
+      const path = isDraft ? '/drafts' : '/proposals';
+      const headers = { Authorization: `Bearer: ${await session?.getToken()}` };
+      return sdk.post(path, data, { headers });
     },
     (errors) => {
       throw new ProposalFormError(
@@ -90,11 +88,8 @@ function AddProposalButton() {
   );
 
   const success = useCallback(() => {
-    const isDraft = form.getValues('status') === 'draft';
+    const isDraft = form.getValues('isDraft');
     form.reset({
-      authorEmail: form.getValues('authorEmail'),
-      authorName: form.getValues('authorName'),
-      authorId: form.getValues('authorId'),
       description: '',
       summary: '',
       title: '',
@@ -117,9 +112,7 @@ function AddProposalButton() {
         success,
         error,
         loading:
-          form.getValues('status') === 'draft' ?
-            'Saving draft...'
-          : 'Submitting proposal...',
+          form.getValues('isDraft') ? 'Saving draft...' : 'Submitting...',
       });
     },
     [error, form, submit, success],
@@ -225,9 +218,9 @@ function AddProposalButton() {
                 type="submit"
                 name="status-draft"
                 variant="outline"
-                onClick={() => form.setValue('status', 'draft')}
+                onClick={() => form.setValue('isDraft', true)}
                 disabled={loading}
-                busy={form.getValues('status') === 'draft' && loading}
+                busy={form.getValues('isDraft') && loading}
               >
                 Save Draft
               </Button>
@@ -235,9 +228,9 @@ function AddProposalButton() {
                 name="status-open"
                 type="submit"
                 variant="default"
-                onClick={() => form.setValue('status', 'open')}
+                onClick={() => form.setValue('isDraft', false)}
                 disabled={loading}
-                busy={form.getValues('status') === 'open' && loading}
+                busy={!form.getValues('isDraft') && loading}
               >
                 Submit Proposal
               </Button>
