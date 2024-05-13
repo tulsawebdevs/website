@@ -28,7 +28,7 @@ import {
   ProposalFormFetchError,
 } from './NewProposalFormErrors.tsx';
 import { useSession } from '../auth/hooks.ts';
-import { schemas, sdk, type Draft, type Proposal } from '../../sdk.ts';
+import { schemas, sdk } from '../../sdk.ts';
 import {
   Form,
   FormControl,
