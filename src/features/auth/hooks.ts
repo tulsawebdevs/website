@@ -1,5 +1,5 @@
 import { toast } from 'sonner';
-import { useCallback, useSyncExternalStore } from 'react';
+import { useSyncExternalStore } from 'react';
 import { clerkStore } from './clerk.ts';
 import type { AuthConditions, Clerk, User } from './clerk.ts';
 
@@ -42,34 +42,4 @@ export function useIfAuthorized<A extends (...args: any[]) => any>(
   if (!session) return () => void openSignIn?.({ fallbackRedirectUrl });
   if (!conditions || session.checkAuthorization(conditions)) return fn;
   return () => void toast.error(unauthorizedMessage);
-}
-
-export function useFetchPost(url: string) {
-  const session = useSession();
-
-  const postRequest = useCallback(
-    async (body: object) => {
-      const authToken = (await session?.getToken()) ?? '';
-
-      return fetch(url, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      }).then((response) => {
-        if (response.status === 400) throw new Error('Bad request');
-        if (response.status === 401) throw new Error('Unauthorized');
-        if (response.status === 404) throw new Error('Not Found');
-        if (response.status === 500) throw new Error('Server error');
-        if (!response.ok) throw new Error('Unknown error');
-
-        return response.json();
-      });
-    },
-    [url, session],
-  );
-
-  return postRequest;
 }

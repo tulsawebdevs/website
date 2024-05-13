@@ -1,10 +1,10 @@
 import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
 import { z } from "zod";
 
-type DraftIndex = Paginated & {
+export type DraftIndex = Paginated & {
   drafts: Array<Draft & DatabaseObject>;
 };
-type Paginated = Partial<{
+export type Paginated = Partial<{
   /**
    * Cursor for paginating through a list of items
    */
@@ -14,7 +14,7 @@ type Paginated = Partial<{
    */
   limit: number;
 }>;
-type Draft = Partial<{
+export type Draft = Partial<{
   /**
    * @maxLength 48
    */
@@ -32,12 +32,12 @@ type Draft = Partial<{
    */
   type: "topic" | "project";
 }>;
-type DatabaseObject = {
+export type DatabaseObject = {
   id: number;
   created: string;
   updated?: string | undefined;
 };
-type Proposal = Draft & {
+export type Proposal = Draft & {
   /**
    * @minLength 8
    */
@@ -46,8 +46,12 @@ type Proposal = Draft & {
    * @minLength 30
    */
   summary: string;
+  /**
+   * @enum topic, project
+   */
+  type: "topic" | "project";
 };
-type ProposalState =
+export type ProposalState =
   | {
       authorName: string;
       /**
@@ -68,7 +72,7 @@ type ProposalState =
       status: "open";
       userVote?: Vote | undefined;
     };
-type Vote = {
+export type Vote = {
   /**
    * Ranking values: -2 (strong disinterest), -1 (slight disinterest), 0 (neutral), 1 (slight interest), 2 (strong interest)
    *
@@ -80,7 +84,7 @@ type Vote = {
    */
   string | undefined;
 };
-type ProposalIndex = Paginated & {
+export type ProposalIndex = Paginated & {
   proposals: Array<Proposal & ProposalState & DatabaseObject>;
 };
 
@@ -116,7 +120,11 @@ const DraftIndex: z.ZodType<DraftIndex> = Paginated.and(
 );
 const Error = z.object({ message: z.string() });
 const Proposal: z.ZodType<Proposal> = Draft.and(
-  z.object({ title: z.string().min(8), summary: z.string().min(30) })
+  z.object({
+    title: z.string().min(8),
+    summary: z.string().min(30),
+    type: z.enum(["topic", "project"]),
+  })
 );
 const Vote: z.ZodType<Vote> = z.object({
   value: z
@@ -437,9 +445,7 @@ const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: Draft.and(
-          z.object({ title: z.string().min(8), summary: z.string().min(30) })
-        ),
+        schema: Proposal,
       },
       {
         name: "Authorization",
@@ -458,8 +464,8 @@ const endpoints = makeApi([
   },
   {
     method: "post",
-    path: "/vote",
-    alias: "postVote",
+    path: "/proposals/vote",
+    alias: "postProposalsvote",
     requestFormat: "json",
     parameters: [
       {
@@ -499,8 +505,8 @@ const endpoints = makeApi([
   },
   {
     method: "delete",
-    path: "/vote",
-    alias: "deleteVote",
+    path: "/proposals/vote",
+    alias: "deleteProposalsvote",
     requestFormat: "json",
     parameters: [
       {

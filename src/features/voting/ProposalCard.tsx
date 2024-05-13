@@ -1,7 +1,5 @@
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
-
-import { z } from 'zod';
 import {
   CardHeader,
   CardContent,
@@ -9,100 +7,79 @@ import {
   CardTitle,
   CardDescription,
 } from '../ui/card.tsx';
-
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar.tsx';
-import ProposalStatusBadge from './ProposalStatusBadge.tsx';
-
+import { Badge } from '../ui/badge.tsx';
 import useDebounce from '../hooks/useDebounce.ts';
-import ProposalInterestVote, { type Vote } from './ProposalInterestVote.tsx';
+import ProposalInterestVote from './ProposalInterestVote.tsx';
 import ProposalLikeButtons from './ProposalLikeButtons.tsx';
 import { useIfAuthorized, useSession } from '../auth/hooks.ts';
+import {
+  sdk,
+  type DatabaseObject,
+  type Proposal,
+  type ProposalState,
+  type Vote,
+} from '../../sdk.ts';
 
-import { schemas, sdk } from '../../sdk.ts';
+export type ProposalCardProps = DatabaseObject & Proposal & ProposalState;
 
-const proposalListItemSchema = schemas.Proposal.and(schemas.DatabaseObject)
-  .and(schemas.ProposalVoteState)
-  .and(
-    z.object({
-      authorName: z.string(),
-    }),
+export default function ProposalCard(props: ProposalCardProps) {
+  const [vote, setVote] = useState(props.userVote);
+
+  const proposedDate = useMemo(
+    () =>
+      new Date(props.created).toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+      }),
+    [props.created],
   );
 
-type ProposalListItem = z.infer<typeof proposalListItemSchema>;
-
-export default function ProposalListItem(props: {
-  proposal: ProposalListItem;
-}) {
-  const [vote, setVote] = useState<Vote>({ value: '0' });
-
-  const proposedDate = new Date(props.proposal.created).toLocaleDateString(
-    'en-US',
-    {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-    },
-  );
-
-  const proposedTime = new Date(props.proposal.created).toLocaleTimeString(
-    'en-US',
-    {
-      hour: 'numeric',
-      minute: 'numeric',
-      hour12: true,
-    },
+  const proposedTime = useMemo(
+    () =>
+      new Date(props.created).toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+      }),
+    [props.created],
   );
 
   const displayName = useMemo(
     () =>
-      props.proposal.authorName
+      props.authorName
         .split(' ')
-        .map((name) => name[0])
+        .map((name) => name[0]?.toUpperCase() ?? '')
         .join(''),
-    [props.proposal.authorName],
+    [props.authorName],
   );
 
-  const numberUpvotes = useMemo(
-    () =>
-      // eslint-disable-next-line no-nested-ternary
-      props.proposal.status === 'closed' ?
-        props.proposal.results.reduce((accumulator, result) => {
+  const votes = useMemo(() => {
+    if (props.status === 'closed') {
+      return props.results.reduce(
+        (accumulator, result) => {
           const voteValue = parseInt(result.value, 10);
-          if (voteValue > 0) {
-            return accumulator + voteValue;
-          }
+          accumulator[voteValue > 0 ? 'up' : 'down'] += voteValue;
           return accumulator;
-        }, 0)
-      : parseInt(props.proposal.userVote?.value ?? '0', 10) > 0 ?
-        parseInt(props.proposal.userVote!.value, 10)
-      : 0,
-    [props.proposal],
-  );
+        },
+        { up: 0, down: 0 },
+      );
+    }
 
-  const numberDownvotes = useMemo(
-    () =>
-      // eslint-disable-next-line no-nested-ternary
-      props.proposal.status === 'closed' ?
-        props.proposal.results.reduce((accumulator, result) => {
-          const voteValue = parseInt(result.value, 10);
-          if (voteValue < 0) {
-            return accumulator + voteValue;
-          }
-          return accumulator;
-        }, 0)
-      : parseInt(props.proposal.userVote?.value ?? '0', 10) < 0 ?
-        parseInt(props.proposal.userVote!.value, 10)
-      : 0,
-    [props.proposal],
-  );
+    return {
+      up: vote && parseInt(vote.value, 10) > 0 ? vote.value : 0,
+      down: vote && parseInt(vote.value, 10) < 0 ? vote.value : 0,
+    };
+  }, [props, vote]);
 
   const session = useSession();
 
   const castVote = useDebounce(async (newVote: Vote) => {
     toast.promise(
-      sdk.post('/:proposalId', newVote, {
+      sdk.post('/proposals/vote', newVote, {
         headers: { Authorization: `Bearer: ${await session?.getToken()}` },
-        params: { proposalId: props.proposal.id },
+        queries: { recordId: props.id },
       }),
     );
   });
@@ -118,14 +95,14 @@ export default function ProposalListItem(props: {
   return (
     <Card>
       <CardHeader className="pb-0 pt-6 flex flex-row justify-between">
-        <CardTitle className="content-center">{props.proposal.title}</CardTitle>
+        <CardTitle className="content-center">{props.title}</CardTitle>
 
         <ProposalLikeButtons
           onVoteValueChange={(value) => onVoteChange({ ...vote, value })}
-          numberUpvotes={numberUpvotes}
-          numberDownvotes={numberDownvotes}
-          disabled={props.proposal.status !== 'open'}
-          voteValue={vote.value}
+          numberUpvotes={votes.up}
+          numberDownvotes={votes.down}
+          disabled={props.status !== 'open'}
+          voteValue={vote?.value}
         />
       </CardHeader>
 
@@ -145,27 +122,32 @@ export default function ProposalListItem(props: {
 
             <div>
               <div className="font-bold dark:text-gray-200">
-                {props.proposal.authorName}
+                {props.authorName}
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400 content-center">
                 Proposed {proposedDate} at {proposedTime}
               </div>
               <div>
-                <ProposalStatusBadge status={props.proposal.status} />
+                <Badge
+                  variant={props.status === 'open' ? 'success' : 'destructive'}
+                >
+                  {props.status.toUpperCase()}
+                </Badge>
+                ;{' '}
               </div>
             </div>
           </div>
 
           <CardDescription className="py-4">
-            {props.proposal.description}
+            {props.description}
           </CardDescription>
         </div>
 
         <div>
           <ProposalInterestVote
-            proposal={props.proposal}
+            proposalId={props.id}
             onVoteChange={onVoteChange}
-            disabled={props.proposal.status !== 'open'}
+            disabled={props.status !== 'open'}
             vote={vote}
           />
         </div>

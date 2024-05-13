@@ -4,8 +4,7 @@ import type { z } from 'zod';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group.tsx';
 import { cn } from '../ui/utils.ts';
 
-import type { ProposalRecord } from './ProposalList.tsx';
-import { schemas } from '../../sdk.ts';
+import { schemas, type Vote } from '../../sdk.ts';
 
 const voteOptions = [
   {
@@ -23,13 +22,11 @@ const voteOptions = [
   { label: 'Strong Interest', value: '2', id: 'vote-strong-interest' },
 ] as const;
 
-export type Vote = z.infer<typeof schemas.Vote>;
-
 type ProposalInterestVoteProps = {
-  proposal: ProposalRecord;
+  proposalId: number;
   disabled?: boolean;
   onVoteChange: (vote: Vote) => void;
-  vote: Vote;
+  vote: Vote | undefined;
 };
 
 export default function ProposalInterestVote(props: ProposalInterestVoteProps) {
@@ -37,59 +34,53 @@ export default function ProposalInterestVote(props: ProposalInterestVoteProps) {
     <RadioGroup
       aria-label="Vote"
       className="flex flex-col md:flex-row md:items-center gap-2"
-      value={props.vote.value}
+      value={props.vote?.value}
       disabled={props.disabled}
       onValueChange={(value: Vote['value']) =>
         props.onVoteChange({ ...props.vote, value })
       }
     >
-      {voteOptions.map((option) => {
-        const optionValue = parseInt(option.value, 10);
-
-        return (
-          <Label
-            key={`${props.proposal.id}-${option.id}`}
+      {voteOptions.map(({ label, value, id }) => (
+        <Label
+          key={`${props.proposalId}-${id}`}
+          className={cn(
+            'flex flex-col gap-2 text-center items-center w-[20%]',
+            { 'cursor-pointer': !props.disabled },
+          )}
+          htmlFor={`${props.proposalId}-${id}`}
+        >
+          <RadioGroupItem
+            className="peer sr-only"
+            id={`${props.proposalId}-${id}`}
+            value={value}
+            disabled={props.disabled}
+          />
+          <div
             className={cn(
-              'flex flex-col gap-2 text-center items-center w-[20%]',
-              { 'cursor-pointer': !props.disabled },
+              'p-0.5 w-5 h-5 flex items-center justify-center rounded-full border-2 border-gray-400',
+              {
+                'peer-aria-checked:bg-red-500 peer-aria-checked:border-red-500 dark:border-gray-600 dark:peer-aria-checked:bg-red-500 dark:peer-aria-checked:border-red-500':
+                  ['-2', '-1'].includes(value),
+                'peer-aria-checked:bg-gray-500 peer-aria-checked:border-gray-500 dark:border-gray-600 dark:peer-aria-checked:bg-gray-500 dark:peer-aria-checked:border-gray-500':
+                  value === '0',
+                'peer-aria-checked:bg-green-500 peer-aria-checked:border-green-500 dark:border-gray-600 dark:peer-aria-checked:bg-green-500 dark:peer-aria-checked:border-green-500':
+                  ['1', '2'].includes(value),
+              },
             )}
-            htmlFor={`${props.proposal.id}-${option.id}`}
           >
-            <RadioGroupItem
-              className="peer sr-only"
-              id={`${props.proposal.id}-${option.id}`}
-              value={option.value}
-              disabled={props.disabled}
-            />
-            <div
-              className={cn(
-                'p-0.5 w-5 h-5 flex items-center justify-center rounded-full border-2 border-gray-400',
-                {
-                  'peer-aria-checked:bg-red-500 peer-aria-checked:border-red-500 dark:border-gray-600 dark:peer-aria-checked:bg-red-500 dark:peer-aria-checked:border-red-500':
-                    optionValue < 0,
-                  'peer-aria-checked:bg-gray-500 peer-aria-checked:border-gray-500 dark:border-gray-600 dark:peer-aria-checked:bg-gray-500 dark:peer-aria-checked:border-gray-500':
-                    optionValue === 0,
-                  'peer-aria-checked:bg-green-500 peer-aria-checked:border-green-500 dark:border-gray-600 dark:peer-aria-checked:bg-green-500 dark:peer-aria-checked:border-green-500':
-                    optionValue > 0,
-                },
-              )}
-            >
-              {optionValue < 0 && (
-                <ThumbsDownIcon className="w-4 h-4 text-white" />
-              )}
-              {optionValue === 0 && (
-                <MinusIcon className="w-4 h-4 text-white" />
-              )}
-              {optionValue > 0 && (
-                <ThumbsUpIcon className="w-4 h-4 text-white" />
-              )}
-            </div>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              {option.label}
-            </span>
-          </Label>
-        );
-      })}
+            {value === '0' && <MinusIcon className="w-4 h-4 text-white" />}
+            {['-2', '-1'].includes(value) && (
+              <ThumbsDownIcon className="w-4 h-4 text-white" />
+            )}
+            {['1', '2'].includes(value) && (
+              <ThumbsUpIcon className="w-4 h-4 text-white" />
+            )}
+          </div>
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            {label}
+          </span>
+        </Label>
+      ))}
     </RadioGroup>
   );
 }

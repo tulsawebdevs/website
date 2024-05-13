@@ -28,7 +28,7 @@ import {
   ProposalFormFetchError,
 } from './NewProposalFormErrors.tsx';
 import { useSession } from '../auth/hooks.ts';
-import { schemas, sdk } from '../../sdk.ts';
+import { schemas, sdk, type Draft, type Proposal } from '../../sdk.ts';
 import {
   Form,
   FormControl,
@@ -38,15 +38,10 @@ import {
 } from '../ui/form.tsx';
 import { IfAuthorized, SignInButton } from '../auth/components.tsx';
 
-export type Proposal = z.infer<typeof schemas.Proposal>;
-export type Draft = z.infer<typeof schemas.Draft>;
-
 const formSchema = z.union([
   z.object({ isDraft: z.literal(true) }).and(schemas.Draft),
   z.object({ isDraft: z.literal(false) }).and(schemas.Proposal),
 ]);
-
-type FormValues = z.infer<typeof formSchema>;
 
 export default function NewProposalFormButton() {
   return (
@@ -61,9 +56,9 @@ function AddProposalButton() {
   const session = useSession();
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<FormValues>({
+  const form = useForm<(Proposal | Draft) & { isDraft: boolean }>({
     resolver: zodResolver(formSchema),
-    mode: 'onSubmit',
+    mode: 'onChange',
   });
 
   useEffect(() => {
