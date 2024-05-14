@@ -17,7 +17,7 @@ export function ProposalList() {
   useEffect(() => {
     setLoading(true);
     sdk
-      .getProposals({ queries: { pagination: { limit } } })
+      .listProposals({ queries: { pagination: { limit } } })
       .then((result) => {
         setCursor(result.cursor);
         setProposals(result.proposals);
@@ -30,7 +30,7 @@ export function ProposalList() {
     if (loading) return;
     setLoading(true);
     sdk
-      .getProposals({ queries: { pagination: { cursor, limit } } })
+      .listProposals({ queries: { pagination: { cursor, limit } } })
       .then((args) => {
         setCursor(args.cursor);
         setProposals([...proposals, ...args.proposals]);
