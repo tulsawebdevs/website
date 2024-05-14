@@ -6,12 +6,12 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "dev": "npm run api:sdk && astro dev",
+    "dev": "echo 'Use the editor at https://editor-next.swagger.io/ to edit the API spec' && astro dev",
     "start": "astro dev",
     "build": "astro build",
-    "api:stub": "curl 'https://generator3.swagger.io/api/generate' -H 'accept: application/octet-stream' -H 'content-type: application/json' -H 'sec-fetch-dest: empty' -H 'sec-fetch-mode: cors' -H 'sec-fetch-site: same-origin' --data-raw \"{\\\"lang\\\":\\\"nodejs-server\\\",\\\"type\\\":\\\"SERVER\\\",\\\"codegenVersion\\\":\\\"V3\\\",\\\"spec\\\": $(cat ./public/docs/api/v0/openapi.json)}\" > ./stub-server.zip && unzip -o ./stub-server.zip -d ./stub-server && rm ./stub-server.zip && cd ./stub-server && npm install && open http://localhost:8080/docs && npm start",
-    "api:dev": "docker port $(docker run -d -p 80 swaggerapi/swagger-editor:next-v5) 80 | sed -n 's|.*:\\(.*\\)|http://localhost:\\1|p' | xargs open && npm run dev",
-    "api:sdk": "npx openapi-zod-client@latest ./public/docs/api/v0/openapi.json -o ./src/sdk.ts -p ./prettier.config.mjs -b https://vote.tulsawebdevs.org --api-client-name=sdk --error-expr=\"status >= 300 || status < 200\" --export-schemas  --export-types --complexity-threshold=10 --with-deprecated --with-description --with-docs --additional-props-default-value=false && sed -i '' 's/^type /export type /g' ./src/sdk.ts",
+    "api:stub": "curl 'https://generator3.swagger.io/api/generate' -H 'accept: application/octet-stream' -H 'content-type: application/json' -H 'sec-fetch-dest: empty' -H 'sec-fetch-mode: cors' -H 'sec-fetch-site: same-origin' --data-raw \"{\\\"lang\\\":\\\"nodejs-server\\\",\\\"type\\\":\\\"SERVER\\\",\\\"codegenVersion\\\":\\\"V3\\\",\\\"spec\\\": $(cat ./public/docs/api/v0/openapi.json)}\" > ./stub-server.zip && unzip -o ./stub-server.zip -d ./stub-server && rm ./stub-server.zip && cd ./stub-server && npm install && echo 'STUB-SURVER: http://localhost:8080 && npm start",
+    "api:sdk": "npx openapi-zod-client@latest ./public/docs/api/v0/openapi.json -o ./src/sdk.ts -p ./prettier.config.mjs -b https://vote.tulsawebdevs.org --api-client-name=sdk --error-expr=\"status >= 300 || status < 200\" --export-schemas  --export-types --complexity-threshold=10 --with-deprecated --with-description --with-docs --additional-props-default-value=false && npx -y replace-in-file --configFile=replace-in-file.config.cjs",
+    "postinstall": "npm run api:sdk",
     "api:docs": "npx swagger-ui ./public/docs/api/v0/openapi.json",
     "test": "vitest",
     "test:e2e": "npx playwright test",
