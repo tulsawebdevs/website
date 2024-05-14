@@ -33,7 +33,21 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/DraftIndex" }
+                "schema": { "$ref": "#/components/schemas/DraftIndex" },
+                "example": {
+                  "limit": 1,
+                  "drafts": [
+                    {
+                      "id": 1,
+                      "created": "2021-09-01T12:00:00Z",
+                      "updated": "2021-09-01T12:00:00Z",
+                      "title": "My Draft",
+                      "summary": "A short summary of the draft",
+                      "description": "A longer description of the draft",
+                      "type": "topic"
+                    }
+                  ]
+                }
               }
             }
           },
@@ -174,7 +188,28 @@
             "description": "OK",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ProposalIndex" }
+                "schema": { "$ref": "#/components/schemas/ProposalIndex" },
+                "example": {
+                  "limit": 1,
+                  "proposals": [
+                    {
+                      "id": 1,
+                      "created": "2021-09-01T12:00:00Z",
+                      "updated": "2021-09-01T12:00:00Z",
+                      "title": "My Proposal",
+                      "summary": "A short summary of the proposal",
+                      "description": "A longer description of the proposal",
+                      "type": "topic",
+                      "status": "closed",
+                      "authorName": "John Doe",
+                      "userVote": { "value": "1", "comment": "I like this idea" },
+                      "results": [
+                        { "value": "1", "comment": "I like this idea" },
+                        { "value": "2", "comment": "I really like this idea" }
+                      ]
+                    }
+                  ]
+                
               }
             }
           },
