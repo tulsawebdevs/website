@@ -202,14 +202,17 @@
                       "type": "topic",
                       "status": "closed",
                       "authorName": "John Doe",
-                      "userVote": { "value": "1", "comment": "I like this idea" },
+                      "userVote": {
+                        "value": "1",
+                        "comment": "I like this idea"
+                      },
                       "results": [
                         { "value": "1", "comment": "I like this idea" },
                         { "value": "2", "comment": "I really like this idea" }
                       ]
                     }
                   ]
-                
+                }
               }
             }
           },
