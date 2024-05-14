@@ -10,7 +10,7 @@
     "start": "astro dev",
     "build": "astro build",
     "api:stub": "curl 'https://generator3.swagger.io/api/generate' -H 'accept: application/octet-stream' -H 'content-type: application/json' -H 'sec-fetch-dest: empty' -H 'sec-fetch-mode: cors' -H 'sec-fetch-site: same-origin' --data-raw \"{\\\"lang\\\":\\\"nodejs-server\\\",\\\"type\\\":\\\"SERVER\\\",\\\"codegenVersion\\\":\\\"V3\\\",\\\"spec\\\": $(cat ./public/docs/api/v0/openapi.json)}\" > ./stub-server.zip && unzip -o ./stub-server.zip -d ./stub-server && rm ./stub-server.zip && cd ./stub-server && npm install && echo 'STUB-SURVER: http://localhost:8080 && npm start",
-    "api:sdk": "npx openapi-zod-client@latest ./public/docs/api/v0/openapi.json -o ./src/sdk.ts -p ./prettier.config.mjs -b https://vote.tulsawebdevs.org --api-client-name=sdk --error-expr=\"status >= 300 || status < 200\" --export-schemas  --export-types --complexity-threshold=10 --with-deprecated --with-description --with-docs --additional-props-default-value=false && npx -y replace-in-file --configFile=replaceInfile.config.cjs && npm run format",
+    "api:sdk": "npx openapi-zod-client@latest ./public/docs/api/v0/openapi.json -o ./src/sdk.ts -p ./prettier.config.mjs -b https://vote.tulsawebdevs.org --api-client-name=sdk --error-expr=\"status >= 300 || status < 200\" --export-schemas  --export-types --complexity-threshold=10 --with-deprecated --with-description --with-docs --additional-props-default-value=false && npx -y replace-in-file --configFile=replaceInFile.config.cjs && npm run format",
     "postinstall": "npm run api:sdk",
     "api:docs": "npx swagger-ui ./public/docs/api/v0/openapi.json",
     "test": "vitest",
