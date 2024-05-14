@@ -406,27 +406,28 @@
         ]
       },
       "Proposal": {
-        "allOf": [
-          { "$ref": "#/components/schemas/Draft" },
-          {
-            "type": "object",
-            "required": ["title", "summary", "type"],
-            "properties": {
-              "title": {
-                "type": "string",
-                "minLength": 8
-              },
-              "summary": {
-                "type": "string",
-                "minLength": 30
-              },
-              "type": {
-                "type": "string",
-                "enum": ["topic", "project"]
-              }
-            }
+        "type": "object",
+        "required": ["title", "summary", "type"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 48
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 30,
+            "maxLength": 255
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2048
+          },
+          "type": {
+            "type": "string",
+            "enum": ["topic", "project"]
           }
-        ]
+        }
       },
       "ProposalState": {
         "oneOf": [

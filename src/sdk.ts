@@ -37,20 +37,6 @@ export type DatabaseObject = {
   created: string;
   updated?: string | undefined;
 };
-export type Proposal = Draft & {
-  /**
-   * @minLength 8
-   */
-  title: string;
-  /**
-   * @minLength 30
-   */
-  summary: string;
-  /**
-   * @enum topic, project
-   */
-  type: "topic" | "project";
-};
 export type ProposalState =
   | {
       authorName: string;
@@ -87,6 +73,26 @@ export type Vote = {
 export type ProposalIndex = Paginated & {
   proposals: Array<Proposal & ProposalState & DatabaseObject>;
 };
+export type Proposal = {
+  /**
+   * @minLength 8
+   * @maxLength 48
+   */
+  title: string;
+  /**
+   * @minLength 30
+   * @maxLength 255
+   */
+  summary: string;
+  description?: /**
+   * @maxLength 2048
+   */
+  string | undefined;
+  /**
+   * @enum topic, project
+   */
+  type: "topic" | "project";
+};
 
 const Paginated: z.ZodType<Paginated> = z
   .object({
@@ -119,13 +125,12 @@ const DraftIndex: z.ZodType<DraftIndex> = Paginated.and(
   z.object({ drafts: z.array(Draft.and(DatabaseObject)) })
 );
 const Error = z.object({ message: z.string() });
-const Proposal: z.ZodType<Proposal> = Draft.and(
-  z.object({
-    title: z.string().min(8),
-    summary: z.string().min(30),
-    type: z.enum(["topic", "project"]),
-  })
-);
+const Proposal: z.ZodType<Proposal> = z.object({
+  title: z.string().min(8).max(48),
+  summary: z.string().min(30).max(255),
+  description: z.string().max(2048).optional(),
+  type: z.enum(["topic", "project"]),
+});
 const Vote: z.ZodType<Vote> = z.object({
   value: z
     .enum(["-2", "-1", "0", "1", "2"])
@@ -224,7 +229,7 @@ const endpoints = makeApi([
   {
     method: "post",
     path: "/drafts",
-    alias: "postDrafts",
+    alias: "createDraft",
     requestFormat: "json",
     parameters: [
       {
@@ -257,7 +262,7 @@ const endpoints = makeApi([
   {
     method: "put",
     path: "/drafts",
-    alias: "putDrafts",
+    alias: "putDraft",
     requestFormat: "json",
     parameters: [
       {
@@ -303,7 +308,7 @@ const endpoints = makeApi([
   {
     method: "patch",
     path: "/drafts",
-    alias: "patchDrafts",
+    alias: "patchDraft",
     requestFormat: "json",
     parameters: [
       {
@@ -349,7 +354,7 @@ const endpoints = makeApi([
   {
     method: "delete",
     path: "/drafts",
-    alias: "deleteDrafts",
+    alias: "deleteDraft",
     requestFormat: "json",
     parameters: [
       {
@@ -383,7 +388,7 @@ const endpoints = makeApi([
   {
     method: "get",
     path: "/proposals",
-    alias: "getProposals",
+    alias: "listProposals",
     requestFormat: "json",
     parameters: [
       {
@@ -439,13 +444,18 @@ const endpoints = makeApi([
   {
     method: "post",
     path: "/proposals",
-    alias: "postProposals",
+    alias: "createProposal",
     requestFormat: "json",
     parameters: [
       {
         name: "body",
         type: "Body",
-        schema: Proposal,
+        schema: z.object({
+          title: z.string().min(8).max(48),
+          summary: z.string().min(30).max(255),
+          description: z.string().max(2048).optional(),
+          type: z.enum(["topic", "project"]),
+        }),
       },
       {
         name: "Authorization",
@@ -465,7 +475,7 @@ const endpoints = makeApi([
   {
     method: "post",
     path: "/proposals/vote",
-    alias: "postProposalsvote",
+    alias: "submitVote",
     requestFormat: "json",
     parameters: [
       {
@@ -506,7 +516,7 @@ const endpoints = makeApi([
   {
     method: "delete",
     path: "/proposals/vote",
-    alias: "deleteProposalsvote",
+    alias: "deleteVote",
     requestFormat: "json",
     parameters: [
       {
