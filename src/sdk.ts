@@ -35,7 +35,7 @@ export type Draft = Partial<{
 export type DatabaseObject = {
   id: number;
   created: string;
-  updated?: string | undefined;
+  updated?: (null | string) | undefined;
 };
 export type ProposalState =
   | {
@@ -119,7 +119,7 @@ const Draft: z.ZodType<Draft> = z
 const DatabaseObject: z.ZodType<DatabaseObject> = z.object({
   id: z.number().int(),
   created: z.string().datetime({ offset: true }),
-  updated: z.string().datetime({ offset: true }).optional(),
+  updated: z.union([z.null(), z.string()]).optional(),
 });
 const DraftIndex: z.ZodType<DraftIndex> = Paginated.and(
   z.object({ drafts: z.array(Draft.and(DatabaseObject)) }),
@@ -157,7 +157,7 @@ const ProposalIndex: z.ZodType<ProposalIndex> = Paginated.and(
     proposals: z.array(Proposal.and(ProposalState).and(DatabaseObject)),
   }),
 );
-const Expirable = z.object({ expires: z.string().datetime({ offset: true }) });
+const Expirable = z.object({ expires: z.union([z.null(), z.string()]) });
 
 export const schemas = {
   Paginated,
