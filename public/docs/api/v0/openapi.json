@@ -428,11 +428,16 @@
         "oneOf": [
           {
             "type": "object",
-            "required": ["status", "results", "authorName"],
+            "required": ["status", "results", "authorName", "userVote"],
             "properties": {
               "authorName": { "type": "string" },
               "status": { "type": "string", "enum": ["closed"] },
-              "userVote": { "$ref": "#/components/schemas/Vote" },
+              "userVote": {
+                "oneOf": [
+                  { "type": "null" },
+                  { "$ref": "#/components/schemas/Vote" }
+                ]
+              },
               "results": {
                 "type": "array",
                 "items": { "$ref": "#/components/schemas/Vote" }
@@ -441,11 +446,16 @@
           },
           {
             "type": "object",
-            "required": ["status", "authorName"],
+            "required": ["status", "authorName", "userVote"],
             "properties": {
               "authorName": { "type": "string", "minLength": 4 },
               "status": { "type": "string", "enum": ["open"] },
-              "userVote": { "$ref": "#/components/schemas/Vote" }
+              "userVote": {
+                "oneOf": [
+                  { "type": "null" },
+                  { "$ref": "#/components/schemas/Vote" }
+                ]
+              }
             }
           }
         ]

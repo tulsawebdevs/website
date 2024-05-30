@@ -25,7 +25,7 @@ type ProposalInterestVoteProps = {
   proposalId: number;
   disabled?: boolean;
   onVoteChange: (vote: Vote) => void;
-  vote: Vote | undefined;
+  vote: Vote | null;
 };
 
 export default function ProposalInterestVote(props: ProposalInterestVoteProps) {
@@ -36,7 +36,7 @@ export default function ProposalInterestVote(props: ProposalInterestVoteProps) {
       value={props.vote?.value}
       disabled={props.disabled}
       onValueChange={(value: Vote['value']) =>
-        props.onVoteChange({ ...props.vote, value })
+        props.onVoteChange({ ...(props.vote ?? {}), value })
       }
     >
       {voteOptions.map(({ label, value, id }) => (

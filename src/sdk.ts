@@ -44,7 +44,7 @@ export type ProposalState =
        * @enum closed
        */
       status: 'closed';
-      userVote?: Vote | undefined;
+      userVote: null | Vote;
       results: Array<Vote>;
     }
   | {
@@ -56,7 +56,7 @@ export type ProposalState =
        * @enum open
        */
       status: 'open';
-      userVote?: Vote | undefined;
+      userVote: null | Vote;
     };
 export type Vote = {
   /**
@@ -143,13 +143,13 @@ const ProposalState: z.ZodType<ProposalState> = z.union([
   z.object({
     authorName: z.string(),
     status: z.literal('closed'),
-    userVote: Vote.optional(),
+    userVote: z.union([z.null(), Vote]),
     results: z.array(Vote),
   }),
   z.object({
     authorName: z.string().min(4),
     status: z.literal('open'),
-    userVote: Vote.optional(),
+    userVote: z.union([z.null(), Vote]),
   }),
 ]);
 const ProposalIndex: z.ZodType<ProposalIndex> = Paginated.and(
