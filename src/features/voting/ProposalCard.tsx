@@ -84,13 +84,16 @@ export default function ProposalCard(props: ProposalCardProps) {
     );
   });
 
-  const onVoteChange = useIfAuthorized(
-    (value: Vote) => {
-      setVote(value);
-      castVote(value);
-    },
-    { unauthorizedMessage: 'You must be logged in to vote.' },
-  );
+  const onVoteChange = () => {
+    console.log('onVoteChange');
+  };
+  // const onVoteChange = useIfAuthorized(
+  //   (value: Vote) => {
+  //     setVote(value);
+  //     castVote(value);
+  //   },
+  //   { unauthorizedMessage: 'You must be logged in to vote.' },
+  // );
 
   return (
     <Card>
