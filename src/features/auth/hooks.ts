@@ -35,7 +35,7 @@ export function useIfAuthorized<A extends (...args: any[]) => any>(
   const {
     conditions,
     unauthorizedMessage = 'You are not authorized to perform this action.',
-    fallbackRedirectUrl = global.location.href,
+    fallbackRedirectUrl = global?.location.href, // optional chain to prevent errors when `global` is not defined
   } = options;
   const { session, openSignIn } = useClerk() ?? {};
 
