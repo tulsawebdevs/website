@@ -428,7 +428,7 @@
         "oneOf": [
           {
             "type": "object",
-            "required": ["status", "results", "authorName", "userVote"],
+            "required": ["status", "results", "authorName"],
             "properties": {
               "authorName": { "type": "string" },
               "status": { "type": "string", "enum": ["closed"] },
@@ -481,8 +481,7 @@
             "enum": ["-2", "-1", "0", "1", "2"]
           },
           "comment": { "type": "string", "maxLength": 255 }
-        },
-        "nullable": true
+        }
       },
       "Expirable": {
         "type": "object",
