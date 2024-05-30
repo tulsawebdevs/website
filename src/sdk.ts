@@ -44,7 +44,7 @@ export type ProposalState =
        * @enum closed
        */
       status: 'closed';
-      userVote?: Vote | undefined;
+      userVote: Vote;
       results: Array<Vote>;
     }
   | {
@@ -143,13 +143,13 @@ const ProposalState: z.ZodType<ProposalState> = z.union([
   z.object({
     authorName: z.string(),
     status: z.literal('closed'),
-    userVote: Vote.optional(),
+    userVote: Vote.nullable(),
     results: z.array(Vote),
   }),
   z.object({
     authorName: z.string().min(4),
     status: z.literal('open'),
-    userVote: Vote.optional(),
+    userVote: Vote.nullish(),
   }),
 ]);
 const ProposalIndex: z.ZodType<ProposalIndex> = Paginated.and(
@@ -481,14 +481,16 @@ const endpoints = makeApi([
       {
         name: 'body',
         type: 'Body',
-        schema: z.object({
-          value: z
-            .enum(['-2', '-1', '0', '1', '2'])
-            .describe(
-              'Ranking values: -2 (strong disinterest), -1 (slight disinterest), 0 (neutral), 1 (slight interest), 2 (strong interest)',
-            ),
-          comment: z.string().max(255).optional(),
-        }),
+        schema: z
+          .object({
+            value: z
+              .enum(['-2', '-1', '0', '1', '2'])
+              .describe(
+                'Ranking values: -2 (strong disinterest), -1 (slight disinterest), 0 (neutral), 1 (slight interest), 2 (strong interest)',
+              ),
+            comment: z.string().max(255).optional(),
+          })
+          .nullable(),
       },
       {
         name: 'Authorization',
