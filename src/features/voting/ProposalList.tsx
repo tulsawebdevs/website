@@ -33,6 +33,7 @@ export function ProposalList() {
 
   const onClick = useCallback(() => {
     if (loading) return;
+    if (!cursor) return;
     loadProposals({ cursor, limit });
   }, [loading, loadProposals, cursor]);
 
