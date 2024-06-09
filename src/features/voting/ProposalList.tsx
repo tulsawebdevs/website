@@ -11,33 +11,30 @@ const limit = 10;
 
 export function ProposalList() {
   const [loading, setLoading] = useState(false);
-  const [cursor, setCursor] = useState<Paginated['cursor']>();
+  const [cursor, nextCursor] = useState<Paginated['cursor']>();
   const [proposals, setProposals] = useState<ProposalCardProps[]>([]);
 
-  useEffect(() => {
+  const loadProposals = useCallback((pagination: Paginated) => {
     setLoading(true);
     sdk
-      .listProposals({ queries: { pagination: { limit } } })
+      .listProposals({ queries: { pagination } })
       .then((result) => {
-        setCursor(result.cursor);
-        setProposals(result.proposals);
+        nextCursor(result.cursor);
+        setProposals((previous) => [...previous, ...result.proposals]);
       })
       .catch(toast.error)
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    // Load initial proposals
+    loadProposals({ limit });
+  }, [loadProposals]);
+
   const onClick = useCallback(() => {
     if (loading) return;
-    setLoading(true);
-    sdk
-      .listProposals({ queries: { pagination: { cursor, limit } } })
-      .then((args) => {
-        setCursor(args.cursor);
-        setProposals([...proposals, ...args.proposals]);
-      })
-      .catch(toast.error)
-      .finally(() => setLoading(false));
-  }, [loading, cursor, proposals]);
+    loadProposals({ cursor, limit });
+  }, [loading, loadProposals, cursor]);
 
   return (
     <div>
