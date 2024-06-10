@@ -112,6 +112,7 @@ const tsLanguageOptions = {
   parserOptions: tsParserOptions,
   globals: /** @type {const} */ ({
     ...Legacy.environments.get('2022')?.globals,
+    ...Legacy.environments.get('browser')?.globals,
     NoInfer: 'readonly',
   }),
 };
