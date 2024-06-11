@@ -25,7 +25,7 @@ type ProposalInterestVoteProps = {
   proposalId: number;
   disabled?: boolean;
   onVoteChange: (vote: Vote) => void;
-  vote: Vote | null;
+  vote: Vote | undefined;
 };
 
 export default function ProposalInterestVote(props: ProposalInterestVoteProps) {
