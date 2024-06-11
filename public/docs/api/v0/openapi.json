@@ -377,12 +377,7 @@
         "properties": {
           "id": { "type": "integer", "format": "int32" },
           "created": { "type": "string", "format": "date-time" },
-          "updated": {
-            "oneOf": [
-              { "type": "null" },
-              { "type": "string", "format": "date-time" }
-            ]
-          }
+          "updated": { "type": "string", "format": "date-time" }
         }
       },
       "Draft": {
