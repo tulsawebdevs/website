@@ -35,7 +35,7 @@ export type Draft = Partial<{
 export type DatabaseObject = {
   id: number;
   created: string;
-  updated?: (null | string) | undefined;
+  updated: string;
 };
 export type ProposalState =
   | {
@@ -44,7 +44,7 @@ export type ProposalState =
        * @enum closed
        */
       status: 'closed';
-      userVote: null | Vote;
+      userVote?: Vote | undefined;
       results: Array<Vote>;
     }
   | {
@@ -56,7 +56,7 @@ export type ProposalState =
        * @enum open
        */
       status: 'open';
-      userVote: null | Vote;
+      userVote?: Vote | undefined;
     };
 export type Vote = {
   /**
@@ -119,7 +119,7 @@ const Draft: z.ZodType<Draft> = z
 const DatabaseObject: z.ZodType<DatabaseObject> = z.object({
   id: z.number().int(),
   created: z.string().datetime({ offset: true }),
-  updated: z.union([z.null(), z.string()]).optional(),
+  updated: z.string().datetime({ offset: true }),
 });
 const DraftIndex: z.ZodType<DraftIndex> = Paginated.and(
   z.object({ drafts: z.array(Draft.and(DatabaseObject)) }),
@@ -143,13 +143,13 @@ const ProposalState: z.ZodType<ProposalState> = z.union([
   z.object({
     authorName: z.string(),
     status: z.literal('closed'),
-    userVote: z.union([z.null(), Vote]),
+    userVote: Vote.optional(),
     results: z.array(Vote),
   }),
   z.object({
     authorName: z.string().min(4),
     status: z.literal('open'),
-    userVote: z.union([z.null(), Vote]),
+    userVote: Vote.optional(),
   }),
 ]);
 const ProposalIndex: z.ZodType<ProposalIndex> = Paginated.and(
@@ -157,7 +157,7 @@ const ProposalIndex: z.ZodType<ProposalIndex> = Paginated.and(
     proposals: z.array(Proposal.and(ProposalState).and(DatabaseObject)),
   }),
 );
-const Expirable = z.object({ expires: z.union([z.null(), z.string()]) });
+const Expirable = z.object({ expires: z.string().datetime({ offset: true }) });
 
 export const schemas = {
   Paginated,

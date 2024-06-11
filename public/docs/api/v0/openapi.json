@@ -373,7 +373,7 @@
     "schemas": {
       "DatabaseObject": {
         "type": "object",
-        "required": ["id", "created"],
+        "required": ["id", "created", "updated"],
         "properties": {
           "id": { "type": "integer", "format": "int32" },
           "created": { "type": "string", "format": "date-time" },
@@ -423,16 +423,11 @@
         "oneOf": [
           {
             "type": "object",
-            "required": ["status", "results", "authorName", "userVote"],
+            "required": ["status", "results", "authorName"],
             "properties": {
               "authorName": { "type": "string" },
               "status": { "type": "string", "enum": ["closed"] },
-              "userVote": {
-                "oneOf": [
-                  { "type": "null" },
-                  { "$ref": "#/components/schemas/Vote" }
-                ]
-              },
+              "userVote": { "$ref": "#/components/schemas/Vote" },
               "results": {
                 "type": "array",
                 "items": { "$ref": "#/components/schemas/Vote" }
@@ -441,16 +436,11 @@
           },
           {
             "type": "object",
-            "required": ["status", "authorName", "userVote"],
+            "required": ["status", "authorName"],
             "properties": {
               "authorName": { "type": "string", "minLength": 4 },
               "status": { "type": "string", "enum": ["open"] },
-              "userVote": {
-                "oneOf": [
-                  { "type": "null" },
-                  { "$ref": "#/components/schemas/Vote" }
-                ]
-              }
+              "userVote": { "$ref": "#/components/schemas/Vote" }
             }
           }
         ]
@@ -492,12 +482,7 @@
         "type": "object",
         "required": ["expires"],
         "properties": {
-          "expires": {
-            "oneOf": [
-              { "type": "null" },
-              { "type": "string", "format": "date-time" }
-            ]
-          }
+          "expires": { "type": "string", "format": "date-time" }
         }
       },
       "Paginated": {
