@@ -1,9 +1,13 @@
 import type React from 'react';
-import { useRef, useEffect, forwardRef } from 'react';
+import type { SignInProps } from '@clerk/clerk-js/dist/types/ui/types';
+import { useRef, useEffect, useCallback, useState } from 'react';
 import { useClerk, useSession, useUser } from './hooks.ts';
 
+import type { AuthConditions, Session, User } from './clerk.ts';
 import { Button } from '../ui/button.tsx';
-import type { AuthConditions, Clerk, Session, User } from './clerk.ts';
+import { DialogTrigger } from '../ui/dialog.tsx';
+import { DropdownMenuTrigger } from '../ui/dropdown-menu.tsx';
+import { SelectTrigger } from '../ui/select.tsx';
 
 type Maybe<T> = T | null | undefined;
 
@@ -48,26 +52,65 @@ export function IfAuthorized({ conditions, children }: IfAuthorizedProps) {
     : fallback({ user, session, conditions });
 }
 
-export const SignInButton = forwardRef<
-  HTMLButtonElement,
-  React.ComponentProps<typeof Button> & {
-    signinProps?: Parameters<Clerk['openSignIn']>[0];
+export function ProtectedTrigger(props: {
+  children: React.ReactNode;
+  type: 'dialog' | 'dropdown-menu' | 'select' | 'button';
+}) {
+  let Trigger;
+
+  switch (props.type) {
+    case 'dialog':
+      Trigger = DialogTrigger;
+      break;
+    case 'dropdown-menu':
+      Trigger = DropdownMenuTrigger;
+      break;
+    case 'button':
+      Trigger = Button;
+      break;
+    case 'select':
+      Trigger = SelectTrigger;
+      break;
+    default:
+      throw new Error(`Unknown protected button type: ${String(props.type)}`);
   }
->((props, ref) => {
-  const clerk = useClerk();
-  const { children = 'Sign In', signinProps, ...buttonProps } = props;
 
   return (
-    <Button
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      {...buttonProps}
-      onClick={() => clerk?.openSignIn(signinProps)}
-      ref={ref}
-    >
+    <IfAuthorized>
+      {() => <Trigger asChild>{props.children}</Trigger>}
+      {() => <SignInButton asChild>{props.children}</SignInButton>}
+    </IfAuthorized>
+  );
+}
+
+export function SignInButton(
+  props: React.ComponentProps<typeof Button> & {
+    signinProps?: SignInProps | undefined;
+  },
+) {
+  const clerk = useClerk();
+  const { children = 'Sign In', signinProps = {}, ...buttonProps } = props;
+  const [fallbackRedirectUrl, setFallbackRedirect] = useState<
+    string | undefined
+  >();
+
+  useEffect(() => {
+    // This useEffect ensures we only run this on the client, where
+    setFallbackRedirect(window.location.href);
+    return () => setFallbackRedirect(undefined);
+  }, []);
+
+  const onClick = useCallback(() => {
+    clerk?.openSignIn({ fallbackRedirectUrl, ...signinProps });
+  }, [clerk, signinProps, fallbackRedirectUrl]);
+
+  return (
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    <Button {...buttonProps} onClick={onClick}>
       {children}
     </Button>
   );
-});
+}
 
 export function UserButton(
   props: Parameters<
