@@ -20,7 +20,7 @@ export class ProposalFormError extends Error {
     if (og instanceof ProposalFormError) og = og.source;
 
     // Unwrap ZodErrors wrapped in ZodiosErrors
-    if (isZodiosZodError(og)) og = og.cause;
+    if (isZodiosZodError(og)) og = og.cause.format()._errors.join('\n\n');
 
     if (og instanceof ZodiosError && !isZodiosZodError(og)) {
       // eslint-disable-next-line no-console -- For debugging unknown Zodios errors
@@ -34,9 +34,7 @@ export class ProposalFormError extends Error {
         case error instanceof z.ZodError:
           return [
             'Invalid Response from server:',
-            ...error.errors.map(
-              (err) => `- ${err.path.join('>')}: ${err.message}\n`,
-            ),
+            error.format()._errors.join('\n\n'),
           ];
         case typeof error === 'string':
           return error;
