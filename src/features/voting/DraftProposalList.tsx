@@ -1,5 +1,6 @@
 import type React from 'react';
-import { useState, useMemo } from 'react';
+import { toast } from 'sonner';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { ListOrderedIcon, FilePenIcon, TrashIcon } from 'lucide-react';
 import { Input } from '../ui/input.tsx';
 import {
@@ -20,65 +21,72 @@ import {
   TableCell,
 } from '../ui/table.tsx';
 import { Checkbox } from '../ui/checkbox.tsx';
+import { sdk, type DraftIndex, type Paginated } from '../../sdk.ts';
+import { useSession } from '../auth/hooks.ts';
+import ProposalFormButton from './ProposalFormButton.tsx';
+
+const limit = 10;
 
 export default function DraftProposalList() {
+  const session = useSession();
+
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState({
-    key: 'name' as 'name' | 'date',
-    order: 'asc' as 'asc' | 'desc',
-  });
-  const [selectedSubmissions, setSelectedSubmissions] = useState<string[]>([]);
+  const [selectedSubmissions, setSelectedSubmissions] = useState<number[]>([]);
   const [showBulkActions, setShowBulkActions] = useState(false);
+  const [drafts, setDrafts] = useState<DraftIndex['drafts']>([]);
+  const [cursor, setCursor] = useState<DraftIndex['cursor']>();
+  const [loading, setLoading] = useState(false);
+  const [sort, setSort] = useState({ key: 'title', order: 'asc' } as {
+    key: 'title' | 'created' | 'updated';
+    order: 'asc' | 'desc';
+  });
+
+  const loadDrafts = useCallback(
+    (pagination: Paginated) => {
+      void session?.getToken().then((token) => {
+        setLoading(true);
+        sdk
+          .listDrafts({
+            queries: { pagination },
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          .then((result) => {
+            setCursor(result.cursor);
+            setDrafts((previous) => [...previous, ...result.drafts]);
+          })
+          .catch(toast.error)
+          .finally(() => setLoading(false));
+      });
+    },
+    [session],
+  );
+
   const submissions = useMemo(
     () =>
-      [
-        {
-          id: 'SUB001',
-          name: 'Contact Form',
-          date: '2023-05-01',
-        },
-        {
-          id: 'SUB002',
-          name: 'Newsletter Signup',
-          date: '2023-05-02',
-        },
-        {
-          id: 'SUB003',
-          name: 'Job Application',
-          date: '2023-05-03',
-        },
-        {
-          id: 'SUB004',
-          name: 'Feedback Form',
-          date: '2023-05-04',
-        },
-        {
-          id: 'SUB005',
-          name: 'Event Registration',
-          date: '2023-05-05',
-        },
-      ]
+      drafts
         .filter((submission) => {
           const searchValue = search.toLowerCase();
           return (
-            submission.name.toLowerCase().includes(searchValue) ||
-            submission.date.toLowerCase().includes(searchValue)
+            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+            submission.title?.toLowerCase().includes(searchValue) ||
+            submission.created.toLowerCase().includes(searchValue) ||
+            submission.updated?.toLowerCase().includes(searchValue)
           );
         })
         .sort((a, b) => {
           if (sort.order === 'asc') {
-            return a[sort.key] > b[sort.key] ? 1 : -1;
+            return (a[sort.key] ?? 0) > (b[sort.key] ?? 0) ? 1 : -1;
           }
 
-          return a[sort.key] < b[sort.key] ? 1 : -1;
+          return (a[sort.key] ?? 0) < (b[sort.key] ?? 0) ? 1 : -1;
         }),
-    [search, sort],
+    [drafts, search, sort.key, sort.order],
   );
 
   const handleSearch = (err: React.ChangeEvent<HTMLInputElement>) =>
     setSearch(err.target.value);
 
-  const handleSort = (key: 'name' | 'date') => {
+  const handleSort = (key: 'title' | 'created' | 'updated') => {
     if (sort.key === key) {
       setSort({ key, order: sort.order === 'asc' ? 'desc' : 'asc' });
     } else {
@@ -86,7 +94,7 @@ export default function DraftProposalList() {
     }
   };
 
-  const handleSelect = (id: string) => {
+  const handleSelect = (id: number) => {
     if (selectedSubmissions.includes(id)) {
       setSelectedSubmissions(selectedSubmissions.filter((s) => s !== id));
     } else {
@@ -95,17 +103,61 @@ export default function DraftProposalList() {
     setShowBulkActions(selectedSubmissions.length > 0);
   };
 
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
+  const handleSelectAll = () => {
+    if (
+      selectedSubmissions.length === 0 ||
+      selectedSubmissions.length < submissions.length
+    ) {
       setSelectedSubmissions(submissions.map((s) => s.id));
     } else {
       setSelectedSubmissions([]);
     }
-    setShowBulkActions(checked);
   };
 
-  const handleDelete = () => {};
-  const handleEdit = () => {};
+  const onScroll = useCallback(() => {
+    const scrolledTo = window.scrollY + window.innerHeight;
+    const threshold = 300;
+    const isNearBottom = document.body.scrollHeight - threshold <= scrolledTo;
+
+    if (loading || !cursor || !isNearBottom) return;
+    loadDrafts({ cursor, limit });
+  }, [cursor, loadDrafts, loading]);
+
+  const handleDelete = (id: number) => {
+    // eslint-disable-next-line no-alert
+    if (window.confirm('Are you sure you want to delete this draft?')) {
+      void session?.getToken().then((token) => {
+        setLoading(true);
+        sdk
+          .deleteDraft(undefined, {
+            headers: { Authorization: `Bearer ${token}` },
+            queries: { recordId: id },
+          })
+          .then(() => {
+            setDrafts((previous) => previous.filter((d) => d.id !== id));
+          })
+          .catch(toast.error)
+          .finally(() => setLoading(false));
+      });
+    }
+  };
+
+  const handleBulkDelete = () => {
+    // eslint-disable-next-line no-alert
+    if (window.confirm('Are you sure you want to delete these drafts?')) {
+      selectedSubmissions.forEach(handleDelete);
+      loadDrafts({ limit: selectedSubmissions.length });
+      setShowBulkActions(false);
+    }
+  };
+
+  useEffect(() => {
+    void loadDrafts({ limit });
+  }, [loadDrafts]);
+
+  useEffect(() => {
+    setShowBulkActions(selectedSubmissions.length > 0);
+  }, [selectedSubmissions]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -113,7 +165,7 @@ export default function DraftProposalList() {
         <h1 className="text-2xl font-bold">Draft Submissions</h1>
         <div className="flex items-center gap-2">
           {showBulkActions && (
-            <Button variant="destructive" onClick={handleDelete}>
+            <Button variant="destructive" onClick={handleBulkDelete}>
               Delete
             </Button>
           )}
@@ -127,10 +179,19 @@ export default function DraftProposalList() {
             <DropdownMenuContent align="start">
               <DropdownMenuRadioGroup
                 value={sort.key}
-                onValueChange={(value) => handleSort(value as 'name' | 'date')}
+                onValueChange={(value) =>
+                  handleSort(value as 'title' | 'created' | 'updated')
+                }
               >
-                <DropdownMenuRadioItem value="name">Name</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="date">Date</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="name">
+                  Title
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="date">
+                  Created
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="updated">
+                  Updated
+                </DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
               <DropdownMenuSeparator />
               <DropdownMenuRadioGroup
@@ -159,39 +220,47 @@ export default function DraftProposalList() {
       <div className="flex flex-col gap-4">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead className="w-[50px]">
+            <TableRow className="sticky top-0 bg-white dark:bg-gray-950">
+              <TableHead>
                 <Checkbox
-                  checked={selectedSubmissions.length === submissions.length}
+                  checked={
+                    // eslint-disable-next-line no-nested-ternary
+                    selectedSubmissions.length === 0 ? false
+                    : selectedSubmissions.length === submissions.length ?
+                      true
+                    : 'indeterminate'
+                  }
                   onCheckedChange={handleSelectAll}
                 />
               </TableHead>
-              <TableHead
-                className="w-[200px]"
-                onClick={() => handleSort('name')}
-              >
-                Form Name
-                {sort.key === 'name' && (
+              <TableHead onClick={() => handleSort('title')}>
+                Title
+                {sort.key === 'title' && (
                   <span className="ml-1">
                     {sort.order === 'asc' ? '\u2191' : '\u2193'}
                   </span>
                 )}
               </TableHead>
-              <TableHead
-                className="w-[150px]"
-                onClick={() => handleSort('date')}
-              >
-                Submission Date
-                {sort.key === 'date' && (
+              <TableHead onClick={() => handleSort('created')}>
+                Created
+                {sort.key === 'created' && (
                   <span className="ml-1">
                     {sort.order === 'asc' ? '\u2191' : '\u2193'}
                   </span>
                 )}
               </TableHead>
-              <TableHead className="w-[100px]">Actions</TableHead>
+              <TableHead onClick={() => handleSort('updated')}>
+                Updated
+                {sort.key === 'updated' && (
+                  <span className="ml-1">
+                    {sort.order === 'asc' ? '\u2191' : '\u2193'}
+                  </span>
+                )}
+              </TableHead>
+              <TableHead className="self-stretch">Actions</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody className="overflow-auto" onScroll={onScroll}>
             {submissions.map((submission) => (
               <TableRow key={submission.id}>
                 <TableCell>
@@ -200,22 +269,28 @@ export default function DraftProposalList() {
                     onCheckedChange={() => handleSelect(submission.id)}
                   />
                 </TableCell>
-                <TableCell>{submission.name}</TableCell>
-                <TableCell>{submission.date}</TableCell>
+                <TableCell>{submission.title}</TableCell>
+                <TableCell>{submission.created}</TableCell>
+                <TableCell>{submission.updated}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="hover:bg-transparent hover:text-primary"
-                    >
-                      <FilePenIcon className="h-4 w-4" />
-                      <span className="sr-only">Edit</span>
-                    </Button>
+                    <ProposalFormButton
+                      renderTrigger={() => (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="hover:bg-transparent hover:text-primary"
+                        >
+                          <FilePenIcon className="h-4 w-4" />
+                          <span className="sr-only">Edit</span>
+                        </Button>
+                      )}
+                    />
                     <Button
                       variant="ghost"
                       size="icon"
                       className="hover:bg-transparent hover:text-red-500"
+                      onClick={() => handleDelete(submission.id)}
                     >
                       <TrashIcon className="h-4 w-4" />
                       <span className="sr-only">Delete</span>
