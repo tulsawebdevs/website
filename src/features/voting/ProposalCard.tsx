@@ -133,7 +133,6 @@ export default function ProposalCard(props: ProposalCardProps) {
                 >
                   {props.status.toUpperCase()}
                 </Badge>
-                ;{' '}
               </div>
             </div>
           </div>
