@@ -478,13 +478,6 @@
           "comment": { "type": "string", "maxLength": 255 }
         }
       },
-      "Expirable": {
-        "type": "object",
-        "required": ["expires"],
-        "properties": {
-          "expires": { "type": "string", "format": "date-time" }
-        }
-      },
       "Paginated": {
         "type": "object",
         "description": "Controls pagination of results",

@@ -157,7 +157,6 @@ const ProposalIndex: z.ZodType<ProposalIndex> = Paginated.and(
     proposals: z.array(Proposal.and(ProposalState).and(DatabaseObject)),
   }),
 );
-const Expirable = z.object({ expires: z.string().datetime({ offset: true }) });
 
 export const schemas = {
   Paginated,
@@ -169,7 +168,6 @@ export const schemas = {
   Vote,
   ProposalState,
   ProposalIndex,
-  Expirable,
 };
 
 const endpoints = makeApi([
