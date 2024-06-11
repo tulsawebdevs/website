@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ProposalButton from '../features/voting/ProposalFormButton.tsx';
-import { ProposalList } from '../features/voting/ProposalList.tsx';
+import DraftProposalList from '../features/voting/DraftProposalList.tsx';
 ---
 
 <Layout title="Tulsa Web Devs">
@@ -13,7 +13,7 @@ import { ProposalList } from '../features/voting/ProposalList.tsx';
         <ProposalButton client:load />
       </div>
 
-      <ProposalList client:load />
+      <DraftProposalList client:load />
     </div>
   </main>
 </Layout>

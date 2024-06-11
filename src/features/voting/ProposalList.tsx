@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
-import NewProposalFormButton from './NewProposalFormButton.tsx';
+import ProposalFormButton from './ProposalFormButton.tsx';
 
 import ProposalCard, { type ProposalCardProps } from './ProposalCard.tsx';
 import { Button } from '../ui/button.tsx';
@@ -11,7 +11,7 @@ const limit = 10;
 
 export function ProposalList() {
   const [loading, setLoading] = useState(false);
-  const [cursor, nextCursor] = useState<Paginated['cursor']>();
+  const [cursor, setCursor] = useState<Paginated['cursor']>();
   const [proposals, setProposals] = useState<ProposalCardProps[]>([]);
 
   const loadProposals = useCallback((pagination: Paginated) => {
@@ -19,7 +19,7 @@ export function ProposalList() {
     sdk
       .listProposals({ queries: { pagination } })
       .then((result) => {
-        nextCursor(result.cursor);
+        setCursor(result.cursor);
         setProposals((previous) => [...previous, ...result.proposals]);
       })
       .catch(toast.error)
@@ -55,7 +55,7 @@ export function ProposalList() {
         : <li>
             <div className="text-center p-2">
               <h2 className="font-bold text-xl mb-2">No proposals found</h2>
-              <NewProposalFormButton />
+              <ProposalFormButton />
             </div>
           </li>
         }

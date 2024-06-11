@@ -19,14 +19,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '../ui/dialog.tsx';
 import { Textarea } from '../ui/textarea.tsx';
 import { Input } from '../ui/input.tsx';
 import {
   ProposalFormError,
   ProposalFormFetchError,
-} from './NewProposalFormErrors.tsx';
+} from './ProposalFormErrors.tsx';
 import { useSession } from '../auth/hooks.ts';
 import { schemas, sdk } from '../../sdk.ts';
 import {
@@ -36,29 +35,31 @@ import {
   FormItem,
   FormLabel,
 } from '../ui/form.tsx';
-import { IfAuthorized, SignInButton } from '../auth/components.tsx';
+import { ProtectedTrigger } from '../auth/components.tsx';
 
 const formSchema = z.union([
   z.object({ isDraft: z.literal(true) }).and(schemas.Draft),
   z.object({ isDraft: z.literal(false) }).and(schemas.Proposal),
 ]);
 
-export default function NewProposalFormButton() {
-  return (
-    <IfAuthorized>
-      {() => <AddProposalButton />}
-      {() => <SignInButton variant="outline">Add Proposal</SignInButton>}
-    </IfAuthorized>
-  );
-}
-
-function AddProposalButton() {
+export default function AddProposalButton({
+  prefill = {},
+  renderTrigger = () => (
+    <Button size="sm" variant="outline">
+      New Proposal
+    </Button>
+  ),
+}: {
+  prefill?: Partial<z.infer<typeof formSchema>>;
+  renderTrigger?: () => React.JSX.Element;
+}) {
   const session = useSession();
   const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: 'onChange',
+    defaultValues: { ...prefill, isDraft: true },
   });
 
   useEffect(() => {
@@ -115,11 +116,7 @@ function AddProposalButton() {
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button size="sm" variant="outline">
-          Add Proposal
-        </Button>
-      </DialogTrigger>
+      <ProtectedTrigger type="dialog">{renderTrigger()}</ProtectedTrigger>
 
       <DialogContent>
         <DialogHeader>
