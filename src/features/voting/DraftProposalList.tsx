@@ -125,21 +125,20 @@ export default function DraftProposalList() {
 
   const handleDelete = (id: number) => {
     // eslint-disable-next-line no-alert
-    if (window.confirm('Are you sure you want to delete this draft?')) {
-      void session?.getToken().then((token) => {
-        setLoading(true);
-        sdk
-          .deleteDraft(undefined, {
-            headers: { Authorization: `Bearer ${token}` },
-            queries: { recordId: id },
-          })
-          .then(() => {
-            setDrafts((previous) => previous.filter((d) => d.id !== id));
-          })
-          .catch(toast.error)
-          .finally(() => setLoading(false));
-      });
-    }
+
+    void session?.getToken().then((token) => {
+      setLoading(true);
+      sdk
+        .deleteDraft(undefined, {
+          headers: { Authorization: `Bearer ${token}` },
+          queries: { recordId: id },
+        })
+        .then(() => {
+          setDrafts((previous) => previous.filter((d) => d.id !== id));
+        })
+        .catch(toast.error)
+        .finally(() => setLoading(false));
+    });
   };
 
   const handleBulkDelete = () => {
