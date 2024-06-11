@@ -70,7 +70,7 @@ function AddProposalButton() {
     async ({ isDraft, ...data }, event) => {
       event?.preventDefault();
       const path = isDraft ? '/drafts' : '/proposals';
-      const headers = { Authorization: `Bearer: ${await session?.getToken()}` };
+      const headers = { Authorization: `Bearer ${await session?.getToken()}` };
       return sdk.post(path, data, { headers });
     },
     (errors) => {

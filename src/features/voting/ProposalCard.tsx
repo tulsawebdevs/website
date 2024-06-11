@@ -78,7 +78,7 @@ export default function ProposalCard(props: ProposalCardProps) {
   const castVote = useDebounce(async (newVote: Vote) => {
     toast.promise(
       sdk.post('/proposals/vote', newVote, {
-        headers: { Authorization: `Bearer: ${await session?.getToken()}` },
+        headers: { Authorization: `Bearer ${await session?.getToken()}` },
         queries: { recordId: props.id },
       }),
     );
