@@ -1,3 +1,4 @@
+import type { SignInProps } from '@clerk/clerk-js/dist/types/ui/types';
 import { toast } from 'sonner';
 import { useSyncExternalStore } from 'react';
 import { clerkStore } from './clerk.ts';
@@ -24,8 +25,7 @@ export function useSession() {
 type ProtectedOptions = {
   conditions?: AuthConditions;
   unauthorizedMessage?: string;
-  fallbackRedirectUrl?: string;
-};
+} & SignInProps;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useIfAuthorized<A extends (...args: any[]) => any>(
@@ -35,11 +35,14 @@ export function useIfAuthorized<A extends (...args: any[]) => any>(
   const {
     conditions,
     unauthorizedMessage = 'You are not authorized to perform this action.',
-    fallbackRedirectUrl = global?.location.href, // optional chain to prevent errors when `global` is not defined
+    fallbackRedirectUrl = window.location.href,
+    ...signInOptions
   } = options;
+
   const { session, openSignIn } = useClerk() ?? {};
 
-  if (!session) return () => void openSignIn?.({ fallbackRedirectUrl });
+  if (!session)
+    return () => void openSignIn?.({ fallbackRedirectUrl, ...signInOptions });
   if (!conditions || session.checkAuthorization(conditions)) return fn;
   return () => void toast.error(unauthorizedMessage);
 }
