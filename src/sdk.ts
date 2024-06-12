@@ -1,5 +1,6 @@
 import { makeApi, Zodios, type ZodiosOptions } from '@zodios/core';
 import { z } from 'zod';
+import { PUBLIC_VOTE_SERVICE_HOST } from './constants';
 
 export type DraftIndex = Paginated & {
   drafts: Array<Draft & DatabaseObject>;
@@ -547,7 +548,7 @@ const endpoints = makeApi([
   },
 ]);
 
-export const sdk = new Zodios('https://vote.tulsawebdevs.org', endpoints);
+export const sdk = new Zodios(PUBLIC_VOTE_SERVICE_HOST, endpoints);
 
 export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
   return new Zodios(baseUrl, endpoints, options);
