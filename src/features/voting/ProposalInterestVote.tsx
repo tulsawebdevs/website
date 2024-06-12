@@ -33,10 +33,13 @@ export default function ProposalInterestVote(props: ProposalInterestVoteProps) {
     <RadioGroup
       aria-label="Vote"
       className="flex flex-col md:flex-row md:items-center gap-2"
-      value={props.vote?.value}
+      value={props.vote?.value.toString()}
       disabled={props.disabled}
-      onValueChange={(value: Vote['value']) =>
-        props.onVoteChange({ ...(props.vote ?? {}), value })
+      onValueChange={(value: string) =>
+        props.onVoteChange({
+          ...(props.vote ?? {}),
+          value: parseInt(value, 10),
+        })
       }
     >
       {voteOptions.map(({ label, value, id }) => (

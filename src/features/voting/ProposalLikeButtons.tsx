@@ -4,7 +4,7 @@ import type { Vote } from '../../sdk.ts';
 
 type ProposalLikeButtonsProps = {
   onVoteValueChange: (vote: Vote['value']) => void;
-  voteValue: string | undefined;
+  voteValue: number | undefined;
   numberUpvotes: number | string;
   numberDownvotes: number | string;
   disabled?: boolean;
@@ -18,12 +18,12 @@ export default function ProposalLikeButtons({
   voteValue,
 }: ProposalLikeButtonsProps) {
   const handleLikeVote = (type: 'up' | 'down') => {
-    let currentVoteValue = voteValue ? parseInt(voteValue, 10) : 0;
+    let currentVoteValue = voteValue ?? 0;
 
     if (type === 'up') currentVoteValue = Math.min(2, currentVoteValue + 1);
     else currentVoteValue = Math.max(-2, currentVoteValue - 1);
 
-    onVoteValueChange(currentVoteValue.toString() as Vote['value']);
+    onVoteValueChange(currentVoteValue as Vote['value']);
   };
 
   return (

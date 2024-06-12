@@ -25,6 +25,7 @@ export type ProposalCardProps = DatabaseObject & Proposal & ProposalState;
 
 export default function ProposalCard(props: ProposalCardProps) {
   const [vote, setVote] = useState(props.userVote);
+  const [prevVote, setPrevVote] = useState(props.userVote);
 
   const proposedDate = useMemo(
     () =>
@@ -59,7 +60,7 @@ export default function ProposalCard(props: ProposalCardProps) {
     if (props.status === 'closed') {
       return props.results.reduce(
         (accumulator, result) => {
-          const voteValue = parseInt(result.value, 10);
+          const voteValue = result.value;
           accumulator[voteValue > 0 ? 'up' : 'down'] += voteValue;
           return accumulator;
         },
@@ -68,20 +69,26 @@ export default function ProposalCard(props: ProposalCardProps) {
     }
 
     return {
-      up: vote && parseInt(vote.value, 10) > 0 ? vote.value : 0,
-      down: vote && parseInt(vote.value, 10) < 0 ? vote.value : 0,
+      up: vote && vote.value > 0 ? vote.value : 0,
+      down: vote && vote.value < 0 ? vote.value : 0,
     };
   }, [props, vote]);
 
   const session = useSession();
 
   const castVote = useDebounce(async (newVote: Vote) => {
-    toast.promise(
-      sdk.post('/proposals/vote', newVote, {
+    sdk
+      .submitVote(newVote, {
         headers: { Authorization: `Bearer ${await session?.getToken()}` },
         queries: { recordId: props.id },
-      }),
-    );
+      })
+      .then(() => {
+        setPrevVote(newVote);
+      })
+      .catch(() => {
+        setVote(prevVote);
+        toast.error('Unable to cast vote. Please try again.');
+      });
   });
 
   const onVoteChange = useIfAuthorized(
