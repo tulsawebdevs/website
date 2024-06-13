@@ -18,34 +18,35 @@ export function ProposalList() {
   const [proposals, setProposals] = useState<ProposalCardProps[]>([]);
 
   const loadProposals = useCallback(
-    (pagination: Paginated) => {
-      void session?.getToken().then((token) => {
-        setLoading(true);
-        sdk
-          .listProposals({
-            queries: { pagination },
-            headers: { authorization: `Bearer ${token}` },
-          })
-          .then((result) => {
-            setCursor(result.cursor);
-            setProposals((previous) => [...previous, ...result.proposals]);
-          })
-          .catch(console.error)
-          .finally(() => setLoading(false));
-      });
+    async (pagination: Paginated) => {
+      const token = await session?.getToken();
+
+      setLoading(true);
+      sdk
+        .listProposals({
+          queries: { pagination },
+          headers: token ? { authorization: `Bearer ${token}` } : {},
+        })
+        .then((result) => {
+          setCursor(result.cursor);
+          setProposals((previous) => [...previous, ...result.proposals]);
+        })
+        .catch(toast.error)
+        .finally(() => setLoading(false));
     },
     [session],
   );
 
   useEffect(() => {
-    // Load initial proposals
-    loadProposals({ limit });
-  }, [loadProposals]);
+    if (session !== undefined) {
+      void loadProposals({ limit });
+    }
+  }, [session, loadProposals]);
 
   const onClick = useCallback(() => {
     if (loading) return;
     if (!cursor) return;
-    loadProposals({ cursor, limit });
+    void loadProposals({ cursor, limit });
   }, [loading, loadProposals, cursor]);
 
   return (
