@@ -25,7 +25,7 @@ export type ProposalCardProps = DatabaseObject & Proposal & ProposalState;
 
 export default function ProposalCard(props: ProposalCardProps) {
   const [vote, setVote] = useState(props.userVote);
-  const [prevVote, setPrevVote] = useState(props.userVote);
+  const [previousVote, setPreviousVote] = useState(props.userVote);
 
   const proposedDate = useMemo(
     () =>
@@ -83,10 +83,10 @@ export default function ProposalCard(props: ProposalCardProps) {
         queries: { recordId: props.id },
       })
       .then(() => {
-        setPrevVote(newVote);
+        setPreviousVote(newVote);
       })
       .catch(() => {
-        setVote(prevVote);
+        setVote(previousVote);
         toast.error('Unable to cast vote. Please try again.');
       });
   });

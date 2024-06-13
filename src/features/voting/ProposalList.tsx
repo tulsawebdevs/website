@@ -6,26 +6,36 @@ import ProposalCard, { type ProposalCardProps } from './ProposalCard.tsx';
 import { Button } from '../ui/button.tsx';
 import { sdk, type Paginated } from '../../sdk.ts';
 import { LoadingSpinner } from '../ui/LoadingSpinner.tsx';
+import { useSession } from '../auth/hooks.ts';
 
 // This component auto-loads proposals on scroll, so we hard-code a static limit
 const limit = 10;
 
 export function ProposalList() {
+  const session = useSession();
   const [loading, setLoading] = useState(true);
   const [cursor, setCursor] = useState<Paginated['cursor']>();
   const [proposals, setProposals] = useState<ProposalCardProps[]>([]);
 
-  const loadProposals = useCallback((pagination: Paginated) => {
-    setLoading(true);
-    sdk
-      .listProposals({ queries: { pagination } })
-      .then((result) => {
-        setCursor(result.cursor);
-        setProposals((previous) => [...previous, ...result.proposals]);
-      })
-      .catch(toast.error)
-      .finally(() => setLoading(false));
-  }, []);
+  const loadProposals = useCallback(
+    (pagination: Paginated) => {
+      void session?.getToken().then((token) => {
+        setLoading(true);
+        sdk
+          .listProposals({
+            queries: { pagination },
+            headers: { authorization: `Bearer ${token}` },
+          })
+          .then((result) => {
+            setCursor(result.cursor);
+            setProposals((previous) => [...previous, ...result.proposals]);
+          })
+          .catch(console.error)
+          .finally(() => setLoading(false));
+      });
+    },
+    [session],
+  );
 
   useEffect(() => {
     // Load initial proposals
