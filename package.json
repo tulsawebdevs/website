@@ -37,7 +37,7 @@
     "@radix-ui/react-slot": "1.0.2",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
-    "@vanilla-extract/css": "1.15.1",
+    "@vanilla-extract/css": "1.15.3",
     "@vanilla-extract/recipes": "0.5.2",
     "@zendeskgarden/container-tabs": "2.0.10",
     "@zodios/core": "10.9.6",
