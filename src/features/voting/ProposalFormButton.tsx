@@ -89,17 +89,21 @@ export default function AddProposalButton({
       description: '',
       summary: '',
       title: '',
-      type: '' as 'topic' | 'project',
+      type: undefined,
+      isDraft: true,
     });
     return isDraft ? 'Draft Saved' : 'Proposal Submitted!';
   }, [form]);
 
   const error = useCallback(
-    (err: unknown) =>
-      err instanceof TypeError ?
+    (err: unknown) => {
+      form.reset({ ...form.getValues(), isDraft: true });
+
+      return err instanceof TypeError ?
         new ProposalFormFetchError().render()
-      : new ProposalFormError(err).render(),
-    [],
+        : new ProposalFormError(err).render();
+    },
+    [form],
   );
 
   const onSubmit = useCallback(
