@@ -1,10 +1,10 @@
 import { makeApi, Zodios, type ZodiosOptions } from '@zodios/core';
 import { z } from 'zod';
 
-type DraftIndex = Paginated & {
+export type DraftIndex = Paginated & {
   drafts: Array<Draft & DatabaseObject>;
 };
-type Paginated = Partial<{
+export type Paginated = Partial<{
   /**
    * Cursor for paginating through a list of items
    */
@@ -14,7 +14,7 @@ type Paginated = Partial<{
    */
   limit: number;
 }>;
-type Draft = Partial<{
+export type Draft = Partial<{
   /**
    * @maxLength 48
    */
@@ -32,12 +32,12 @@ type Draft = Partial<{
    */
   type: 'topic' | 'project';
 }>;
-type DatabaseObject = {
+export type DatabaseObject = {
   id: number;
   created: string;
   updated: string;
 };
-type ProposalState =
+export type ProposalState =
   | {
       authorName: string;
       /**
@@ -58,7 +58,7 @@ type ProposalState =
       status: 'open';
       userVote?: Vote | undefined;
     };
-type Vote = {
+export type Vote = {
   /**
    * Ranking values: -2 (strong disinterest), -1 (slight disinterest), 0 (neutral), 1 (slight interest), 2 (strong interest)
    *
@@ -70,10 +70,10 @@ type Vote = {
    */
   string | undefined;
 };
-type ProposalIndex = Paginated & {
+export type ProposalIndex = Paginated & {
   proposals: Array<Proposal & ProposalState & DatabaseObject>;
 };
-type Proposal = {
+export type Proposal = {
   /**
    * @minLength 8
    * @maxLength 48
