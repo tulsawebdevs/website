@@ -1,10 +1,10 @@
 import { makeApi, Zodios, type ZodiosOptions } from '@zodios/core';
 import { z } from 'zod';
 
-export type DraftIndex = Paginated & {
+type DraftIndex = Paginated & {
   drafts: Array<Draft & DatabaseObject>;
 };
-export type Paginated = Partial<{
+type Paginated = Partial<{
   /**
    * Cursor for paginating through a list of items
    */
@@ -14,7 +14,7 @@ export type Paginated = Partial<{
    */
   limit: number;
 }>;
-export type Draft = Partial<{
+type Draft = Partial<{
   /**
    * @maxLength 48
    */
@@ -32,12 +32,12 @@ export type Draft = Partial<{
    */
   type: 'topic' | 'project';
 }>;
-export type DatabaseObject = {
+type DatabaseObject = {
   id: number;
   created: string;
   updated: string;
 };
-export type ProposalState =
+type ProposalState =
   | {
       authorName: string;
       /**
@@ -58,22 +58,22 @@ export type ProposalState =
       status: 'open';
       userVote?: Vote | undefined;
     };
-export type Vote = {
+type Vote = {
   /**
    * Ranking values: -2 (strong disinterest), -1 (slight disinterest), 0 (neutral), 1 (slight interest), 2 (strong interest)
    *
    * @enum -2, -1, 0, 1, 2
    */
-  value: '-2' | '-1' | '0' | '1' | '2';
+  value: -2 | -1 | 0 | 1 | 2;
   comment?: /**
    * @maxLength 255
    */
   string | undefined;
 };
-export type ProposalIndex = Paginated & {
+type ProposalIndex = Paginated & {
   proposals: Array<Proposal & ProposalState & DatabaseObject>;
 };
-export type Proposal = {
+type Proposal = {
   /**
    * @minLength 8
    * @maxLength 48
@@ -133,7 +133,13 @@ const Proposal: z.ZodType<Proposal> = z.object({
 });
 const Vote: z.ZodType<Vote> = z.object({
   value: z
-    .enum(['-2', '-1', '0', '1', '2'])
+    .union([
+      z.literal(-2),
+      z.literal(-1),
+      z.literal(0),
+      z.literal(1),
+      z.literal(2),
+    ])
     .describe(
       'Ranking values: -2 (strong disinterest), -1 (slight disinterest), 0 (neutral), 1 (slight interest), 2 (strong interest)',
     ),
@@ -481,7 +487,13 @@ const endpoints = makeApi([
         type: 'Body',
         schema: z.object({
           value: z
-            .enum(['-2', '-1', '0', '1', '2'])
+            .union([
+              z.literal(-2),
+              z.literal(-1),
+              z.literal(0),
+              z.literal(1),
+              z.literal(2),
+            ])
             .describe(
               'Ranking values: -2 (strong disinterest), -1 (slight disinterest), 0 (neutral), 1 (slight interest), 2 (strong interest)',
             ),
