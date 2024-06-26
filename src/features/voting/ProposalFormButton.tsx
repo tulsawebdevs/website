@@ -55,6 +55,7 @@ export default function AddProposalButton({
 }) {
   const session = useSession();
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -89,17 +90,25 @@ export default function AddProposalButton({
       description: '',
       summary: '',
       title: '',
-      type: '' as 'topic' | 'project',
+      type: undefined,
+      isDraft: true,
     });
+
+    // Stay open after draft submit, in case the user wants to create another
+    if (!isDraft) setOpen(false);
+
     return isDraft ? 'Draft Saved' : 'Proposal Submitted!';
-  }, [form]);
+  }, [form, setOpen]);
 
   const error = useCallback(
-    (err: unknown) =>
-      err instanceof TypeError ?
-        new ProposalFormFetchError().render()
-      : new ProposalFormError(err).render(),
-    [],
+    (err: unknown) => {
+      form.reset({ ...form.getValues(), isDraft: true });
+
+      return err instanceof TypeError ?
+          new ProposalFormFetchError().render()
+        : new ProposalFormError(err).render();
+    },
+    [form],
   );
 
   const onSubmit = useCallback(
@@ -115,7 +124,7 @@ export default function AddProposalButton({
   );
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <ProtectedTrigger type="dialog">{renderTrigger()}</ProtectedTrigger>
 
       <DialogContent>
