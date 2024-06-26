@@ -59,7 +59,7 @@ export default function ProposalCard(props: ProposalCardProps) {
     if (props.status === 'closed') {
       return props.results.reduce(
         (accumulator, result) => {
-          const voteValue = parseInt(result.value, 10);
+          const voteValue = result.value;
           accumulator[voteValue > 0 ? 'up' : 'down'] += voteValue;
           return accumulator;
         },
@@ -68,8 +68,8 @@ export default function ProposalCard(props: ProposalCardProps) {
     }
 
     return {
-      up: vote && parseInt(vote.value, 10) > 0 ? vote.value : 0,
-      down: vote && parseInt(vote.value, 10) < 0 ? vote.value : 0,
+      up: vote && vote.value > 0 ? vote.value : 0,
+      down: vote && vote.value < 0 ? vote.value : 0,
     };
   }, [props, vote]);
 

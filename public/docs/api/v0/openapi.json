@@ -472,8 +472,8 @@
         "properties": {
           "value": {
             "description": "Ranking values: -2 (strong disinterest), -1 (slight disinterest), 0 (neutral), 1 (slight interest), 2 (strong interest)",
-            "type": "string",
-            "enum": ["-2", "-1", "0", "1", "2"]
+            "type": "integer",
+            "enum": [-2, -1, 0, 1, 2]
           },
           "comment": { "type": "string", "maxLength": 255 }
         }

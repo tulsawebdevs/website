@@ -8,17 +8,17 @@ import { type Vote } from '../../sdk.ts';
 const voteOptions = [
   {
     label: 'Strong Disinterest',
-    value: '-2',
+    value: -2,
     id: 'vote-strong-disinterest',
   },
   {
     label: 'Slight Disinterest',
-    value: '-1',
+    value: -1,
     id: 'vote-slight-disinterest',
   },
-  { label: 'Neutral', value: '0', id: 'vote-neutral' },
-  { label: 'Slight Interest', value: '1', id: 'vote-slight-interest' },
-  { label: 'Strong Interest', value: '2', id: 'vote-strong-interest' },
+  { label: 'Neutral', value: 0, id: 'vote-neutral' },
+  { label: 'Slight Interest', value: 1, id: 'vote-slight-interest' },
+  { label: 'Strong Interest', value: 2, id: 'vote-strong-interest' },
 ] as const;
 
 type ProposalInterestVoteProps = {
@@ -33,10 +33,13 @@ export default function ProposalInterestVote(props: ProposalInterestVoteProps) {
     <RadioGroup
       aria-label="Vote"
       className="flex flex-col md:flex-row md:items-center gap-2"
-      value={props.vote?.value}
+      value={`${props.vote?.value}`}
       disabled={props.disabled}
-      onValueChange={(value: Vote['value']) =>
-        props.onVoteChange({ ...(props.vote ?? {}), value })
+      onValueChange={(value: `${Vote['value']}`) =>
+        props.onVoteChange({
+          ...(props.vote ?? {}),
+          value: parseInt(value, 10) as Vote['value'],
+        })
       }
     >
       {voteOptions.map(({ label, value, id }) => (
@@ -51,7 +54,7 @@ export default function ProposalInterestVote(props: ProposalInterestVoteProps) {
           <RadioGroupItem
             className="peer sr-only"
             id={`${props.proposalId}-${id}`}
-            value={value}
+            value={`${value}`}
             disabled={props.disabled}
           />
           <div
@@ -59,19 +62,19 @@ export default function ProposalInterestVote(props: ProposalInterestVoteProps) {
               'p-0.5 w-5 h-5 flex items-center justify-center rounded-full border-2 border-gray-400',
               {
                 'peer-aria-checked:bg-red-500 peer-aria-checked:border-red-500 dark:border-gray-600 dark:peer-aria-checked:bg-red-500 dark:peer-aria-checked:border-red-500':
-                  ['-2', '-1'].includes(value),
+                  [-2, -1].includes(value),
                 'peer-aria-checked:bg-gray-500 peer-aria-checked:border-gray-500 dark:border-gray-600 dark:peer-aria-checked:bg-gray-500 dark:peer-aria-checked:border-gray-500':
-                  value === '0',
+                  value === 0,
                 'peer-aria-checked:bg-green-500 peer-aria-checked:border-green-500 dark:border-gray-600 dark:peer-aria-checked:bg-green-500 dark:peer-aria-checked:border-green-500':
-                  ['1', '2'].includes(value),
+                  [1, 2].includes(value),
               },
             )}
           >
-            {value === '0' && <MinusIcon className="w-4 h-4 text-white" />}
-            {['-2', '-1'].includes(value) && (
+            {value === 0 && <MinusIcon className="w-4 h-4 text-white" />}
+            {[-2, -1].includes(value) && (
               <ThumbsDownIcon className="w-4 h-4 text-white" />
             )}
-            {['1', '2'].includes(value) && (
+            {[1, 2].includes(value) && (
               <ThumbsUpIcon className="w-4 h-4 text-white" />
             )}
           </div>

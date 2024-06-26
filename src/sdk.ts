@@ -64,7 +64,7 @@ export type Vote = {
    *
    * @enum -2, -1, 0, 1, 2
    */
-  value: '-2' | '-1' | '0' | '1' | '2';
+  value: -2 | -1 | 0 | 1 | 2;
   comment?: /**
    * @maxLength 255
    */
@@ -133,7 +133,13 @@ const Proposal: z.ZodType<Proposal> = z.object({
 });
 const Vote: z.ZodType<Vote> = z.object({
   value: z
-    .enum(['-2', '-1', '0', '1', '2'])
+    .union([
+      z.literal(-2),
+      z.literal(-1),
+      z.literal(0),
+      z.literal(1),
+      z.literal(2),
+    ])
     .describe(
       'Ranking values: -2 (strong disinterest), -1 (slight disinterest), 0 (neutral), 1 (slight interest), 2 (strong interest)',
     ),
@@ -481,7 +487,13 @@ const endpoints = makeApi([
         type: 'Body',
         schema: z.object({
           value: z
-            .enum(['-2', '-1', '0', '1', '2'])
+            .union([
+              z.literal(-2),
+              z.literal(-1),
+              z.literal(0),
+              z.literal(1),
+              z.literal(2),
+            ])
             .describe(
               'Ranking values: -2 (strong disinterest), -1 (slight disinterest), 0 (neutral), 1 (slight interest), 2 (strong interest)',
             ),
