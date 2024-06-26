@@ -208,7 +208,8 @@
                       },
                       "results": [
                         { "value": "1", "comment": "I like this idea" },
-                        { "value": "2", "comment": "I really like this idea" }
+                        { "value": "2", "comment": "I really like this idea" },
+                        { "value": "3", "comment": null }
                       ]
                     }
                   ]
@@ -420,30 +421,17 @@
         }
       },
       "ProposalState": {
-        "oneOf": [
-          {
-            "type": "object",
-            "required": ["status", "results", "authorName"],
-            "properties": {
-              "authorName": { "type": "string" },
-              "status": { "type": "string", "enum": ["closed"] },
-              "userVote": { "$ref": "#/components/schemas/Vote" },
-              "results": {
-                "type": "array",
-                "items": { "$ref": "#/components/schemas/Vote" }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "required": ["status", "authorName"],
-            "properties": {
-              "authorName": { "type": "string", "minLength": 4 },
-              "status": { "type": "string", "enum": ["open"] },
-              "userVote": { "$ref": "#/components/schemas/Vote" }
-            }
+        "type": "object",
+        "required": ["status", "results", "authorName"],
+        "properties": {
+          "authorName": { "type": "string" },
+          "status": { "type": "string", "enum": ["closed", "open"] },
+          "userVote": { "$ref": "#/components/schemas/Vote" },
+          "results": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Vote" }
           }
-        ]
+        }
       },
       "ProposalIndex": {
         "allOf": [
@@ -475,7 +463,7 @@
             "type": "integer",
             "enum": [-2, -1, 0, 1, 2]
           },
-          "comment": { "type": "string", "maxLength": 255 }
+          "comment": { "type": ["string", "null"], "maxLength": 255 }
         }
       },
       "Paginated": {
