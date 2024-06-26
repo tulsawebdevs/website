@@ -18,7 +18,8 @@ export default function ProposalLikeButtons({
   voteValue,
 }: ProposalLikeButtonsProps) {
   const handleLikeVote = (type: 'up' | 'down') => {
-    let currentVoteValue = voteValue ? voteValue : 0;
+    let currentVoteValue;
+    currentVoteValue = voteValue ?? 0;
 
     if (type === 'up') currentVoteValue = Math.min(2, currentVoteValue + 1);
     else currentVoteValue = Math.max(-2, currentVoteValue - 1);
