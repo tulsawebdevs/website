@@ -41,7 +41,7 @@ export function ProposalList() {
     <div>
       <ul className="flex flex-col" id="proposal-list">
         {proposals.map((proposal) => (
-          <li key={`${proposal.summary}`} className="mb-2">
+          <li key={`${proposal.id}`} className="mb-2">
             {/* eslint-disable-next-line react/jsx-props-no-spreading */}
             <ProposalCard {...proposal} />
           </li>
