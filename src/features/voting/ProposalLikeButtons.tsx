@@ -32,21 +32,21 @@ export default function ProposalLikeButtons({
       <Button
         size="sm"
         variant="outline"
-        onClick={() => handleLikeVote('up')}
-        disabled={disabled}
-      >
-        <ThumbsUpIcon className="w-5 h-5 text-green-500 mr-1" />
-        <span className="text-green-500 font-medium">{numberUpvotes}</span>
-      </Button>
-
-      <Button
-        size="sm"
-        variant="outline"
         onClick={() => handleLikeVote('down')}
         disabled={disabled}
       >
         <ThumbsDownIcon className="w-5 h-5 text-red-500 mr-1" />
         <span className="text-red-500 font-medium">{numberDownvotes}</span>
+      </Button>
+
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() => handleLikeVote('up')}
+        disabled={disabled}
+      >
+        <ThumbsUpIcon className="w-5 h-5 text-green-500 mr-1" />
+        <span className="text-green-500 font-medium">{numberUpvotes}</span>
       </Button>
     </div>
   );
