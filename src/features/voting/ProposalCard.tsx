@@ -81,6 +81,11 @@ export default function ProposalCard(props: ProposalCardProps) {
         headers: { Authorization: `Bearer ${await session?.getToken()}` },
         queries: { recordId: props.id },
       }),
+      {
+        loading: 'Casting vote...',
+        success: 'Vote cast successfully.',
+        error: 'Failed to cast vote.',
+      },
     );
   });
 
