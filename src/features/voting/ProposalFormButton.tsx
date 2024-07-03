@@ -214,7 +214,9 @@ export default function AddProposalButton({
               )}
             />
             <DialogFooter className="flex justify-end p-2">
-              <Button
+              {
+                // TODO: Disabled until the Drafts UI is completed
+                /* <Button
                 className="mr-2"
                 type="submit"
                 name="status-draft"
@@ -224,7 +226,8 @@ export default function AddProposalButton({
                 busy={form.getValues('isDraft') && loading}
               >
                 Save Draft
-              </Button>
+              </Button> */
+              }
               <Button
                 name="status-open"
                 type="submit"
