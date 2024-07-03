@@ -35,13 +35,6 @@ const buttonVariants = cva(
     },
   },
 );
-
-const ThreeDots = React.lazy(() =>
-  import('react-loader-spinner').then(({ ThreeDots }) => ({
-    default: ThreeDots,
-  })),
-);
-
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
