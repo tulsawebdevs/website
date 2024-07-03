@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
-
+import { LoadingSpinner } from './LoadingSpinner.tsx';
 import { cn } from './utils.ts';
 
 const buttonVariants = cva(
@@ -63,14 +63,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {busy ?
           <div className="flex justify-center">
-            <ThreeDots
-              ariaLabel="Loading..."
-              radius={10}
-              wrapperClass="fixed"
-              height={20}
-              width={20}
+            <LoadingSpinner
+              aria-label="Loading..."
               color="currentColor"
-              visible={busy}
+              className="fixed h-fit w-fit"
             />
             <div className="opacity-0">{children}</div>
           </div>
