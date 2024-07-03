@@ -18,32 +18,34 @@ export function ProposalList() {
   const [proposals, setProposals] = useState<ProposalCardProps[]>([]);
 
   const loadProposals = useCallback(
-    async (pagination: Paginated) => {
-      const token = await session?.getToken();
-
+    (pagination: Paginated) => {
       setLoading(true);
 
-      sdk
-        .listProposals({
-          queries: { pagination },
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        })
-        .then((result) => {
-          setCursor(result.cursor);
-          setProposals((previous) => [...previous, ...result.proposals]);
-        })
-        .catch(toast.error)
-        .finally(() => setLoading(false));
+      async function load() {
+        const token = await session?.getToken();
+
+        sdk
+          .listProposals({
+            queries: { pagination },
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          })
+          .then((result) => {
+            setCursor(result.cursor);
+            setProposals((previous) => [...previous, ...result.proposals]);
+          })
+          .catch(toast.error)
+          .finally(() => setLoading(false));
+      }
+
+      void load();
     },
     [session],
   );
 
   useEffect(() => {
     // Load initial proposals
-    if (session !== undefined) {
-      void loadProposals({ limit });
-    }
-  }, [loadProposals, session]);
+    void loadProposals({ limit });
+  }, [loadProposals]);
 
   const onClick = useCallback(() => {
     if (loading) return;
@@ -54,6 +56,15 @@ export function ProposalList() {
 
   return (
     <div>
+      {!loading && !proposals.length && (
+        <li>
+          <div className="text-center p-2">
+            <h2 className="font-bold text-xl mb-2">No proposals found</h2>
+            <ProposalFormButton />
+          </div>
+        </li>
+      )}
+
       <ul className="flex flex-col" id="proposal-list">
         {proposals.map((proposal) => (
           <li key={`${proposal.id}`} className="mb-2">
@@ -61,30 +72,21 @@ export function ProposalList() {
             <ProposalCard {...proposal} />
           </li>
         ))}
-
-        {loading && (
-          <div className="flex justify-center p-5 text-black">
-            <LoadingSpinner />
-          </div>
-        )}
-
-        {!loading && cursor && (
-          <div className="flex justify-center p-5 text-black">
-            <Button onClick={onClick} busy={loading} variant="secondary">
-              Load More
-            </Button>
-          </div>
-        )}
-
-        {!loading && proposals.length === 0 && (
-          <li>
-            <div className="text-center p-2">
-              <h2 className="font-bold text-xl mb-2">No proposals found</h2>
-              <ProposalFormButton />
-            </div>
-          </li>
-        )}
       </ul>
+
+      <div className="flex justify-center p-5 text-black">
+        {proposals.length && loading ?
+          <LoadingSpinner className="max-h-6 max-w-6 opacity-70" />
+        : <Button
+            onClick={onClick}
+            busy={loading}
+            disabled={!cursor}
+            variant="secondary"
+          >
+            Load More
+          </Button>
+        }
+      </div>
     </div>
   );
 }

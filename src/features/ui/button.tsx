@@ -55,6 +55,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref,
   ) => {
     const Comp = asChild ? Slot : 'button';
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
@@ -65,7 +66,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           <div className="flex justify-center">
             <LoadingSpinner
               aria-label="Loading..."
-              color="currentColor"
+              color="black"
               className="fixed h-fit w-fit"
             />
             <div className="opacity-0">{children}</div>
