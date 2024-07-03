@@ -1,12 +1,13 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import * as React from 'react';
-import { cn } from './utils.ts';
 import { LoaderCircleIcon } from 'lucide-react';
+import { cn } from './utils.ts';
 
 const spinnerVariants = 'w-16 h-16 rounded-full animate-spin';
 
-interface LoadingSpinnerProps extends React.HTMLAttributes<SVGSVGElement> {
+type LoadingSpinnerProps = {
   className?: string;
-}
+} & React.HTMLAttributes<SVGSVGElement>;
 
 const LoadingSpinner = React.forwardRef<SVGSVGElement, LoadingSpinnerProps>(
   (props, ref) => {
