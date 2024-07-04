@@ -18,8 +18,9 @@ export function ProposalList() {
   const [proposals, setProposals] = useState<ProposalCardProps[]>([]);
 
   const load = useCallback(
-    async (pagination: Paginated, token?: string | null) => {
+    async (pagination: Paginated) => {
       setLoading(true);
+      const token = await session?.getToken();
 
       try {
         const result = await sdk.listProposals({
@@ -39,26 +40,23 @@ export function ProposalList() {
   );
 
   useEffect(() => {
-    session?.getToken().then((token) =>
-      // Load initial proposals
-      toast.promise(load({ limit }, token), {
-        loading: 'Loading proposals...',
-        success: 'Proposals loaded',
-        error: 'Failed to load proposals',
-      }),
-    );
-  }, [load, session]);
+    // Load initial proposals
+    toast.promise(load({ limit }), {
+      loading: 'Loading proposals...',
+      success: 'Proposals loaded',
+      error: 'Failed to load proposals',
+    });
+  }, []);
 
   const onClick = useCallback(async () => {
     if (loading) return;
     if (!cursor) return;
-    session?.getToken().then((token) =>
-      toast.promise(load({ cursor, limit }, token), {
-        loading: 'Loading more proposals...',
-        success: 'More proposals loaded',
-        error: 'Failed to load more proposals',
-      }),
-    );
+
+    toast.promise(load({ cursor, limit }), {
+      loading: 'Loading more proposals...',
+      success: 'More proposals loaded',
+      error: 'Failed to load more proposals',
+    });
   }, [loading, load, cursor]);
 
   return (
