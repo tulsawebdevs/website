@@ -100,9 +100,9 @@ export default function ProposalCard(props: ProposalCardProps) {
 
   return (
     <Card>
-      <CardHeader className="pb-0 pt-6 flex flex-row justify-between">
+      <CardHeader className="flex flex-row justify-between gap-2 flex-wrap">
         <div className="flex flex-col max-w-full gap-2 content-center">
-          <CardTitle className="break-words">{props.title}</CardTitle>
+          <CardTitle className="break-words text-wrap">{props.title}</CardTitle>
           <h2 className="break-words">{props.summary}</h2>
         </div>
 
@@ -115,8 +115,8 @@ export default function ProposalCard(props: ProposalCardProps) {
         />
       </CardHeader>
 
-      <CardContent className="my-3">
-        <CardDescription className="py-4 break-words">
+      <CardContent className="flex gap-6 flex-col">
+        <CardDescription className="break-words">
           {props.description}
         </CardDescription>
 
@@ -128,7 +128,7 @@ export default function ProposalCard(props: ProposalCardProps) {
         />
       </CardContent>
 
-      <CardFooter className="flex flex-row justify-between">
+      <CardFooter className="flex flex-row justify-between gap-4">
         <Badge variant={props.status === 'open' ? 'success' : 'destructive'}>
           {props.status.toUpperCase()}
         </Badge>

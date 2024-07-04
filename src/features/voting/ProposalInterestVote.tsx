@@ -32,7 +32,7 @@ export default function ProposalInterestVote(props: ProposalInterestVoteProps) {
   return (
     <RadioGroup
       aria-label="Vote"
-      className="flex flex-col md:flex-row md:items-center gap-2"
+      className="flex flex-row place-content-center gap-2"
       value={`${props.vote?.value}`}
       disabled={props.disabled}
       onValueChange={(value: `${Vote['value']}`) =>
