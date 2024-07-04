@@ -269,8 +269,12 @@ export default function DraftProposalList() {
                   />
                 </TableCell>
                 <TableCell>{submission.title}</TableCell>
-                <TableCell>{submission.created}</TableCell>
-                <TableCell>{submission.updated}</TableCell>
+                <TableCell>
+                  {new Date(submission.created).toLocaleString()}
+                </TableCell>{' '}
+                <TableCell>
+                  {new Date(submission.updated).toLocaleString()}
+                </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <ProposalFormButton
