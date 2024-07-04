@@ -28,7 +28,7 @@ export function ProposalList() {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
         setCursor(result.cursor);
-        setProposals(result.proposals);
+        setProposals((prev) => [...prev, ...result.proposals]);
       } catch (e) {
         if (e instanceof Error) return console.dir(e.message);
         else throw e;
