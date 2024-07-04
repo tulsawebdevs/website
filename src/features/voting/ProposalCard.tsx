@@ -6,6 +6,7 @@ import {
   Card,
   CardTitle,
   CardDescription,
+  CardFooter,
 } from '../ui/card.tsx';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar.tsx';
 import { Badge } from '../ui/badge.tsx';
@@ -115,50 +116,41 @@ export default function ProposalCard(props: ProposalCardProps) {
       </CardHeader>
 
       <CardContent className="my-3">
-        <div className="mb-2">
-          <div className="flex space-x-2 mb-2">
-            <Avatar className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-200">
-              <AvatarImage
-                alt="avatar"
-                src="http://placedog.net/100/100?50"
-                className="w-full h-full object-cover rounded-full"
-              />
-              <AvatarFallback className="capitalize">
-                {displayName}
-              </AvatarFallback>
-            </Avatar>
+        <CardDescription className="py-4 break-words">
+          {props.description}
+        </CardDescription>
 
-            <div>
-              <div className="font-bold dark:text-gray-200">
-                {props.authorName}
-              </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400 content-center">
-                Proposed {proposedDate} at {proposedTime}
-              </div>
-              <div>
-                <Badge
-                  variant={props.status === 'open' ? 'success' : 'destructive'}
-                >
-                  {props.status.toUpperCase()}
-                </Badge>
-              </div>
-            </div>
-          </div>
-
-          <CardDescription className="py-4 break-words">
-            {props.description}
-          </CardDescription>
-        </div>
-
-        <div>
-          <ProposalInterestVote
-            proposalId={props.id}
-            onVoteChange={onVoteChange}
-            disabled={props.status !== 'open'}
-            vote={vote}
-          />
-        </div>
+        <ProposalInterestVote
+          proposalId={props.id}
+          onVoteChange={onVoteChange}
+          disabled={props.status !== 'open'}
+          vote={vote}
+        />
       </CardContent>
+
+      <CardFooter className="flex flex-row justify-between">
+        <Badge variant={props.status === 'open' ? 'success' : 'destructive'}>
+          {props.status.toUpperCase()}
+        </Badge>
+
+        <div className="flex flex-row place-items-center gap-2">
+          <Avatar className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-200">
+            <AvatarImage
+              alt="avatar"
+              src="http://placedog.net/100/100?50"
+              className="w-full h-full object-cover rounded-full"
+            />
+            <AvatarFallback className="capitalize">
+              {displayName}
+            </AvatarFallback>
+          </Avatar>
+          <div className="font-bold dark:text-gray-200">{props.authorName}</div>
+
+          <div className="text-sm text-gray-500 dark:text-gray-400 content-center">
+            Proposed {proposedDate} at {proposedTime}
+          </div>
+        </div>
+      </CardFooter>
     </Card>
   );
 }
