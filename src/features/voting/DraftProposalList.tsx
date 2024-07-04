@@ -41,22 +41,23 @@ export default function DraftProposalList() {
     order: 'asc' | 'desc';
   });
 
-  const loadDrafts = useCallback(
-    (pagination: Paginated) => {
-      void session?.getToken().then((token) => {
-        setLoading(true);
-        sdk
-          .listDrafts({
-            queries: { pagination },
-            headers: { Authorization: `Bearer ${token}` },
-          })
-          .then((result) => {
-            setCursor(result.cursor);
-            setDrafts((previous) => [...previous, ...result.drafts]);
-          })
-          .catch(toast.error)
-          .finally(() => setLoading(false));
-      });
+  const load = useCallback(
+    async (pagination: Paginated) => {
+      setLoading(true);
+      try {
+        const token = await session?.getToken();
+        const result = await sdk.listDrafts({
+          queries: { pagination },
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setCursor(result.cursor);
+        setDrafts((previous) => [...previous, ...result.drafts]);
+      } catch (e) {
+        if (e instanceof Error) console.dir(e.message);
+        throw e;
+      } finally {
+        setLoading(false);
+      }
     },
     [session],
   );
@@ -120,39 +121,50 @@ export default function DraftProposalList() {
     const isNearBottom = document.body.scrollHeight - threshold <= scrolledTo;
 
     if (loading || !cursor || !isNearBottom) return;
-    loadDrafts({ cursor, limit });
-  }, [cursor, loadDrafts, loading]);
+    toast.promise(load({ cursor, limit }), {
+      loading: 'Loading more submissions...',
+      success: 'Loaded more submissions',
+      error: 'Failed to load more submissions',
+    });
+  }, [cursor, load, loading]);
 
-  const handleDelete = (id: number) => {
-    // eslint-disable-next-line no-alert
-
-    void session?.getToken().then((token) => {
+  const destroy = useCallback(
+    async (id: number) => {
+      const token = await session?.getToken();
       setLoading(true);
-      sdk
-        .deleteDraft(undefined, {
+      try {
+        await sdk.deleteDraft(undefined, {
           headers: { Authorization: `Bearer ${token}` },
           queries: { recordId: id },
-        })
-        .then(() => {
-          setDrafts((previous) => previous.filter((d) => d.id !== id));
-        })
-        .catch(toast.error)
-        .finally(() => setLoading(false));
-    });
-  };
+        });
+        setDrafts((previous) => previous.filter((d) => d.id !== id));
+      } catch (e) {
+        if (e instanceof Error) console.dir(e.message);
+        throw e;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [session],
+  );
 
   const handleBulkDelete = () => {
     // eslint-disable-next-line no-alert
     if (window.confirm('Are you sure you want to delete these drafts?')) {
-      selectedSubmissions.forEach(handleDelete);
-      loadDrafts({ limit: selectedSubmissions.length });
+      selectedSubmissions.forEach((item) =>
+        toast.promise(destroy(item), {
+          loading: 'Deleting draft...',
+          success: 'Draft deleted',
+          error: 'Failed to delete draft',
+        }),
+      );
       setShowBulkActions(false);
     }
   };
 
   useEffect(() => {
-    void loadDrafts({ limit });
-  }, [loadDrafts]);
+    void load({ limit });
+  }, [load]);
 
   useEffect(() => {
     setShowBulkActions(selectedSubmissions.length > 0);

@@ -17,42 +17,49 @@ export function ProposalList() {
   const [cursor, setCursor] = useState<Paginated['cursor']>();
   const [proposals, setProposals] = useState<ProposalCardProps[]>([]);
 
-  const loadProposals = useCallback(
-    (pagination: Paginated) => {
+  const load = useCallback(
+    async (pagination: Paginated, token?: string | null) => {
       setLoading(true);
 
-      async function load() {
-        const token = await session?.getToken();
-
-        sdk
-          .listProposals({
-            queries: { pagination },
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
-          })
-          .then((result) => {
-            setCursor(result.cursor);
-            setProposals((previous) => [...previous, ...result.proposals]);
-          })
-          .catch(toast.error)
-          .finally(() => setLoading(false));
+      try {
+        const result = await sdk.listProposals({
+          queries: { pagination },
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        setCursor(result.cursor);
+        setProposals(result.proposals);
+      } catch (e) {
+        if (e instanceof Error) return console.dir(e.message);
+        else throw e;
+      } finally {
+        setLoading(false);
       }
-
-      void load();
     },
     [session],
   );
 
   useEffect(() => {
-    // Load initial proposals
-    void loadProposals({ limit });
-  }, [loadProposals]);
+    session?.getToken().then((token) =>
+      // Load initial proposals
+      toast.promise(load({ limit }, token), {
+        loading: 'Loading proposals...',
+        success: 'Proposals loaded',
+        error: 'Failed to load proposals',
+      }),
+    );
+  }, [load, session]);
 
-  const onClick = useCallback(() => {
+  const onClick = useCallback(async () => {
     if (loading) return;
     if (!cursor) return;
-
-    void loadProposals({ cursor, limit });
-  }, [loading, loadProposals, cursor]);
+    session?.getToken().then((token) =>
+      toast.promise(load({ cursor, limit }, token), {
+        loading: 'Loading more proposals...',
+        success: 'More proposals loaded',
+        error: 'Failed to load more proposals',
+      }),
+    );
+  }, [loading, load, cursor]);
 
   return (
     <div>
