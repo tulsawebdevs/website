@@ -100,7 +100,10 @@ export default function ProposalCard(props: ProposalCardProps) {
   return (
     <Card>
       <CardHeader className="pb-0 pt-6 flex flex-row justify-between">
-        <CardTitle className="content-center">{props.title}</CardTitle>
+        <div className="flex flex-col max-w-full gap-2 content-center">
+          <CardTitle className="break-words">{props.title}</CardTitle>
+          <h2 className="break-words">{props.summary}</h2>
+        </div>
 
         <ProposalLikeButtons
           onVoteValueChange={(value) => onVoteChange({ ...vote, value })}
@@ -142,7 +145,7 @@ export default function ProposalCard(props: ProposalCardProps) {
             </div>
           </div>
 
-          <CardDescription className="py-4">
+          <CardDescription className="py-4 break-words">
             {props.description}
           </CardDescription>
         </div>
