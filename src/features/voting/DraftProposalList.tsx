@@ -52,9 +52,6 @@ export default function DraftProposalList() {
         });
         setCursor(result.cursor);
         setDrafts((previous) => [...previous, ...result.drafts]);
-      } catch (e) {
-        if (e instanceof Error) console.dir(e.message);
-        throw e;
       } finally {
         setLoading(false);
       }
@@ -138,9 +135,6 @@ export default function DraftProposalList() {
           queries: { recordId: id },
         });
         setDrafts((previous) => previous.filter((d) => d.id !== id));
-      } catch (e) {
-        if (e instanceof Error) console.dir(e.message);
-        throw e;
       } finally {
         setLoading(false);
       }
@@ -305,7 +299,7 @@ export default function DraftProposalList() {
                       variant="ghost"
                       size="icon"
                       className="hover:bg-transparent hover:text-red-500"
-                      onClick={() => handleDelete(submission.id)}
+                      onClick={() => void destroy(submission.id)}
                     >
                       <TrashIcon className="h-4 w-4" />
                       <span className="sr-only">Delete</span>

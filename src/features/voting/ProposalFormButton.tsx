@@ -71,7 +71,7 @@ export default function AddProposalButton({
   const submit = form.handleSubmit(
     ({ isDraft, ...data }, event) => {
       event?.preventDefault();
-      session?.getToken().then(async (token) => {
+      void session?.getToken().then(async (token) => {
         const path = isDraft ? '/drafts' : '/proposals';
         const headers = { Authorization: `Bearer ${token}` };
         const result = await sdk.post(path, data, { headers });

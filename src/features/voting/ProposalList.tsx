@@ -28,10 +28,7 @@ export function ProposalList() {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
         setCursor(result.cursor);
-        setProposals((prev) => [...prev, ...result.proposals]);
-      } catch (e) {
-        if (e instanceof Error) return console.dir(e.message);
-        else throw e;
+        setProposals((previous) => [...previous, ...result.proposals]);
       } finally {
         setLoading(false);
       }
@@ -46,9 +43,9 @@ export function ProposalList() {
       success: 'Proposals loaded',
       error: 'Failed to load proposals',
     });
-  }, []);
+  });
 
-  const onClick = useCallback(async () => {
+  const onClick = useCallback(() => {
     if (loading) return;
     if (!cursor) return;
 
