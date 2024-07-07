@@ -32,7 +32,7 @@ jobs:
 
   deploy:
     env:
-      PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_ZW5vcm1vdXMtYnVnLTMxLmNsZXJrLmFjY291bnRzLmRldiQ
+      PUBLIC_CLERK_PUBLISHABLE_KEY: pk_live_Y2xlcmsudHVsc2F3ZWJkZXZzLm9yZyQ
     needs: build
     runs-on: ubuntu-latest
     environment:
