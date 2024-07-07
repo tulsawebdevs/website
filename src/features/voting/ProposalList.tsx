@@ -5,22 +5,23 @@ import ProposalFormButton from './ProposalFormButton.tsx';
 import ProposalCard, { type ProposalCardProps } from './ProposalCard.tsx';
 import { Button } from '../ui/button.tsx';
 import { sdk, type Paginated } from '../../sdk.ts';
-import { useSession } from '../auth/hooks.ts';
+import { useClerk } from '../auth/hooks.ts';
 import { LoadingSpinner } from '../ui/LoadingSpinner.tsx';
 
 // This component auto-loads proposals on scroll, so we hard-code a static limit
 const limit = 10;
 
 export function ProposalList() {
-  const session = useSession();
+  const clerk = useClerk();
   const [loading, setLoading] = useState(true);
   const [cursor, setCursor] = useState<Paginated['cursor']>();
   const [proposals, setProposals] = useState<ProposalCardProps[]>([]);
 
   const load = useCallback(
     async (pagination: Paginated) => {
+      if (!clerk) return;
       setLoading(true);
-      const token = await session?.getToken();
+      const token = await clerk.session?.getToken();
 
       try {
         const result = await sdk.listProposals({
@@ -33,17 +34,18 @@ export function ProposalList() {
         setLoading(false);
       }
     },
-    [session],
+    [clerk],
   );
 
   useEffect(() => {
+    if (!clerk) return;
     // Load initial proposals
     toast.promise(load({ limit }), {
       loading: 'Loading proposals...',
       success: 'Proposals loaded',
       error: 'Failed to load proposals',
     });
-  });
+  }, [clerk, load]);
 
   const onClick = useCallback(() => {
     if (loading) return;
