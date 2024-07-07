@@ -37,15 +37,25 @@ export type DatabaseObject = {
   created: string;
   updated: string;
 };
-export type ProposalState = {
-  authorName: string;
-  /**
-   * @enum closed, open
-   */
-  status: 'closed' | 'open';
-  userVote?: Vote | undefined;
-  results: Array<Vote>;
-};
+export type ProposalState =
+  | {
+      authorName: string;
+      /**
+       * @enum closed
+       */
+      status: 'closed';
+      userVote?: Vote | undefined;
+      results: Array<Vote>;
+    }
+  | {
+      authorName: string;
+      /**
+       * @enum open
+       */
+      status: 'open';
+      userVote?: Vote | undefined;
+      results?: (Array<Vote> | null) | undefined;
+    };
 export type Vote = {
   /**
    * Ranking values: -2 (strong disinterest), -1 (slight disinterest), 0 (neutral), 1 (slight interest), 2 (strong interest)
@@ -143,12 +153,20 @@ const Vote: z.ZodType<Vote> = z.object({
     ),
   comment: z.union([z.string(), z.null()]).optional(),
 });
-const ProposalState: z.ZodType<ProposalState> = z.object({
-  authorName: z.string(),
-  status: z.enum(['closed', 'open']),
-  userVote: Vote.optional(),
-  results: z.array(Vote),
-});
+const ProposalState: z.ZodType<ProposalState> = z.union([
+  z.object({
+    authorName: z.string(),
+    status: z.literal('closed'),
+    userVote: Vote.optional(),
+    results: z.array(Vote),
+  }),
+  z.object({
+    authorName: z.string(),
+    status: z.literal('open'),
+    userVote: Vote.optional(),
+    results: z.union([z.array(Vote), z.null()]).optional(),
+  }),
+]);
 const ProposalIndex: z.ZodType<ProposalIndex> = Paginated.and(
   z.object({
     proposals: z.array(Proposal.and(ProposalState).and(DatabaseObject)),

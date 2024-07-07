@@ -421,17 +421,39 @@
         }
       },
       "ProposalState": {
-        "type": "object",
-        "required": ["status", "results", "authorName"],
-        "properties": {
-          "authorName": { "type": "string" },
-          "status": { "type": "string", "enum": ["closed", "open"] },
-          "userVote": { "$ref": "#/components/schemas/Vote" },
-          "results": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/Vote" }
+        "oneOf": [
+          {
+            "type": "object",
+            "required": ["status", "results", "authorName"],
+            "properties": {
+              "authorName": { "type": "string" },
+              "status": { "type": "string", "enum": ["closed"] },
+              "userVote": { "$ref": "#/components/schemas/Vote" },
+              "results": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/Vote" }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["status", "authorName"],
+            "properties": {
+              "authorName": { "type": "string" },
+              "status": { "type": "string", "enum": ["open"] },
+              "userVote": { "$ref": "#/components/schemas/Vote" },
+              "results": {
+                "oneOf": [
+                  {
+                    "type": "array",
+                    "items": { "$ref": "#/components/schemas/Vote" }
+                  },
+                  { "type": "null" }
+                ]
+              }
+            }
           }
-        }
+        ]
       },
       "ProposalIndex": {
         "allOf": [

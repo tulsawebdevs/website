@@ -7,56 +7,55 @@ import { Button } from '../ui/button.tsx';
 import { sdk, type Paginated } from '../../sdk.ts';
 import { useClerk } from '../auth/hooks.ts';
 import { LoadingSpinner } from '../ui/LoadingSpinner.tsx';
+import type { Clerk } from '../auth/clerk.ts';
 
 // This component auto-loads proposals on scroll, so we hard-code a static limit
 const limit = 10;
 
 export function ProposalList() {
-  const clerk = useClerk();
+  const clerkClient = useClerk();
   const [loading, setLoading] = useState(true);
   const [cursor, setCursor] = useState<Paginated['cursor']>();
   const [proposals, setProposals] = useState<ProposalCardProps[]>([]);
 
-  const load = useCallback(
-    async (pagination: Paginated) => {
-      if (!clerk) return;
-      setLoading(true);
-      const token = await clerk.session?.getToken();
+  const load = useCallback(async (pagination: Paginated, clerk: Clerk) => {
+    if (!clerk) return;
+    setLoading(true);
+    const token = await clerk.session?.getToken();
 
-      try {
-        const result = await sdk.listProposals({
-          queries: { pagination },
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        setCursor(result.cursor);
-        setProposals((previous) => [...previous, ...result.proposals]);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [clerk],
-  );
+    try {
+      const result = await sdk.listProposals({
+        queries: { pagination },
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      setCursor(result.cursor);
+      setProposals((previous) => [...previous, ...result.proposals]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    if (!clerk) return;
+    if (!clerkClient) return;
     // Load initial proposals
-    toast.promise(load({ limit }), {
+    toast.promise(load({ limit }, clerkClient), {
       loading: 'Loading proposals...',
       success: 'Proposals loaded',
       error: 'Failed to load proposals',
     });
-  }, [clerk, load]);
+  }, [clerkClient, load]);
 
   const onClick = useCallback(() => {
     if (loading) return;
     if (!cursor) return;
+    if (!clerkClient) return;
 
-    toast.promise(load({ cursor, limit }), {
+    toast.promise(load({ cursor, limit }, clerkClient), {
       loading: 'Loading more proposals...',
       success: 'More proposals loaded',
       error: 'Failed to load more proposals',
     });
-  }, [loading, load, cursor]);
+  }, [loading, load, cursor, clerkClient]);
 
   return (
     <div>
