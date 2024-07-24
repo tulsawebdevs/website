@@ -8,7 +8,6 @@ import {
   CardDescription,
   CardFooter,
 } from '../ui/card.tsx';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar.tsx';
 import { Badge } from '../ui/badge.tsx';
 import useDebounce from '../hooks/useDebounce.ts';
 import ProposalInterestVote from './ProposalInterestVote.tsx';
@@ -134,16 +133,6 @@ export default function ProposalCard(props: ProposalCardProps) {
         </Badge>
 
         <div className="flex flex-row place-items-center gap-2">
-          <Avatar className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-200">
-            <AvatarImage
-              alt="avatar"
-              src="http://placedog.net/100/100?50"
-              className="w-full h-full object-cover rounded-full"
-            />
-            <AvatarFallback className="capitalize">
-              {displayName}
-            </AvatarFallback>
-          </Avatar>
           <div className="font-bold dark:text-gray-200">{props.authorName}</div>
 
           <div className="text-sm text-gray-500 dark:text-gray-400 content-center">
