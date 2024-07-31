@@ -37,25 +37,36 @@ export type DatabaseObject = {
   created: string;
   updated: string;
 };
-export type ProposalState =
-  | {
-      authorName: string;
-      /**
-       * @enum closed
-       */
-      status: 'closed';
-      userVote?: Vote | undefined;
-      results: Array<Vote>;
-    }
-  | {
-      authorName: string;
-      /**
-       * @enum open
-       */
-      status: 'open';
-      userVote?: Vote | undefined;
-      results?: (Array<Vote> | null) | undefined;
-    };
+export type ProposalWinner = Proposal &
+  DatabaseObject & {
+    authorName: string;
+    /**
+     * @enum closed
+     */
+    status: 'closed';
+    userVote?: Vote | undefined;
+    results: Array<Vote>;
+  };
+export type Proposal = {
+  /**
+   * @minLength 8
+   * @maxLength 48
+   */
+  title: string;
+  /**
+   * @minLength 30
+   * @maxLength 255
+   */
+  summary: string;
+  description?: /**
+   * @maxLength 2048
+   */
+  string | undefined;
+  /**
+   * @enum topic, project
+   */
+  type: 'topic' | 'project';
+};
 export type Vote = {
   /**
    * Ranking values: -2 (strong disinterest), -1 (slight disinterest), 0 (neutral), 1 (slight interest), 2 (strong interest)
@@ -78,30 +89,65 @@ export type Vote = {
       )
     | undefined;
 };
+export type ProposalState =
+  | {
+      authorName: string;
+      /**
+       * @enum closed
+       */
+      status: 'closed';
+      userVote?: Vote | undefined;
+      results: Array<Vote>;
+    }
+  | {
+      authorName: string;
+      /**
+       * @enum open
+       */
+      status: 'open';
+      userVote?: Vote | undefined;
+      results?: (Array<Vote> | null) | undefined;
+    };
 export type ProposalIndex = Paginated & {
   proposals: Array<Proposal & ProposalState & DatabaseObject>;
 };
-export type Proposal = {
-  /**
-   * @minLength 8
-   * @maxLength 48
-   */
-  title: string;
-  /**
-   * @minLength 30
-   * @maxLength 255
-   */
-  summary: string;
-  description?: /**
-   * @maxLength 2048
-   */
-  string | undefined;
-  /**
-   * @enum topic, project
-   */
-  type: 'topic' | 'project';
-};
 
+const Proposal: z.ZodType<Proposal> = z.object({
+  title: z.string().min(8).max(48),
+  summary: z.string().min(30).max(255),
+  description: z.string().max(2048).optional(),
+  type: z.enum(['topic', 'project']),
+});
+const DatabaseObject: z.ZodType<DatabaseObject> = z.object({
+  id: z.number().int(),
+  created: z.string().datetime({ offset: true }),
+  updated: z.string().datetime({ offset: true }),
+});
+const Vote: z.ZodType<Vote> = z.object({
+  value: z
+    .union([
+      z.literal(-2),
+      z.literal(-1),
+      z.literal(0),
+      z.literal(1),
+      z.literal(2),
+    ])
+    .describe(
+      'Ranking values: -2 (strong disinterest), -1 (slight disinterest), 0 (neutral), 1 (slight interest), 2 (strong interest)',
+    ),
+  comment: z.union([z.string(), z.null()]).optional(),
+});
+const ProposalWinner: z.ZodType<ProposalWinner> = Proposal.and(
+  DatabaseObject,
+).and(
+  z.object({
+    authorName: z.string(),
+    status: z.literal('closed'),
+    userVote: Vote.optional(),
+    results: z.array(Vote),
+  }),
+);
+const Error = z.object({ message: z.string() });
 const Paginated: z.ZodType<Paginated> = z
   .object({
     cursor: z
@@ -124,35 +170,9 @@ const Draft: z.ZodType<Draft> = z
     type: z.enum(['topic', 'project']),
   })
   .partial();
-const DatabaseObject: z.ZodType<DatabaseObject> = z.object({
-  id: z.number().int(),
-  created: z.string().datetime({ offset: true }),
-  updated: z.string().datetime({ offset: true }),
-});
 const DraftIndex: z.ZodType<DraftIndex> = Paginated.and(
   z.object({ drafts: z.array(Draft.and(DatabaseObject)) }),
 );
-const Error = z.object({ message: z.string() });
-const Proposal: z.ZodType<Proposal> = z.object({
-  title: z.string().min(8).max(48),
-  summary: z.string().min(30).max(255),
-  description: z.string().max(2048).optional(),
-  type: z.enum(['topic', 'project']),
-});
-const Vote: z.ZodType<Vote> = z.object({
-  value: z
-    .union([
-      z.literal(-2),
-      z.literal(-1),
-      z.literal(0),
-      z.literal(1),
-      z.literal(2),
-    ])
-    .describe(
-      'Ranking values: -2 (strong disinterest), -1 (slight disinterest), 0 (neutral), 1 (slight interest), 2 (strong interest)',
-    ),
-  comment: z.union([z.string(), z.null()]).optional(),
-});
 const ProposalState: z.ZodType<ProposalState> = z.union([
   z.object({
     authorName: z.string(),
@@ -174,13 +194,14 @@ const ProposalIndex: z.ZodType<ProposalIndex> = Paginated.and(
 );
 
 export const schemas = {
+  Proposal,
+  DatabaseObject,
+  Vote,
+  ProposalWinner,
+  Error,
   Paginated,
   Draft,
-  DatabaseObject,
   DraftIndex,
-  Error,
-  Proposal,
-  Vote,
   ProposalState,
   ProposalIndex,
 };
@@ -553,6 +574,25 @@ const endpoints = makeApi([
       },
     ],
     response: z.void(),
+    errors: [
+      {
+        status: 401,
+        description: `Unauthorized`,
+        schema: z.object({ message: z.string() }),
+      },
+      {
+        status: 404,
+        description: `Not Found`,
+        schema: z.object({ message: z.string() }),
+      },
+    ],
+  },
+  {
+    method: 'get',
+    path: '/winner',
+    alias: 'getVoteWinner',
+    requestFormat: 'json',
+    response: ProposalWinner,
     errors: [
       {
         status: 401,
