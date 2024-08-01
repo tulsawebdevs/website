@@ -52,7 +52,7 @@ export default function VotingStatistics({ results }: Props) {
 
   return (
     <div data-testid="voting-statistics">
-      <h2 className="font-bold">Voting Results</h2>
+      <h2 className="font-bold dark:text-sky-500">Voting Results</h2>
       <p className="font-medium text-slate-500 text-sm">
         Total Score: <span data-testid="vote-score">{stats.total}</span>
       </p>
@@ -86,7 +86,7 @@ export default function VotingStatistics({ results }: Props) {
 
       <div className="flex justify-between">
         <div>
-          <span className="text-slate-600">Negative</span>
+          <span className="text-slate-600 dark:text-white">Negative</span>
 
           <div className="flex items-center justify-center">
             <ThumbsDownIcon className="w-5 h-5 text-red-500 mr-2" />
@@ -96,15 +96,17 @@ export default function VotingStatistics({ results }: Props) {
           </div>
         </div>
         <div>
-          <span className="text-slate-600">Neutral</span>
+          <span className="text-slate-600 dark:text-white">Neutral</span>
 
           <div className="flex items-center justify-center">
             <Meh className="w-5 h-5 mr-2" />
-            <span data-testid="neutral-count">{stats.neutral.count}</span>
+            <span data-testid="neutral-count" className="dark:text-white">
+              {stats.neutral.count}
+            </span>
           </div>
         </div>
         <div>
-          <span className="text-slate-600">Positive</span>
+          <span className="text-slate-600 dark:text-white">Positive</span>
 
           <div className="flex items-center justify-center">
             <ThumbsUpIcon className="w-5 h-5 text-green-500 mr-2" />
