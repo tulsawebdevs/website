@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import confetti from 'canvas-confetti';
 import { toast } from 'sonner';
+import { isErrorFromAlias } from '@zodios/core';
 import { Button } from '../ui/button.tsx';
 import WinningProposal from './WinningProposal.tsx';
-import { sdk, type ProposalWinner } from '../../sdk.ts';
+import { endpoints, sdk, type ProposalWinner } from '../../sdk.ts';
 import { useClerk } from '../auth/hooks.ts';
 
 export default function SelectWinner() {
@@ -36,7 +37,7 @@ export default function SelectWinner() {
       setWinner(result);
       launchConfetti();
     } catch (error) {
-      toast.error('Unable to get winner. Please try again.');
+      handleError(error);
     } finally {
       setLoading(false);
       setCountdown(5);
@@ -88,36 +89,31 @@ export default function SelectWinner() {
 }
 
 function launchConfetti() {
-  void confetti({
-    origin: { y: 0.7 },
-    spread: 26,
-    startVelocity: 55,
-    particleCount: Math.floor(200 * 0.25),
-  });
-  void confetti({
-    origin: { y: 0.7 },
-    spread: 60,
-    particleCount: Math.floor(200 * 0.2),
-  });
-  void confetti({
-    origin: { y: 0.7 },
-    spread: 100,
-    decay: 0.91,
-    scalar: 0.8,
-    particleCount: Math.floor(200 * 0.35),
-  });
-  void confetti({
-    origin: { y: 0.7 },
-    spread: 120,
-    startVelocity: 25,
-    decay: 0.92,
-    scalar: 1.2,
-    particleCount: Math.floor(200 * 0.1),
-  });
-  void confetti({
-    origin: { y: 0.7 },
-    spread: 120,
-    startVelocity: 45,
-    particleCount: Math.floor(200 * 0.1),
-  });
+  const _fire = (particleRatio: number, options: confetti.Options) => {
+    void confetti({
+      origin: { y: 0.7 },
+      particleCount: Math.floor(200 * particleRatio),
+      ...options,
+    });
+  };
+
+  _fire(0.25, { spread: 26, startVelocity: 55 });
+  _fire(0.2, { spread: 60 });
+  _fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+  _fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+  _fire(0.1, { spread: 120, startVelocity: 45 });
+}
+
+function handleError(error: unknown) {
+  if (isErrorFromAlias(endpoints, 'getVoteWinner', error)) {
+    if (error.response.status === 401) {
+      toast.error('You do not have permission to view winners.');
+    }
+
+    if (error.response.status === 404) {
+      toast.warning(error.response.data.message);
+    }
+  } else {
+    toast.error('Unable to get winner. Please try again.');
+  }
 }
