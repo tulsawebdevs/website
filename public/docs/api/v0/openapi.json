@@ -16,6 +16,46 @@
     }
   ],
   "paths": {
+    "/winner": {
+      "summary": "Retrieve the top voted proposal for upcoming event",
+      "parameters": [],
+      "get": {
+        "operationId": "getVoteWinner",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProposalWinner" },
+                "example": {
+                  "id": 1,
+                  "created": "2021-09-01T12:00:00Z",
+                  "updated": "2021-09-01T12:00:00Z",
+                  "title": "My Proposal",
+                  "description": "A longer description of the proposal",
+                  "summary": "A short summary of the proposal",
+                  "authorName": "John Doe",
+                  "type": "topic",
+                  "status": "closed",
+                  "results": [
+                    { "value": 2, "comment": null },
+                    { "value": 2, "comment": null },
+                    { "value": 2, "comment": null },
+                    { "value": 0, "comment": null },
+                    { "value": -1, "comment": null },
+                    { "value": -2, "comment": null }
+                  ]
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/401" },
+          "404": { "$ref": "#/components/responses/404" },
+          "default": { "$ref": "#/components/responses/500" }
+        }
+      }
+    },
     "/drafts": {
       "summary": "Manage the current user's proposal drafts",
       "parameters": [
@@ -405,6 +445,26 @@
                     { "$ref": "#/components/schemas/DatabaseObject" }
                   ]
                 }
+              }
+            }
+          }
+        ]
+      },
+      "ProposalWinner": {
+        "type": "object",
+        "allOf": [
+          { "$ref": "#/components/schemas/Proposal" },
+          { "$ref": "#/components/schemas/DatabaseObject" },
+          {
+            "type": "object",
+            "required": ["status", "results", "authorName"],
+            "properties": {
+              "authorName": { "type": "string" },
+              "status": { "type": "string", "enum": ["closed"] },
+              "userVote": { "$ref": "#/components/schemas/Vote" },
+              "results": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/Vote" }
               }
             }
           }

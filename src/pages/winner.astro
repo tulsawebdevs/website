@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SelectWinner from '../features/voting/SelectWinner.tsx';
+---
+
+<Layout title="Winner | Tulsa Web Devs">
+  <main class="w-screen h-screen flex justify-center items-center">
+    <SelectWinner client:load />
+  </main>
+</Layout>

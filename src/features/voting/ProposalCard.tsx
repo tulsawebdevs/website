@@ -46,15 +46,6 @@ export default function ProposalCard(props: ProposalCardProps) {
     [props.created],
   );
 
-  const displayName = useMemo(
-    () =>
-      props.authorName
-        .split(' ')
-        .map((name) => name[0]?.toUpperCase() ?? '')
-        .join(''),
-    [props.authorName],
-  );
-
   const votes = useMemo(() => {
     if (props.status === 'closed') {
       return props.results.reduce(
