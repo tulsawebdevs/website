@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { isErrorFromAlias } from '@zodios/core';
 import { Button } from '../ui/button.tsx';
 import WinningProposal from './WinningProposal.tsx';
-import { endpoints, sdk, type ProposalWinner } from '../../sdk.ts';
+import { sdk, type ProposalWinner } from '../../sdk.ts';
 import { useClerk } from '../auth/hooks.ts';
 
 export default function SelectWinner() {
@@ -105,7 +105,7 @@ function launchConfetti() {
 }
 
 function handleError(error: unknown) {
-  if (isErrorFromAlias(endpoints, 'getVoteWinner', error)) {
+  if (isErrorFromAlias(sdk.api, 'getVoteWinner', error)) {
     if (error.response.status === 401) {
       toast.error('You do not have permission to view winners.');
     }
