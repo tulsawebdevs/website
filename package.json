@@ -62,7 +62,7 @@
     "@astrojs/ts-plugin": "1.7.0",
     "@eslint/eslintrc": "3.0.2",
     "@eslint/js": "8.57.0",
-    "@playwright/test": "1.41.2",
+    "@playwright/test": "1.43.1",
     "@types/eslint__eslintrc": "2.1.1",
     "@types/eslint__js": "8.42.3",
     "@types/eslint-config-prettier": "6.11.3",
