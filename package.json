@@ -39,7 +39,7 @@
     "@types/react-dom": "18.3.0",
     "@vanilla-extract/css": "1.15.5",
     "@vanilla-extract/recipes": "0.5.2",
-    "@zendeskgarden/container-tabs": "2.0.10",
+    "@zendeskgarden/container-tabs": "2.0.13",
     "@zodios/core": "10.9.6",
     "astro": "4.8.2",
     "class-variance-authority": "0.7.0",
