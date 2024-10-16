@@ -61,7 +61,7 @@
   "devDependencies": {
     "@astrojs/ts-plugin": "1.7.0",
     "@eslint/eslintrc": "3.0.2",
-    "@eslint/js": "8.57.0",
+    "@eslint/js": "8.57.1",
     "@playwright/test": "1.41.2",
     "@types/eslint__eslintrc": "2.1.2",
     "@types/eslint__js": "8.42.3",
@@ -73,7 +73,7 @@
     "@vitest/coverage-v8": "1.6.0",
     "astro-eslint-parser": "0.17.0",
     "autoprefixer": "10.4.20",
-    "eslint": "8.57.0",
+    "eslint": "8.57.1",
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-prettier": "9.1.0",
     "eslint-mdx": "3.1.5",
